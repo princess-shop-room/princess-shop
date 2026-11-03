@@ -13,7 +13,7 @@
   }
   * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; font-family: 'Hiragino Maru Gothic ProN', sans-serif; }
   
-  /* 縦横スクロールを完全に禁止（1画面固定） */
+  /* 縦横スクロール完全禁止（1画面固定） */
   html, body {
     width: 100vw; height: 100vh; overflow: hidden;
     background: radial-gradient(circle, #FFF5F8 0%, #F8BBD0 100%);
@@ -23,22 +23,17 @@
   #fxCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
 
   .screen {
-    width: 100vw; height: 100vh; padding: 8px 12px;
+    width: 100vw; height: 100vh; padding: 6px 12px;
     display: none; flex-direction: column; justify-content: space-between;
   }
   .screen.active { display: flex; }
 
-  /* ヘッダー（高さ固定） */
+  /* ヘッダー */
   .header {
-    height: 48px; display: flex; justify-content: space-between; align-items: center;
-    background: #FFF; border: 3px solid var(--primary-pink); border-radius: 14px; padding: 0 14px;
+    height: 46px; display: flex; justify-content: space-between; align-items: center;
+    background: #FFF; border: 3px solid var(--primary-pink); border-radius: 14px; padding: 0 12px;
   }
-  .header h1 { font-size: 19px; color: var(--deep-pink); }
-  .point-badge {
-    background: linear-gradient(135deg, #FFF9C4, #FFD54F);
-    border: 2px solid #FFA000; border-radius: 12px; padding: 3px 10px;
-    font-size: 13px; font-weight: bold; color: #5D4037;
-  }
+  .header h1 { font-size: 18px; color: var(--deep-pink); }
 
   /* ボタン */
   .btn {
@@ -53,10 +48,10 @@
   .btn-green { background: linear-gradient(180deg, #E8F5E9 0%, #66BB6A 100%); color: #1B5E20; }
   .btn-red { background: linear-gradient(180deg, #FFEBEE 0%, #E53935 100%); color: #FFF; }
 
-  /* メインボディ：横3分割で完全フィット */
+  /* メインボディ：横3分割 */
   .main-body {
-    height: calc(100vh - 66px); width: 100%;
-    display: flex; gap: 10px; margin-top: 6px;
+    height: calc(100vh - 60px); width: 100%;
+    display: flex; gap: 10px; margin-top: 4px;
   }
 
   /* ① 左：カメラ（コード） */
@@ -75,14 +70,14 @@
   }
   .scan-guide.hit { border-color: #00E676 !important; }
 
-  /* ② 中央：手打ちカタログ（画面に全ボタンが収まるグリッド） */
+  /* ② 中央：手打ちカタログ（1画面ぴったり12品） */
   .col-manual {
     flex: 1.2; background: rgba(255, 255, 255, 0.95); border-radius: 16px;
-    border: 3px solid var(--primary-pink); padding: 8px; display: flex; flex-direction: column;
+    border: 3px solid var(--primary-pink); padding: 6px; display: flex; flex-direction: column;
   }
   .catalog-grid {
     flex: 1; display: grid; grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(4, 1fr); gap: 6px; margin-top: 4px;
+    grid-template-rows: repeat(4, 1fr); gap: 5px; margin-top: 4px;
   }
   .item-card {
     background: #FFF; border: 2px solid #F8BBD0; border-radius: 10px;
@@ -90,7 +85,7 @@
     cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
   .item-card:active { transform: scale(0.92); }
-  .item-card .icon { font-size: 24px; line-height: 1; }
+  .item-card .icon { font-size: 22px; line-height: 1; }
   .item-card .name { font-size: 11px; font-weight: bold; margin-top: 2px; }
   .item-card .price { font-size: 11px; font-weight: 900; color: var(--deep-pink); }
 
@@ -141,12 +136,11 @@
 
 <canvas id="fxCanvas"></canvas>
 
-<!-- 1. メインレジ画面（完全1画面完結） -->
+<!-- 1. メインレジ画面 -->
 <div id="cashierScreen" class="screen active">
   <div class="header">
     <h1>👑 AONE Princess Shop 💖</h1>
     <div style="display: flex; align-items: center; gap: 8px;">
-      <div class="point-badge">⭐ ポイント: <span id="totalPoints">0</span> pt</div>
       <button class="btn btn-gold" onclick="openPrintSheet()">🖨️ いんさつシート</button>
       <button class="btn btn-red" onclick="clearCart()">🗑️ クリア</button>
     </div>
@@ -155,19 +149,19 @@
   <div class="main-body">
     <!-- ① 左：カメラ（コード） -->
     <div class="col-code">
-      <div style="font-size: 13px; font-weight: bold; color: var(--deep-pink); margin-bottom: 4px;">
+      <div style="font-size: 13px; font-weight: bold; color: var(--deep-pink); margin-bottom: 2px;">
         📷 コードをかざす（コード）
       </div>
       <div class="camera-wrap">
         <video id="scanVideo" playsinline autoplay muted></video>
         <div id="scanBox" class="scan-guide"></div>
       </div>
-      <div style="font-size: 11px; color: #666; text-align: center; margin-top: 4px;">
+      <div style="font-size: 11px; color: #666; text-align: center; margin-top: 2px;">
         値札をわくにかざしてね
       </div>
     </div>
 
-    <!-- ② 中央：手打ちカタログ（画面ぴったり収まる12商品） -->
+    <!-- ② 中央：手打ちカタログ（画面ぴったり12品） -->
     <div class="col-manual">
       <div style="font-size: 13px; font-weight: bold; color: var(--deep-pink);">
         🛍️ タッチしてえらぶ（手打ち）
@@ -192,17 +186,26 @@
   </div>
 </div>
 
-<!-- 2. ポイントカード確認画面 -->
+<!-- 2. ポイントカード読み取り画面 -->
 <div id="pointModal" class="modal-overlay">
   <div class="modal-box">
-    <div style="font-size: 36px;">⭐👑</div>
+    <div style="font-size: 34px;">⭐👑</div>
     <h2 style="color: #FFB300; font-size: 20px;">「ポイントカードはお持ちですか？」</h2>
-    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 14px;">
-      <button class="btn btn-gold" style="font-size: 16px; padding: 10px 18px;" onclick="addPointSuccess()">
-        💳 カードあり (+10pt)
-      </button>
-      <button class="btn" style="background: #EEE; color: #555; font-size: 16px; padding: 10px 18px;" onclick="skipPoint()">
-        もっていません
+    <p style="font-size: 12px; color: #666; margin: 6px 0;">
+      印刷したポイントカードをカメラにかざしてね！
+    </p>
+
+    <div style="width: 220px; height: 140px; margin: 6px auto; border-radius: 12px; overflow: hidden; border: 2px solid #FFD54F; background: #000;">
+      <video id="pointVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover;"></video>
+    </div>
+
+    <!-- 読み取り結果表示エリア -->
+    <div id="pointResultBox" style="display: none; background: #FFF9C4; border: 2px solid #FFA000; border-radius: 10px; padding: 6px; margin: 8px 0; font-size: 14px; font-weight: bold; color: #5D4037;">
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 8px;">
+      <button class="btn" style="background: #EEE; color: #555;" onclick="skipPoint()">
+        もっていません（スキップ）
       </button>
     </div>
   </div>
@@ -272,36 +275,53 @@
   </div>
 </div>
 
-<!-- 7. 完了画面 -->
-<div id="successScreen" class="screen" style="justify-content: center; align-items: center; gap: 14px;">
+<!-- 7. お会計完了画面 -->
+<div id="successScreen" class="screen" style="justify-content: center; align-items: center; gap: 12px;">
   <div style="font-size: 55px;">💖👑✨</div>
   <h1 style="font-size: 32px; color: var(--deep-pink);">おかいあげ ありがとう！</h1>
-  <div id="successDetails" style="font-size: 19px; font-weight: bold; color: #880E4F; text-align: center;"></div>
+  <div id="successDetails" style="font-size: 18px; font-weight: bold; color: #880E4F; text-align: center;"></div>
+  <!-- たまったポイント表示 -->
+  <div id="successPointBadge" style="display:none; background: #FFF9C4; border: 2px solid #FFA000; border-radius: 12px; padding: 6px 16px; font-size: 16px; font-weight: bold; color: #E65100;">
+  </div>
   <button class="btn btn-gold" style="font-size: 19px; padding: 8px 24px;" onclick="nextCustomer()">つぎのおきゃくさま 🌸</button>
 </div>
 
-<!-- 8. 印刷シート -->
+<!-- 8. 印刷シート（2人分のポイントカード付き！） -->
 <div id="printSheetModal">
   <div class="no-print" style="position: sticky; top:0; background:#FFF; padding:6px; border-bottom:1px solid #CCC; display:flex; justify-content:space-between;">
-    <h3>🖨️ A4印刷シート（商品・カード・QR）</h3>
+    <h3>🖨️ A4印刷シート（2人分のポイントカード ＆ 決済カード ＆ 商品）</h3>
     <div>
       <button class="btn btn-gold" onclick="window.print()">印刷する</button>
       <button class="btn btn-red" onclick="closeModal('printSheetModal')">とじる</button>
     </div>
   </div>
   <div style="max-width: 800px; margin: 0 auto; padding: 10px;">
-    <h4 style="color: var(--deep-pink);">💳 カード ＆ 決済QR</h4>
+    <!-- 2人分のポイントカード -->
+    <h4 style="color: var(--deep-pink);">⭐ お客さんのポイントカード（2人分）</h4>
     <div class="print-grid">
-      <div class="print-card" style="background:#FFF9C4; border: 3px solid #FFA000;">
-        <strong style="color: #E65100;">⭐ AONE ポイントカード</strong>
-        <div style="font-size: 26px; margin: 10px 0;">👑 ⭐</div>
-        <span style="font-size: 11px;">見せるだけでOK</span>
+      <!-- ひめ（ピンク） -->
+      <div class="print-card" style="background:#FCE4EC; border: 3px solid #FF4081;">
+        <strong style="color: #C2185B;">🌸 ひめ ポイントカード</strong>
+        <div id="print_qr_point_pink" style="margin:4px 0;"></div>
+        <span style="font-size: 11px;">1人目のカード</span>
       </div>
+      <!-- おうじ（ブルー） -->
+      <div class="print-card" style="background:#E1F5FE; border: 3px solid #0288D1;">
+        <strong style="color: #01579B;">💎 おうじ ポイントカード</strong>
+        <div id="print_qr_point_blue" style="margin:4px 0;"></div>
+        <span style="font-size: 11px;">2人目のカード</span>
+      </div>
+      <!-- クレジットカード -->
       <div class="print-card" style="background: linear-gradient(135deg, #FF80AB, #FFD54F); color: #FFF; border: 3px solid #FFB300;">
         <strong>👑 AONE VIP CARD</strong>
         <div style="font-size: 26px; margin: 10px 0;">💳 ✨</div>
-        <span style="font-size: 11px; background: rgba(0,0,0,0.2); padding: 2px 4px; border-radius: 4px;">クレジットカード（スライド用）</span>
+        <span style="font-size: 11px; background: rgba(0,0,0,0.2); padding: 2px 4px; border-radius: 4px;">クレジットカード</span>
       </div>
+    </div>
+
+    <!-- 決済用QRコード -->
+    <h4 style="color: var(--deep-pink); margin-top: 10px;">📱 スマホQRコード</h4>
+    <div class="print-grid">
       <div class="print-card" style="border: 3px solid #0288D1;">
         <strong style="color:#0288D1;">📱 スマホQR決済</strong>
         <div id="print_qr_pay" style="margin:4px 0;"></div>
@@ -309,13 +329,14 @@
       </div>
     </div>
 
-    <h4 style="color: var(--deep-pink); margin-top: 12px;">🏷️ 商品ねふだバーコード</h4>
+    <!-- 商品タグ -->
+    <h4 style="color: var(--deep-pink); margin-top: 10px;">🏷️ 商品ねふだバーコード</h4>
     <div class="print-grid" id="productPrintGrid"></div>
   </div>
 </div>
 
 <script>
-// 1画面にぴったり収まる厳選12商品（4行×3列）
+// 12商品
 const PRODUCTS = [
   { code: 'ITEM_COOKIE',  name: 'クッキー',   price: 130, icon: '🍪' },
   { code: 'ITEM_CHOCO',   name: 'チョコ',     price: 120, icon: '🍫' },
@@ -336,8 +357,18 @@ let scanStream = null;
 let lastScanCode = '';
 let lastScanTime = 0;
 let isMainScanning = true;
-let totalUserPoints = 0;
 
+// ユーザー別ポイントデータ（LocalStorageでずっと保存！）
+let userPoints = JSON.parse(localStorage.getItem('aone_points')) || {
+  'POINT_PINK': { name: '🌸 ひめ', pt: 0 },
+  'POINT_BLUE': { name: '💎 おうじ', pt: 0 }
+};
+
+let currentCustomerCard = null; // 今回スキャンしたカード
+
+// カメラ用
+let ptStream = null;
+let ptTimer = null;
 let qrStream = null;
 let qrTimer = null;
 
@@ -397,18 +428,13 @@ function scanFrame() {
   }
 }
 
-// カタログ描画（4行×3列にぴったり収める）
 function renderCatalog() {
   const container = document.getElementById('catalogGrid');
   container.innerHTML = '';
   PRODUCTS.forEach(p => {
     const card = document.createElement('div');
     card.className = 'item-card';
-    card.innerHTML = `
-      <div class="icon">${p.icon}</div>
-      <div class="name">${p.name}</div>
-      <div class="price">¥${p.price}</div>
-    `;
+    card.innerHTML = `<div class="icon">${p.icon}</div><div class="name">${p.name}</div><div class="price">¥${p.price}</div>`;
     card.onclick = () => addToCart(p);
     container.appendChild(card);
   });
@@ -440,31 +466,80 @@ function renderCart() {
 
 function clearCart() { cart = []; renderCart(); }
 
-// --- 会計フロー ---
+// --- 会計フロー：ポイント確認 ---
 function startCheckoutFlow() {
   if (cart.length === 0) { alert('かいものかごに しょうひんを入れてね！'); return; }
   isMainScanning = false;
-  document.getElementById('pointModal').style.display = 'flex';
+  currentCustomerCard = null;
+  document.getElementById('pointResultBox').style.display = 'none';
+  openPointModal();
 }
 
-function addPointSuccess() {
-  closeModal('pointModal');
+async function openPointModal() {
+  document.getElementById('pointModal').style.display = 'flex';
+  const video = document.getElementById('pointVideo');
+  try {
+    ptStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } } });
+    video.srcObject = ptStream;
+    ptTimer = setInterval(scanPointFrame, 200);
+  } catch (e) {}
+}
+
+function scanPointFrame() {
+  const video = document.getElementById('pointVideo');
+  if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+  const cvs = document.createElement('canvas'); cvs.width = video.videoWidth; cvs.height = video.videoHeight;
+  const ctx = cvs.getContext('2d'); ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
+  const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+  const code = jsQR(imgData.data, imgData.width, imgData.height);
+
+  if (code && userPoints[code.data]) {
+    onPointCardScanned(code.data);
+  }
+}
+
+// ポイントカードが読み取れた！
+function onPointCardScanned(cardKey) {
+  if (ptTimer) { clearInterval(ptTimer); ptTimer = null; }
+  currentCustomerCard = cardKey;
+  
   beep(1046, 0.1); setTimeout(() => beep(1318, 0.2), 100);
-  totalUserPoints += 10;
-  document.getElementById('totalPoints').textContent = totalUserPoints;
   emitGlitter(window.innerWidth / 2, window.innerHeight / 2, 40);
-  openPayModal();
+
+  const prevPt = userPoints[cardKey].pt;
+  const newPt = prevPt + 10;
+  userPoints[cardKey].pt = newPt;
+  localStorage.setItem('aone_points', JSON.stringify(userPoints)); // 保存！
+
+  const box = document.getElementById('pointResultBox');
+  box.innerHTML = `
+    🎉 ${userPoints[cardKey].name}のカードをよみとったよ！<br>
+    ぜんかい: ${prevPt} pt ➔ <strong>いま: ${newPt} pt</strong> (+10pt)
+  `;
+  box.style.display = 'block';
+
+  setTimeout(() => {
+    closePointModal();
+    openPayModal();
+  }, 1600);
+}
+
+function closePointModal() {
+  if (ptStream) { ptStream.getTracks().forEach(t => t.stop()); ptStream = null; }
+  if (ptTimer) { clearInterval(ptTimer); ptTimer = null; }
+  closeModal('pointModal');
 }
 
 function skipPoint() {
-  closeModal('pointModal');
+  currentCustomerCard = null;
+  closePointModal();
   openPayModal();
 }
 
+// お支払い選択
 function openPayModal() {
   document.getElementById('paySelectModal').style.display = 'flex';
 }
-
 function closeModal(id) {
   document.getElementById(id).style.display = 'none';
   if (id === 'paySelectModal' && !isMainScanning) isMainScanning = true;
@@ -548,6 +623,16 @@ function completeCheckout(method) {
     おしはらい: <strong>${method}</strong><br>
     ごうけい: <strong style="color:#FF4081;font-size:30px;">¥${total.toLocaleString()}</strong>
   `;
+
+  // たまったポイントのレシート表示
+  const ptBadge = document.getElementById('successPointBadge');
+  if (currentCustomerCard && userPoints[currentCustomerCard]) {
+    ptBadge.innerHTML = `⭐ ${userPoints[currentCustomerCard].name}の現在のポイント: <strong>${userPoints[currentCustomerCard].pt} pt</strong>`;
+    ptBadge.style.display = 'inline-block';
+  } else {
+    ptBadge.style.display = 'none';
+  }
+
   document.getElementById('cashierScreen').classList.remove('active');
   document.getElementById('successScreen').classList.add('active');
 }
@@ -563,8 +648,13 @@ function nextCustomer() {
 // 印刷シート生成
 function openPrintSheet() {
   document.getElementById('printSheetModal').style.display = 'block';
+  document.getElementById('print_qr_point_pink').innerHTML = '';
+  document.getElementById('print_qr_point_blue').innerHTML = '';
   document.getElementById('print_qr_pay').innerHTML = '';
-  new QRCode(document.getElementById('print_qr_pay'), { text: 'PLAY:QR_PAY', width: 80, height: 80 });
+
+  new QRCode(document.getElementById('print_qr_point_pink'), { text: 'POINT_PINK', width: 75, height: 75 });
+  new QRCode(document.getElementById('print_qr_point_blue'), { text: 'POINT_BLUE', width: 75, height: 75 });
+  new QRCode(document.getElementById('print_qr_pay'), { text: 'PLAY:QR_PAY', width: 75, height: 75 });
 
   const grid = document.getElementById('productPrintGrid');
   grid.innerHTML = '';
