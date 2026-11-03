@@ -406,4 +406,257 @@ function scanFrame() {
   const code = jsQR(imgData.data, imgData.width, imgData.height);
   if (code) {
     const now = Date.now();
-    if (code.data === lastScanCode && now - lastS
+    if (code.data === lastScanCode && now - lastScanTime < 1600) return;
+    lastScanCode = code.data;
+    lastScanTime = now;
+
+    const item = PRODUCTS.find(p => p.code === code.data);
+    if (item) {
+      const box = document.getElementById('scanBox');
+      box.classList.add('hit');
+      setTimeout(() => box.classList.remove('hit'), 350);
+      addToCart(item);
+    }
+  }
+}
+
+function renderCatalog() {
+  const container = document.getElementById('catalogGrid');
+  container.innerHTML = '';
+  PRODUCTS.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `<div class="icon">${p.icon}</div><div class="name">${p.name}</div><div class="price">¥${p.price}</div>`;
+    card.onclick = () => addToCart(p);
+    container.appendChild(card);
+  });
+}
+
+function addToCart(item) {
+  playBeep();
+  const exist = cart.find(c => c.code === item.code);
+  if (exist) exist.qty += 1;
+  else cart.push({ ...item, qty: 1 });
+  renderCart();
+}
+
+function renderCart() {
+  const list = document.getElementById('cartList');
+  list.innerHTML = '';
+  let total = 0;
+  cart.forEach(item => {
+    const sub = item.price * item.qty;
+    total += sub;
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `<span>${item.icon} ${item.name} × ${item.qty}</span><strong>¥${sub}</strong>`;
+    list.appendChild(div);
+  });
+  document.getElementById('cartTotal').textContent = total.toLocaleString();
+}
+
+function clearCart() { cart = []; renderCart(); }
+
+// 会計フロー
+function startCheckoutFlow() {
+  if (cart.length === 0) { alert('かいものかごに しょうひんを入れてね！'); return; }
+  isMainScanning = false;
+  currentCustomerCard = null;
+  document.getElementById('pointResultBox').style.display = 'none';
+  openPointModal();
+}
+
+async function openPointModal() {
+  document.getElementById('pointModal').style.display = 'flex';
+  const video = document.getElementById('pointVideo');
+  try {
+    ptStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 480 } } });
+    video.srcObject = ptStream;
+    ptTimer = setInterval(scanPointFrame, 250);
+  } catch (e) {}
+}
+
+function scanPointFrame() {
+  const video = document.getElementById('pointVideo');
+  if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+  const cvs = document.createElement('canvas'); cvs.width = 240; cvs.height = 180;
+  const ctx = cvs.getContext('2d'); ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
+  const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+  const code = jsQR(imgData.data, imgData.width, imgData.height);
+
+  if (code && userPoints[code.data]) {
+    onPointCardScanned(code.data);
+  }
+}
+
+function onPointCardScanned(cardKey) {
+  if (ptTimer) { clearInterval(ptTimer); ptTimer = null; }
+  currentCustomerCard = cardKey;
+  
+  beep(1046, 0.1); setTimeout(() => beep(1318, 0.2), 100);
+
+  const prevPt = userPoints[cardKey].pt;
+  const newPt = prevPt + 10;
+  userPoints[cardKey].pt = newPt;
+  localStorage.setItem('princess_points', JSON.stringify(userPoints));
+
+  const box = document.getElementById('pointResultBox');
+  box.innerHTML = `
+    🎉 ${userPoints[cardKey].name}ちゃんのカードをよみとったよ！<br>
+    ぜんかい: ${prevPt} pt ➔ <strong>いま: ${newPt} pt</strong> (+10pt)
+  `;
+  box.style.display = 'block';
+
+  setTimeout(() => {
+    closePointModal();
+    openPayModal();
+  }, 1400);
+}
+
+function closePointModal() {
+  if (ptStream) { ptStream.getTracks().forEach(t => t.stop()); ptStream = null; }
+  if (ptTimer) { clearInterval(ptTimer); ptTimer = null; }
+  closeModal('pointModal');
+}
+
+function skipPoint() {
+  currentCustomerCard = null;
+  closePointModal();
+  openPayModal();
+}
+
+function openPayModal() {
+  document.getElementById('paySelectModal').style.display = 'flex';
+}
+function closeModal(id) {
+  document.getElementById(id).style.display = 'none';
+  if (id === 'paySelectModal' && !isMainScanning) isMainScanning = true;
+}
+
+// 現金
+function startCashPay() {
+  closeModal('paySelectModal');
+  let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+  document.getElementById('cashTotalDisp').textContent = total.toLocaleString();
+  document.getElementById('cashModal').style.display = 'flex';
+}
+function finishCashPay(isExact) {
+  closeModal('cashModal');
+  playCash();
+  let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+  let msg = isExact ? `げんきん（ちょうど ¥${total}）` : `げんきん（おつりあり）`;
+  setTimeout(() => completeCheckout(msg), 300);
+}
+
+// クレジット
+function startCardPay() {
+  closeModal('paySelectModal');
+  document.getElementById('terminalStatus').innerHTML = "[ PRINCESS TERMINAL ]<br>カードをスライド または タッチしてね";
+  document.getElementById('cardPayModal').style.display = 'flex';
+}
+function executeCardSwipe() {
+  beep(1200, 0.1);
+  const s = document.getElementById('terminalStatus');
+  s.innerHTML = "💳 よみとっています... ピピピ...";
+  setTimeout(() => {
+    beep(1800, 0.15);
+    s.innerHTML = "✅ しょうにんOK！";
+    setTimeout(() => {
+      closeModal('cardPayModal');
+      completeCheckout('👑 Princess VIP CARD（クレジット）');
+    }, 400);
+  }, 500);
+}
+
+// QR決済
+async function startQRScan() {
+  closeModal('paySelectModal');
+  document.getElementById('qrScanModal').style.display = 'flex';
+  const video = document.getElementById('qrVideo');
+  try {
+    qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 480 } } });
+    video.srcObject = qrStream;
+    qrTimer = setInterval(scanQRTick, 250);
+  } catch (e) {
+    alert('カメラを開けませんでした');
+    stopQRScan();
+  }
+}
+function stopQRScan() {
+  if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
+  if (qrTimer) { clearInterval(qrTimer); qrTimer = null; }
+  closeModal('qrScanModal');
+  openPayModal();
+}
+function scanQRTick() {
+  const video = document.getElementById('qrVideo');
+  if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+  const cvs = document.createElement('canvas'); cvs.width = 240; cvs.height = 180;
+  const ctx = cvs.getContext('2d'); ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
+  const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+  const code = jsQR(imgData.data, imgData.width, imgData.height);
+  if (code && code.data === 'PLAY:QR_PAY') {
+    if (qrStream) qrStream.getTracks().forEach(t => t.stop());
+    clearInterval(qrTimer);
+    closeModal('qrScanModal');
+    completeCheckout('📱 スマホQRコード決済');
+  }
+}
+
+function completeCheckout(method) {
+  playFanfare();
+  let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+  document.getElementById('successDetails').innerHTML = `
+    おしはらい: <strong>${method}</strong><br>
+    ごうけい: <strong style="color:#FF4081;font-size:30px;">¥${total.toLocaleString()}</strong>
+  `;
+
+  const ptBadge = document.getElementById('successPointBadge');
+  if (currentCustomerCard && userPoints[currentCustomerCard]) {
+    ptBadge.innerHTML = `⭐ ${userPoints[currentCustomerCard].name}ちゃんの現在のポイント: <strong>${userPoints[currentCustomerCard].pt} pt</strong>`;
+    ptBadge.style.display = 'inline-block';
+  } else {
+    ptBadge.style.display = 'none';
+  }
+
+  document.getElementById('cashierScreen').classList.remove('active');
+  document.getElementById('successScreen').classList.add('active');
+}
+
+function nextCustomer() {
+  cart = [];
+  renderCart();
+  isMainScanning = true;
+  document.getElementById('successScreen').classList.remove('active');
+  document.getElementById('cashierScreen').classList.add('active');
+}
+
+// 印刷シート生成
+function openPrintSheet() {
+  document.getElementById('printSheetModal').style.display = 'block';
+  document.getElementById('print_qr_point_aone').innerHTML = '';
+  document.getElementById('print_qr_point_ayaha').innerHTML = '';
+  document.getElementById('print_qr_pay').innerHTML = '';
+
+  new QRCode(document.getElementById('print_qr_point_aone'), { text: 'POINT_AONE', width: 75, height: 75 });
+  new QRCode(document.getElementById('print_qr_point_ayaha'), { text: 'POINT_AYAHA', width: 75, height: 75 });
+  new QRCode(document.getElementById('print_qr_pay'), { text: 'PLAY:QR_PAY', width: 75, height: 75 });
+
+  const grid = document.getElementById('productPrintGrid');
+  grid.innerHTML = '';
+  PRODUCTS.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'print-card';
+    div.innerHTML = `<span>${p.icon}</span><strong style="font-size:11px;">${p.name}</strong><span style="color:#FF4081;font-weight:bold;font-size:11px;">¥${p.price}</span><div id="q_${p.code}"></div>`;
+    grid.appendChild(div);
+    setTimeout(() => new QRCode(document.getElementById(`q_${p.code}`), { text: p.code, width: 70, height: 70 }), 50);
+  });
+}
+
+window.onload = () => {
+  renderCatalog();
+  startMainScanner();
+};
+</script>
+</body>
+</html>
