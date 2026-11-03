@@ -20,8 +20,6 @@
     color: var(--text-color);
   }
 
-  #fxCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
-
   .screen {
     width: 100vw; height: 100vh; padding: 6px 12px;
     display: none; flex-direction: column; justify-content: space-between;
@@ -70,7 +68,7 @@
   }
   .scan-guide.hit { border-color: #00E676 !important; }
 
-  /* ② 中央：手打ちカタログ（1画面ぴったり12品） */
+  /* ② 中央：手打ちカタログ（画面ぴったり12品） */
   .col-manual {
     flex: 1.2; background: rgba(255, 255, 255, 0.95); border-radius: 16px;
     border: 3px solid var(--primary-pink); padding: 6px; display: flex; flex-direction: column;
@@ -134,8 +132,6 @@
 </head>
 <body>
 
-<canvas id="fxCanvas"></canvas>
-
 <!-- 1. メインレジ画面 -->
 <div id="cashierScreen" class="screen active">
   <div class="header">
@@ -161,7 +157,7 @@
       </div>
     </div>
 
-    <!-- ② 中央：手打ちカタログ（画面ぴったり12品） -->
+    <!-- ② 中央：手打ちカタログ -->
     <div class="col-manual">
       <div style="font-size: 13px; font-weight: bold; color: var(--deep-pink);">
         🛍️ タッチしてえらぶ（手打ち）
@@ -195,12 +191,11 @@
       印刷したポイントカードをカメラにかざしてね！
     </p>
 
-    <div style="width: 220px; height: 140px; margin: 6px auto; border-radius: 12px; overflow: hidden; border: 2px solid #FFD54F; background: #000;">
+    <div style="width: 200px; height: 130px; margin: 6px auto; border-radius: 12px; overflow: hidden; border: 2px solid #FFD54F; background: #000;">
       <video id="pointVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover;"></video>
     </div>
 
-    <!-- 読み取り結果表示エリア -->
-    <div id="pointResultBox" style="display: none; background: #FFF9C4; border: 2px solid #FFA000; border-radius: 10px; padding: 6px; margin: 8px 0; font-size: 14px; font-weight: bold; color: #5D4037;">
+    <div id="pointResultBox" style="display: none; background: #FFF9C4; border: 2px solid #FFA000; border-radius: 10px; padding: 6px; margin: 6px 0; font-size: 14px; font-weight: bold; color: #5D4037;">
     </div>
 
     <div style="display: flex; gap: 10px; justify-content: center; margin-top: 8px;">
@@ -233,7 +228,7 @@
   </div>
 </div>
 
-<!-- 4. クレジットカード決済端末 -->
+<!-- 4. クレジットカード端末 -->
 <div id="cardPayModal" class="modal-overlay">
   <div class="modal-box">
     <h2 style="color: #FFB300;">💳 クレジットカード決済</h2>
@@ -253,7 +248,7 @@
 <div id="qrScanModal" class="modal-overlay">
   <div class="modal-box">
     <h2 style="color: #0288D1;">📱 QRコードをうつしてね</h2>
-    <div style="width: 220px; height: 160px; margin: 8px auto; border-radius: 12px; overflow: hidden; border: 3px solid var(--gold); background: #000;">
+    <div style="width: 200px; height: 150px; margin: 8px auto; border-radius: 12px; overflow: hidden; border: 3px solid var(--gold); background: #000;">
       <video id="qrVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover;"></video>
     </div>
     <button class="btn btn-red" onclick="stopQRScan()">もどる</button>
@@ -280,38 +275,33 @@
   <div style="font-size: 55px;">💖👑✨</div>
   <h1 style="font-size: 32px; color: var(--deep-pink);">おかいあげ ありがとう！</h1>
   <div id="successDetails" style="font-size: 18px; font-weight: bold; color: #880E4F; text-align: center;"></div>
-  <!-- たまったポイント表示 -->
   <div id="successPointBadge" style="display:none; background: #FFF9C4; border: 2px solid #FFA000; border-radius: 12px; padding: 6px 16px; font-size: 16px; font-weight: bold; color: #E65100;">
   </div>
   <button class="btn btn-gold" style="font-size: 19px; padding: 8px 24px;" onclick="nextCustomer()">つぎのおきゃくさま 🌸</button>
 </div>
 
-<!-- 8. 印刷シート（2人分のポイントカード付き！） -->
+<!-- 8. 印刷シート -->
 <div id="printSheetModal">
   <div class="no-print" style="position: sticky; top:0; background:#FFF; padding:6px; border-bottom:1px solid #CCC; display:flex; justify-content:space-between;">
-    <h3>🖨️ A4印刷シート（2人分のポイントカード ＆ 決済カード ＆ 商品）</h3>
+    <h3>🖨️ A4印刷シート（ポイントカード・決済カード・商品）</h3>
     <div>
       <button class="btn btn-gold" onclick="window.print()">印刷する</button>
       <button class="btn btn-red" onclick="closeModal('printSheetModal')">とじる</button>
     </div>
   </div>
   <div style="max-width: 800px; margin: 0 auto; padding: 10px;">
-    <!-- 2人分のポイントカード -->
     <h4 style="color: var(--deep-pink);">⭐ お客さんのポイントカード（2人分）</h4>
     <div class="print-grid">
-      <!-- ひめ（ピンク） -->
       <div class="print-card" style="background:#FCE4EC; border: 3px solid #FF4081;">
         <strong style="color: #C2185B;">🌸 ひめ ポイントカード</strong>
         <div id="print_qr_point_pink" style="margin:4px 0;"></div>
         <span style="font-size: 11px;">1人目のカード</span>
       </div>
-      <!-- おうじ（ブルー） -->
       <div class="print-card" style="background:#E1F5FE; border: 3px solid #0288D1;">
         <strong style="color: #01579B;">💎 おうじ ポイントカード</strong>
         <div id="print_qr_point_blue" style="margin:4px 0;"></div>
         <span style="font-size: 11px;">2人目のカード</span>
       </div>
-      <!-- クレジットカード -->
       <div class="print-card" style="background: linear-gradient(135deg, #FF80AB, #FFD54F); color: #FFF; border: 3px solid #FFB300;">
         <strong>👑 AONE VIP CARD</strong>
         <div style="font-size: 26px; margin: 10px 0;">💳 ✨</div>
@@ -319,7 +309,6 @@
       </div>
     </div>
 
-    <!-- 決済用QRコード -->
     <h4 style="color: var(--deep-pink); margin-top: 10px;">📱 スマホQRコード</h4>
     <div class="print-grid">
       <div class="print-card" style="border: 3px solid #0288D1;">
@@ -329,14 +318,12 @@
       </div>
     </div>
 
-    <!-- 商品タグ -->
     <h4 style="color: var(--deep-pink); margin-top: 10px;">🏷️ 商品ねふだバーコード</h4>
     <div class="print-grid" id="productPrintGrid"></div>
   </div>
 </div>
 
 <script>
-// 12商品
 const PRODUCTS = [
   { code: 'ITEM_COOKIE',  name: 'クッキー',   price: 130, icon: '🍪' },
   { code: 'ITEM_CHOCO',   name: 'チョコ',     price: 120, icon: '🍫' },
@@ -358,21 +345,20 @@ let lastScanCode = '';
 let lastScanTime = 0;
 let isMainScanning = true;
 
-// ユーザー別ポイントデータ（LocalStorageでずっと保存！）
+// ユーザー別ポイント
 let userPoints = JSON.parse(localStorage.getItem('aone_points')) || {
   'POINT_PINK': { name: '🌸 ひめ', pt: 0 },
   'POINT_BLUE': { name: '💎 おうじ', pt: 0 }
 };
 
-let currentCustomerCard = null; // 今回スキャンしたカード
+let currentCustomerCard = null;
 
-// カメラ用
 let ptStream = null;
 let ptTimer = null;
 let qrStream = null;
 let qrTimer = null;
 
-// 音
+// 音声
 let actx = null;
 function beep(freq, duration) {
   if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -388,15 +374,15 @@ function playBeep() { beep(1900, 0.08); }
 function playCash() { beep(523, 0.1); setTimeout(() => beep(1046, 0.2), 100); }
 function playFanfare() { [523, 659, 784, 1046, 1318].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 80)); }
 
-// メインカメラ
+// メインカメラ（超軽量480pでサクサク動作）
 async function startMainScanner() {
   const video = document.getElementById('scanVideo');
   try {
     scanStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } }
+      video: { facingMode: { ideal: "environment" }, width: { ideal: 640 }, height: { ideal: 480 } }
     });
     video.srcObject = scanStream;
-    setInterval(scanFrame, 200);
+    setInterval(scanFrame, 250); // 250msごとに軽量処理
   } catch (e) {}
 }
 
@@ -405,8 +391,9 @@ function scanFrame() {
   const video = document.getElementById('scanVideo');
   if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
 
+  // 軽量キャンバスで解析（Fireタブレットの負荷激減）
   const cvs = document.createElement('canvas');
-  cvs.width = video.videoWidth; cvs.height = video.videoHeight;
+  cvs.width = 320; cvs.height = 240;
   const ctx = cvs.getContext('2d');
   ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
   const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
@@ -446,7 +433,6 @@ function addToCart(item) {
   if (exist) exist.qty += 1;
   else cart.push({ ...item, qty: 1 });
   renderCart();
-  emitGlitter(window.innerWidth * 0.85, window.innerHeight * 0.5, 12);
 }
 
 function renderCart() {
@@ -466,7 +452,7 @@ function renderCart() {
 
 function clearCart() { cart = []; renderCart(); }
 
-// --- 会計フロー：ポイント確認 ---
+// 会計フロー
 function startCheckoutFlow() {
   if (cart.length === 0) { alert('かいものかごに しょうひんを入れてね！'); return; }
   isMainScanning = false;
@@ -479,16 +465,16 @@ async function openPointModal() {
   document.getElementById('pointModal').style.display = 'flex';
   const video = document.getElementById('pointVideo');
   try {
-    ptStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } } });
+    ptStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 480 } } });
     video.srcObject = ptStream;
-    ptTimer = setInterval(scanPointFrame, 200);
+    ptTimer = setInterval(scanPointFrame, 250);
   } catch (e) {}
 }
 
 function scanPointFrame() {
   const video = document.getElementById('pointVideo');
   if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
-  const cvs = document.createElement('canvas'); cvs.width = video.videoWidth; cvs.height = video.videoHeight;
+  const cvs = document.createElement('canvas'); cvs.width = 240; cvs.height = 180;
   const ctx = cvs.getContext('2d'); ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
   const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
   const code = jsQR(imgData.data, imgData.width, imgData.height);
@@ -498,18 +484,16 @@ function scanPointFrame() {
   }
 }
 
-// ポイントカードが読み取れた！
 function onPointCardScanned(cardKey) {
   if (ptTimer) { clearInterval(ptTimer); ptTimer = null; }
   currentCustomerCard = cardKey;
   
   beep(1046, 0.1); setTimeout(() => beep(1318, 0.2), 100);
-  emitGlitter(window.innerWidth / 2, window.innerHeight / 2, 40);
 
   const prevPt = userPoints[cardKey].pt;
   const newPt = prevPt + 10;
   userPoints[cardKey].pt = newPt;
-  localStorage.setItem('aone_points', JSON.stringify(userPoints)); // 保存！
+  localStorage.setItem('aone_points', JSON.stringify(userPoints));
 
   const box = document.getElementById('pointResultBox');
   box.innerHTML = `
@@ -521,7 +505,7 @@ function onPointCardScanned(cardKey) {
   setTimeout(() => {
     closePointModal();
     openPayModal();
-  }, 1600);
+  }, 1400);
 }
 
 function closePointModal() {
@@ -536,7 +520,6 @@ function skipPoint() {
   openPayModal();
 }
 
-// お支払い選択
 function openPayModal() {
   document.getElementById('paySelectModal').style.display = 'flex';
 }
@@ -576,8 +559,8 @@ function executeCardSwipe() {
     setTimeout(() => {
       closeModal('cardPayModal');
       completeCheckout('👑 AONE VIP CARD（クレジット）');
-    }, 500);
-  }, 600);
+    }, 400);
+  }, 500);
 }
 
 // QR決済
@@ -586,9 +569,9 @@ async function startQRScan() {
   document.getElementById('qrScanModal').style.display = 'flex';
   const video = document.getElementById('qrVideo');
   try {
-    qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } } });
+    qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 480 } } });
     video.srcObject = qrStream;
-    qrTimer = setInterval(scanQRTick, 200);
+    qrTimer = setInterval(scanQRTick, 250);
   } catch (e) {
     alert('カメラを開けませんでした');
     stopQRScan();
@@ -603,7 +586,7 @@ function stopQRScan() {
 function scanQRTick() {
   const video = document.getElementById('qrVideo');
   if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
-  const cvs = document.createElement('canvas'); cvs.width = video.videoWidth; cvs.height = video.videoHeight;
+  const cvs = document.createElement('canvas'); cvs.width = 240; cvs.height = 180;
   const ctx = cvs.getContext('2d'); ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
   const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
   const code = jsQR(imgData.data, imgData.width, imgData.height);
@@ -617,14 +600,12 @@ function scanQRTick() {
 
 function completeCheckout(method) {
   playFanfare();
-  emitGlitter(window.innerWidth / 2, window.innerHeight / 2, 80);
   let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
   document.getElementById('successDetails').innerHTML = `
     おしはらい: <strong>${method}</strong><br>
     ごうけい: <strong style="color:#FF4081;font-size:30px;">¥${total.toLocaleString()}</strong>
   `;
 
-  // たまったポイントのレシート表示
   const ptBadge = document.getElementById('successPointBadge');
   if (currentCustomerCard && userPoints[currentCustomerCard]) {
     ptBadge.innerHTML = `⭐ ${userPoints[currentCustomerCard].name}の現在のポイント: <strong>${userPoints[currentCustomerCard].pt} pt</strong>`;
@@ -666,15 +647,6 @@ function openPrintSheet() {
     setTimeout(() => new QRCode(document.getElementById(`q_${p.code}`), { text: p.code, width: 70, height: 70 }), 50);
   });
 }
-
-// キラキラ
-const c = document.getElementById('fxCanvas'); const ctx = c.getContext('2d');
-let pts = [];
-function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
-window.onresize = resize; resize();
-function emitGlitter(x,y,cnt){ for(let i=0;i<cnt;i++) pts.push({x,y,vx:(Math.random()-0.5)*8,vy:(Math.random()-0.5)*8,color:['#FFD700','#FF80AB','#FFF'][Math.floor(Math.random()*3)],alpha:1}); }
-function loop(){ ctx.clearRect(0,0,c.width,c.height); for(let i=pts.length-1;i>=0;i--){ let p=pts[i]; p.x+=p.vx; p.y+=p.vy; p.alpha-=0.03; ctx.fillStyle=p.color; ctx.globalAlpha=Math.max(0,p.alpha); ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill(); if(p.alpha<=0) pts.splice(i,1); } requestAnimationFrame(loop); }
-loop();
 
 window.onload = () => {
   renderCatalog();
