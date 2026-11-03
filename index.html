@@ -8,35 +8,44 @@
   :root {
     --primary-pink: #FF80AB;
     --deep-pink: #FF4081;
-    --lavender: #E1BEE7;
     --gold: #FFD700;
     --text-color: #4A148C;
   }
   * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; font-family: 'Hiragino Maru Gothic ProN', sans-serif; }
-  body { background: radial-gradient(circle, #FFF5F8 0%, #F8BBD0 100%); overflow: hidden; width: 100vw; height: 100vh; color: var(--text-color); }
+  
+  /* 縦横スクロールを完全に禁止（1画面固定） */
+  html, body {
+    width: 100vw; height: 100vh; overflow: hidden;
+    background: radial-gradient(circle, #FFF5F8 0%, #F8BBD0 100%);
+    color: var(--text-color);
+  }
+
   #fxCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
-  .screen { display: none; width: 100vw; height: 100vh; padding: 10px; flex-direction: column; justify-content: space-between; }
+
+  .screen {
+    width: 100vw; height: 100vh; padding: 8px 12px;
+    display: none; flex-direction: column; justify-content: space-between;
+  }
   .screen.active { display: flex; }
 
-  /* ヘッダー */
+  /* ヘッダー（高さ固定） */
   .header {
-    display: flex; justify-content: space-between; align-items: center;
-    background: #FFF; border: 3px solid var(--primary-pink); border-radius: 16px; padding: 6px 14px;
-    box-shadow: 0 4px 10px rgba(255, 128, 171, 0.2);
+    height: 48px; display: flex; justify-content: space-between; align-items: center;
+    background: #FFF; border: 3px solid var(--primary-pink); border-radius: 14px; padding: 0 14px;
   }
-  .header h1 { font-size: 20px; color: var(--deep-pink); }
+  .header h1 { font-size: 19px; color: var(--deep-pink); }
   .point-badge {
     background: linear-gradient(135deg, #FFF9C4, #FFD54F);
-    border: 2px solid #FFA000; border-radius: 14px; padding: 4px 10px;
-    font-size: 14px; font-weight: bold; color: #5D4037;
+    border: 2px solid #FFA000; border-radius: 12px; padding: 3px 10px;
+    font-size: 13px; font-weight: bold; color: #5D4037;
   }
 
   /* ボタン */
   .btn {
     background: linear-gradient(180deg, #FFF 0%, #FF80AB 100%);
-    color: #FFF; border: 2px solid #FFF; border-radius: 20px;
-    padding: 6px 14px; font-size: 15px; font-weight: bold; cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    color: #FFF; border: 2px solid #FFF; border-radius: 16px;
+    padding: 6px 12px; font-size: 14px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1); display: inline-flex; align-items: center; justify-content: center; gap: 4px;
   }
   .btn:active { transform: scale(0.95); }
   .btn-gold { background: linear-gradient(180deg, #FFF9C4 0%, #FFD54F 100%); color: #5D4037; }
@@ -44,18 +53,16 @@
   .btn-green { background: linear-gradient(180deg, #E8F5E9 0%, #66BB6A 100%); color: #1B5E20; }
   .btn-red { background: linear-gradient(180deg, #FFEBEE 0%, #E53935 100%); color: #FFF; }
 
-  /* メイン画面レイアウト */
-  .main-body { display: flex; width: 100%; height: calc(100vh - 68px); gap: 10px; margin-top: 6px; }
-
-  /* 左側：商品入力エリア（コード 50% ＋ 手打ち 50%） */
-  .entry-container {
-    flex: 1.6; display: flex; flex-direction: column; gap: 8px;
+  /* メインボディ：横3分割で完全フィット */
+  .main-body {
+    height: calc(100vh - 66px); width: 100%;
+    display: flex; gap: 10px; margin-top: 6px;
   }
-  
-  /* 上側（50%）：カメラコードリーダー */
-  .scanner-half {
-    flex: 1; background: #FFF; border-radius: 16px; border: 3px solid var(--primary-pink);
-    padding: 6px 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+
+  /* ① 左：カメラ（コード） */
+  .col-code {
+    flex: 1.1; background: #FFF; border-radius: 16px; border: 3px solid var(--primary-pink);
+    padding: 8px; display: flex; flex-direction: column; justify-content: space-between;
   }
   .camera-wrap {
     width: 100%; flex: 1; position: relative; border-radius: 12px; overflow: hidden; background: #000;
@@ -63,63 +70,54 @@
   #scanVideo { width: 100%; height: 100%; object-fit: cover; }
   .scan-guide {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 220px; height: 120px; border: 3px dashed #FF4081; border-radius: 14px;
+    width: 170px; height: 170px; border: 3px dashed #FF4081; border-radius: 14px;
     box-shadow: 0 0 0 2000px rgba(0,0,0,0.3); pointer-events: none;
   }
   .scan-guide.hit { border-color: #00E676 !important; }
 
-  /* 下側（50%）：手動ポチポチ商品カタログ */
-  .manual-half {
-    flex: 1; background: rgba(255, 255, 255, 0.95); border-radius: 16px; border: 3px solid var(--primary-pink);
-    padding: 6px; display: flex; flex-direction: column;
+  /* ② 中央：手打ちカタログ（画面に全ボタンが収まるグリッド） */
+  .col-manual {
+    flex: 1.2; background: rgba(255, 255, 255, 0.95); border-radius: 16px;
+    border: 3px solid var(--primary-pink); padding: 8px; display: flex; flex-direction: column;
   }
   .catalog-grid {
-    flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 2px;
+    flex: 1; display: grid; grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr); gap: 6px; margin-top: 4px;
   }
   .item-card {
-    background: #FFF; border: 2px solid #F8BBD0; border-radius: 10px; padding: 4px;
-    display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+    background: #FFF; border: 2px solid #F8BBD0; border-radius: 10px;
+    padding: 2px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
-  .item-card:active { transform: scale(0.95); }
-  .item-card .name-box { font-size: 11px; font-weight: bold; text-align: left; }
-  .item-card .price { font-size: 12px; font-weight: 900; color: var(--deep-pink); }
+  .item-card:active { transform: scale(0.92); }
+  .item-card .icon { font-size: 24px; line-height: 1; }
+  .item-card .name { font-size: 11px; font-weight: bold; margin-top: 2px; }
+  .item-card .price { font-size: 11px; font-weight: 900; color: var(--deep-pink); }
 
-  /* 右側：買い物かご */
-  .cart-panel {
+  /* ③ 右：買い物かご＆お会計 */
+  .col-cart {
     flex: 1; background: rgba(255, 255, 255, 0.95); border-radius: 16px;
-    border: 3px solid var(--primary-pink); display: flex; flex-direction: column; padding: 10px;
+    border: 3px solid var(--primary-pink); display: flex; flex-direction: column; padding: 8px 10px;
   }
-  .cart-list { flex: 1; overflow-y: auto; margin: 6px 0; display: flex; flex-direction: column; gap: 4px; }
+  .cart-list { flex: 1; overflow-y: auto; margin: 4px 0; display: flex; flex-direction: column; gap: 4px; }
   .cart-item {
     display: flex; justify-content: space-between; align-items: center;
     background: #FFF0F5; padding: 4px 8px; border-radius: 8px; border: 1px solid #F8BBD0; font-size: 13px;
   }
   .cart-total-box {
-    background: #FCE4EC; border-radius: 12px; padding: 8px 12px;
+    background: #FCE4EC; border-radius: 12px; padding: 6px 12px;
     display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #880E4F;
   }
 
-  /* モーダル全般 */
+  /* モーダル */
   .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 1000;
   }
   .modal-box {
     background: #FFF; border-radius: 20px; border: 4px solid var(--primary-pink);
-    padding: 18px; width: 480px; max-width: 92%; text-align: center;
+    padding: 16px; width: 440px; max-width: 90%; text-align: center;
   }
-
-  /* クレジット端末 */
-  .card-terminal {
-    background: #263238; border-radius: 16px; border: 3px solid #FFD54F;
-    padding: 12px; margin: 12px 0; color: #FFF;
-  }
-  .card-slot {
-    width: 80%; height: 50px; background: #37474F; border: 2px dashed #FFF;
-    border-radius: 10px; margin: 0 auto; display: flex; align-items: center; justify-content: center;
-    font-size: 16px; font-weight: bold; cursor: pointer; color: #FFD54F;
-  }
-  .card-slot:active { background: #FF4081; color: #FFF; }
 
   /* 印刷シート */
   #printSheetModal {
@@ -143,7 +141,7 @@
 
 <canvas id="fxCanvas"></canvas>
 
-<!-- 1. メインレジ画面（半々表記） -->
+<!-- 1. メインレジ画面（完全1画面完結） -->
 <div id="cashierScreen" class="screen active">
   <div class="header">
     <h1>👑 AONE Princess Shop 💖</h1>
@@ -155,40 +153,40 @@
   </div>
 
   <div class="main-body">
-    <!-- 左側（50%コード ＋ 50%手打ち） -->
-    <div class="entry-container">
-      <!-- 上半分：カメラ読み取り（コード） -->
-      <div class="scanner-half">
-        <div style="font-size: 13px; font-weight: bold; color: var(--deep-pink); width: 100%; text-align: left;">
-          📷 バーコードをうつしてね（コード）
-        </div>
-        <div class="camera-wrap">
-          <video id="scanVideo" playsinline autoplay muted></video>
-          <div id="scanBox" class="scan-guide"></div>
-        </div>
+    <!-- ① 左：カメラ（コード） -->
+    <div class="col-code">
+      <div style="font-size: 13px; font-weight: bold; color: var(--deep-pink); margin-bottom: 4px;">
+        📷 コードをかざす（コード）
       </div>
-
-      <!-- 下半分：手動カタログ（手打ち） -->
-      <div class="manual-half">
-        <div style="font-size: 13px; font-weight: bold; color: var(--deep-pink); margin-bottom: 4px; text-align: left;">
-          🛍️ タッチしてえらぶ（手打ち）
-        </div>
-        <div class="catalog-grid" id="catalogGrid"></div>
+      <div class="camera-wrap">
+        <video id="scanVideo" playsinline autoplay muted></video>
+        <div id="scanBox" class="scan-guide"></div>
+      </div>
+      <div style="font-size: 11px; color: #666; text-align: center; margin-top: 4px;">
+        値札をわくにかざしてね
       </div>
     </div>
 
-    <!-- 右側：買い物かご ＆ 会計 -->
-    <div class="cart-panel">
-      <h2 style="font-size: 16px; color: #880E4F;">🛒 かいものかご</h2>
+    <!-- ② 中央：手打ちカタログ（画面ぴったり収まる12商品） -->
+    <div class="col-manual">
+      <div style="font-size: 13px; font-weight: bold; color: var(--deep-pink);">
+        🛍️ タッチしてえらぶ（手打ち）
+      </div>
+      <div class="catalog-grid" id="catalogGrid"></div>
+    </div>
+
+    <!-- ③ 右：お買い物かご ＆ お会計 -->
+    <div class="col-cart">
+      <h2 style="font-size: 15px; color: #880E4F;">🛒 かいものかご</h2>
       <div class="cart-list" id="cartList"></div>
 
       <div class="cart-total-box">
         <span>ごうけい</span>
-        <span style="font-size: 26px; color: var(--deep-pink);">¥<span id="cartTotal">0</span></span>
+        <span style="font-size: 24px; color: var(--deep-pink);">¥<span id="cartTotal">0</span></span>
       </div>
 
-      <button class="btn btn-gold" style="font-size: 20px; padding: 10px; margin-top: 6px;" onclick="startCheckoutFlow()">
-        ✨ おかいけいにすすむ
+      <button class="btn btn-gold" style="font-size: 19px; padding: 8px; margin-top: 6px;" onclick="startCheckoutFlow()">
+        ✨ おかいけいへ
       </button>
     </div>
   </div>
@@ -197,43 +195,34 @@
 <!-- 2. ポイントカード確認画面 -->
 <div id="pointModal" class="modal-overlay">
   <div class="modal-box">
-    <div style="font-size: 40px;">⭐👑</div>
-    <h2 style="color: #FFB300; font-size: 22px;">「ポイントカードはお持ちですか？」</h2>
-    <p style="font-size: 13px; color: #666; margin: 8px 0;">
-      持っている場合は、カメラにかざすか「カードあり」を押してね！
-    </p>
-
-    <!-- 専用ミニスキャナー -->
-    <div style="width: 220px; height: 140px; margin: 8px auto; border-radius: 12px; overflow: hidden; border: 2px solid #FFD54F; background: #000;">
-      <video id="pointVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover;"></video>
-    </div>
-
-    <div style="display: flex; gap: 8px; justify-content: center; margin-top: 10px;">
-      <button class="btn btn-gold" style="font-size: 16px; padding: 8px 18px;" onclick="addPointSuccess()">
+    <div style="font-size: 36px;">⭐👑</div>
+    <h2 style="color: #FFB300; font-size: 20px;">「ポイントカードはお持ちですか？」</h2>
+    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 14px;">
+      <button class="btn btn-gold" style="font-size: 16px; padding: 10px 18px;" onclick="addPointSuccess()">
         💳 カードあり (+10pt)
       </button>
-      <button class="btn" style="background: #EEE; color: #555; font-size: 16px;" onclick="skipPoint()">
+      <button class="btn" style="background: #EEE; color: #555; font-size: 16px; padding: 10px 18px;" onclick="skipPoint()">
         もっていません
       </button>
     </div>
   </div>
 </div>
 
-<!-- 3. お支払方法選択画面（3種類） -->
+<!-- 3. お支払方法選択画面 -->
 <div id="paySelectModal" class="modal-overlay">
   <div class="modal-box">
-    <h2 style="color: var(--deep-pink); font-size: 22px;">「おしはらい ほうほうは？」</h2>
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0;">
-      <button class="btn btn-green" style="height: 100px; flex-direction: column; font-size: 16px; border-radius: 16px; gap: 6px;" onclick="startCashPay()">
-        <span style="font-size: 28px;">💵</span>
+    <h2 style="color: var(--deep-pink); font-size: 20px;">「おしはらい ほうほうは？」</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0;">
+      <button class="btn btn-green" style="height: 90px; flex-direction: column; font-size: 15px; border-radius: 14px; gap: 4px;" onclick="startCashPay()">
+        <span style="font-size: 26px;">💵</span>
         <span>げんきん</span>
       </button>
-      <button class="btn btn-gold" style="height: 100px; flex-direction: column; font-size: 16px; border-radius: 16px; gap: 6px;" onclick="startCardPay()">
-        <span style="font-size: 28px;">💳</span>
+      <button class="btn btn-gold" style="height: 90px; flex-direction: column; font-size: 15px; border-radius: 14px; gap: 4px;" onclick="startCardPay()">
+        <span style="font-size: 26px;">💳</span>
         <span>カード</span>
       </button>
-      <button class="btn btn-blue" style="height: 100px; flex-direction: column; font-size: 16px; border-radius: 16px; gap: 6px;" onclick="startQRScan()">
-        <span style="font-size: 28px;">📱</span>
+      <button class="btn btn-blue" style="height: 90px; flex-direction: column; font-size: 15px; border-radius: 14px; gap: 4px;" onclick="startQRScan()">
+        <span style="font-size: 26px;">📱</span>
         <span>QRコード</span>
       </button>
     </div>
@@ -241,15 +230,15 @@
   </div>
 </div>
 
-<!-- 4. クレジットカード端末モーダル（スワイプ・タッチ） -->
+<!-- 4. クレジットカード決済端末 -->
 <div id="cardPayModal" class="modal-overlay">
   <div class="modal-box">
     <h2 style="color: #FFB300;">💳 クレジットカード決済</h2>
-    <div class="card-terminal">
+    <div style="background: #263238; border-radius: 14px; border: 3px solid #FFD54F; padding: 12px; margin: 12px 0; color: #FFF;">
       <div id="terminalStatus" style="font-size: 14px; margin-bottom: 8px;">
         [ AONE TERMINAL ]<br>カードをスライド または タッチしてね
       </div>
-      <div class="card-slot" onclick="executeCardSwipe()">
+      <div style="width: 80%; height: 46px; background: #37474F; border: 2px dashed #FFF; border-radius: 10px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: bold; cursor: pointer; color: #FFD54F;" onclick="executeCardSwipe()">
         💳 カードをここにかざす / スライド
       </div>
     </div>
@@ -257,26 +246,25 @@
   </div>
 </div>
 
-<!-- 5. 1つのQRコード決済モーダル -->
+<!-- 5. QRコード決済 -->
 <div id="qrScanModal" class="modal-overlay">
   <div class="modal-box">
     <h2 style="color: #0288D1;">📱 QRコードをうつしてね</h2>
-    <div style="width: 240px; height: 180px; margin: 10px auto; border-radius: 12px; overflow: hidden; border: 3px solid var(--gold); background: #000;">
+    <div style="width: 220px; height: 160px; margin: 8px auto; border-radius: 12px; overflow: hidden; border: 3px solid var(--gold); background: #000;">
       <video id="qrVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover;"></video>
     </div>
-    <p style="font-size: 12px; color: #666; margin-bottom: 8px;">印刷したQRコードをカメラにかざしてね！</p>
     <button class="btn btn-red" onclick="stopQRScan()">もどる</button>
   </div>
 </div>
 
-<!-- 6. 現金決済モーダル -->
+<!-- 6. 現金決済 -->
 <div id="cashModal" class="modal-overlay">
   <div class="modal-box">
     <h2 style="color: #2E7D32;">💵 げんきん おかいけい</h2>
-    <div style="font-size: 22px; font-weight: bold; margin: 10px 0;">
+    <div style="font-size: 20px; font-weight: bold; margin: 10px 0;">
       ごうけい: <span style="color: var(--deep-pink);">¥<span id="cashTotalDisp">0</span></span>
     </div>
-    <div style="display: flex; gap: 8px; justify-content: center; margin: 14px 0;">
+    <div style="display: flex; gap: 8px; justify-content: center; margin: 12px 0;">
       <button class="btn btn-green" onclick="finishCashPay(true)">ぴったり もらった！</button>
       <button class="btn btn-gold" onclick="finishCashPay(false)">おつり あり</button>
     </div>
@@ -284,39 +272,36 @@
   </div>
 </div>
 
-<!-- 7. お会計完了画面 -->
+<!-- 7. 完了画面 -->
 <div id="successScreen" class="screen" style="justify-content: center; align-items: center; gap: 14px;">
-  <div style="font-size: 60px;">💖👑✨</div>
-  <h1 style="font-size: 34px; color: var(--deep-pink);">おかいあげ ありがとう！</h1>
-  <div id="successDetails" style="font-size: 20px; font-weight: bold; color: #880E4F; text-align: center;"></div>
-  <button class="btn btn-gold" style="font-size: 20px; padding: 10px 28px;" onclick="nextCustomer()">つぎのおきゃくさま 🌸</button>
+  <div style="font-size: 55px;">💖👑✨</div>
+  <h1 style="font-size: 32px; color: var(--deep-pink);">おかいあげ ありがとう！</h1>
+  <div id="successDetails" style="font-size: 19px; font-weight: bold; color: #880E4F; text-align: center;"></div>
+  <button class="btn btn-gold" style="font-size: 19px; padding: 8px 24px;" onclick="nextCustomer()">つぎのおきゃくさま 🌸</button>
 </div>
 
-<!-- 8. 印刷シート（全商品 ＆ ポイントカード ＆ クレジット ＆ 共通QR） -->
+<!-- 8. 印刷シート -->
 <div id="printSheetModal">
-  <div class="no-print" style="position: sticky; top:0; background:#FFF; padding:8px; border-bottom:1px solid #CCC; display:flex; justify-content:space-between;">
-    <h3>🖨️ A4印刷シート（商品・ポイント・クレジット・QR）</h3>
+  <div class="no-print" style="position: sticky; top:0; background:#FFF; padding:6px; border-bottom:1px solid #CCC; display:flex; justify-content:space-between;">
+    <h3>🖨️ A4印刷シート（商品・カード・QR）</h3>
     <div>
       <button class="btn btn-gold" onclick="window.print()">印刷する</button>
       <button class="btn btn-red" onclick="closeModal('printSheetModal')">とじる</button>
     </div>
   </div>
-  <div style="max-width: 800px; margin: 0 auto; padding: 12px;">
+  <div style="max-width: 800px; margin: 0 auto; padding: 10px;">
     <h4 style="color: var(--deep-pink);">💳 カード ＆ 決済QR</h4>
     <div class="print-grid">
-      <!-- ポイントカード -->
       <div class="print-card" style="background:#FFF9C4; border: 3px solid #FFA000;">
-        <strong style="color: #E65100;">⭐ AONE POINT CARD</strong>
-        <div id="print_qr_point" style="margin:4px 0;"></div>
-        <span style="font-size: 11px;">ポイントカード（カメラ用）</span>
+        <strong style="color: #E65100;">⭐ AONE ポイントカード</strong>
+        <div style="font-size: 26px; margin: 10px 0;">👑 ⭐</div>
+        <span style="font-size: 11px;">見せるだけでOK</span>
       </div>
-      <!-- クレジットカード -->
       <div class="print-card" style="background: linear-gradient(135deg, #FF80AB, #FFD54F); color: #FFF; border: 3px solid #FFB300;">
         <strong>👑 AONE VIP CARD</strong>
-        <div style="margin: 10px 0; font-size: 24px;">💳 ✨</div>
-        <span style="font-size: 11px; background: rgba(0,0,0,0.2); padding: 2px 4px; border-radius: 4px;">クレジットカード（スワイプ用）</span>
+        <div style="font-size: 26px; margin: 10px 0;">💳 ✨</div>
+        <span style="font-size: 11px; background: rgba(0,0,0,0.2); padding: 2px 4px; border-radius: 4px;">クレジットカード（スライド用）</span>
       </div>
-      <!-- 共通スマホQR -->
       <div class="print-card" style="border: 3px solid #0288D1;">
         <strong style="color:#0288D1;">📱 スマホQR決済</strong>
         <div id="print_qr_pay" style="margin:4px 0;"></div>
@@ -324,33 +309,26 @@
       </div>
     </div>
 
-    <!-- 商品タグ -->
-    <h4 style="color: var(--deep-pink); margin-top: 14px;">🏷️ 商品ねふだバーコード</h4>
+    <h4 style="color: var(--deep-pink); margin-top: 12px;">🏷️ 商品ねふだバーコード</h4>
     <div class="print-grid" id="productPrintGrid"></div>
   </div>
 </div>
 
 <script>
-// 全18種類の商品
+// 1画面にぴったり収まる厳選12商品（4行×3列）
 const PRODUCTS = [
-  { code: 'ITEM_COOKIE',   name: 'クッキー',       price: 130, icon: '🍪' },
-  { code: 'ITEM_CHOCO',    name: 'チョコ',         price: 120, icon: '🍫' },
-  { code: 'ITEM_CHIPS',    name: 'ポテチ',         price: 150, icon: '🥔' },
-  { code: 'ITEM_PUDDING',  name: 'プリン',         price: 140, icon: '🍮' },
-  { code: 'ITEM_ICE',      name: 'アイス',         price: 160, icon: '🍦' },
-  { code: 'ITEM_CANDY',    name: 'キャンディ',     price: 80,  icon: '🍬' },
-  { code: 'ITEM_ORANGE',   name: 'オレンジジュース', price: 150, icon: '🧃' },
-  { code: 'ITEM_APPLE_J',  name: 'りんごジュース', price: 150, icon: '🧃' },
-  { code: 'ITEM_MILK',     name: 'いちごミルク',   price: 140, icon: '🍓' },
-  { code: 'ITEM_APPLE',    name: 'りんご',         price: 120, icon: '🍎' },
-  { code: 'ITEM_BANANA',   name: 'バナナ',         price: 100, icon: '🍌' },
-  { code: 'ITEM_STRAW',    name: 'いちご',         price: 380, icon: '🍓' },
-  { code: 'ITEM_TOMATO',   name: 'トマト',         price: 90,  icon: '🍅' },
-  { code: 'ITEM_CARROT',   name: 'にんじん',       price: 80,  icon: '🥕' },
-  { code: 'ITEM_ONIGIRI',  name: 'おにぎり',       price: 130, icon: '🍙' },
-  { code: 'ITEM_MELON',    name: 'メロンパン',     price: 140, icon: '🍈' },
-  { code: 'ITEM_SAND',     name: 'サンドイッチ',   price: 260, icon: '🥪' },
-  { code: 'ITEM_CURRY',    name: 'カレーライス',   price: 320, icon: '🍛' }
+  { code: 'ITEM_COOKIE',  name: 'クッキー',   price: 130, icon: '🍪' },
+  { code: 'ITEM_CHOCO',   name: 'チョコ',     price: 120, icon: '🍫' },
+  { code: 'ITEM_JUICE',   name: 'ジュース',   price: 150, icon: '🧃' },
+  { code: 'ITEM_PUDDING', name: 'プリン',     price: 140, icon: '🍮' },
+  { code: 'ITEM_ICE',     name: 'アイス',     price: 160, icon: '🍦' },
+  { code: 'ITEM_APPLE',   name: 'りんご',     price: 120, icon: '🍎' },
+  { code: 'ITEM_BANANA',  name: 'バナナ',     price: 100, icon: '🍌' },
+  { code: 'ITEM_STRAW',   name: 'いちご',     price: 380, icon: '🍓' },
+  { code: 'ITEM_TOMATO',  name: 'トマト',     price: 90,  icon: '🍅' },
+  { code: 'ITEM_ONIGIRI', name: 'おにぎり',   price: 130, icon: '🍙' },
+  { code: 'ITEM_BREAD',   name: 'パン',       price: 140, icon: '🍞' },
+  { code: 'ITEM_CURRY',   name: 'カレー',     price: 320, icon: '🍛' }
 ];
 
 let cart = [];
@@ -360,12 +338,8 @@ let lastScanTime = 0;
 let isMainScanning = true;
 let totalUserPoints = 0;
 
-// QR決済用
 let qrStream = null;
 let qrTimer = null;
-// ポイント用
-let ptStream = null;
-let ptTimer = null;
 
 // 音
 let actx = null;
@@ -383,7 +357,7 @@ function playBeep() { beep(1900, 0.08); }
 function playCash() { beep(523, 0.1); setTimeout(() => beep(1046, 0.2), 100); }
 function playFanfare() { [523, 659, 784, 1046, 1318].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 80)); }
 
-// メインカメラ（コード常時スキャン）
+// メインカメラ
 async function startMainScanner() {
   const video = document.getElementById('scanVideo');
   try {
@@ -423,7 +397,7 @@ function scanFrame() {
   }
 }
 
-// 手打ちカタログ描画
+// カタログ描画（4行×3列にぴったり収める）
 function renderCatalog() {
   const container = document.getElementById('catalogGrid');
   container.innerHTML = '';
@@ -431,8 +405,8 @@ function renderCatalog() {
     const card = document.createElement('div');
     card.className = 'item-card';
     card.innerHTML = `
-      <div style="font-size:18px;">${p.icon}</div>
-      <div class="name-box">${p.name}</div>
+      <div class="icon">${p.icon}</div>
+      <div class="name">${p.name}</div>
       <div class="price">¥${p.price}</div>
     `;
     card.onclick = () => addToCart(p);
@@ -446,7 +420,7 @@ function addToCart(item) {
   if (exist) exist.qty += 1;
   else cart.push({ ...item, qty: 1 });
   renderCart();
-  emitGlitter(window.innerWidth * 0.8, window.innerHeight * 0.5, 12);
+  emitGlitter(window.innerWidth * 0.85, window.innerHeight * 0.5, 12);
 }
 
 function renderCart() {
@@ -466,62 +440,37 @@ function renderCart() {
 
 function clearCart() { cart = []; renderCart(); }
 
-// --- 会計フロー：ポイント確認 ➔ 支払い選択 ---
+// --- 会計フロー ---
 function startCheckoutFlow() {
   if (cart.length === 0) { alert('かいものかごに しょうひんを入れてね！'); return; }
   isMainScanning = false;
-  openPointModal();
+  document.getElementById('pointModal').style.display = 'flex';
 }
 
-// ポイント確認
-async function openPointModal() {
-  document.getElementById('pointModal').style.display = 'flex';
-  const video = document.getElementById('pointVideo');
-  try {
-    ptStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } } });
-    video.srcObject = ptStream;
-    ptTimer = setInterval(scanPointFrame, 200);
-  } catch(e){}
-}
-function scanPointFrame() {
-  const video = document.getElementById('pointVideo');
-  if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
-  const cvs = document.createElement('canvas'); cvs.width = video.videoWidth; cvs.height = video.videoHeight;
-  const ctx = cvs.getContext('2d'); ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
-  const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
-  const code = jsQR(imgData.data, imgData.width, imgData.height);
-  if (code && code.data === 'CARD:POINT') {
-    addPointSuccess();
-  }
-}
-function closePointModal() {
-  if (ptStream) { ptStream.getTracks().forEach(t => t.stop()); ptStream = null; }
-  if (ptTimer) { clearInterval(ptTimer); ptTimer = null; }
-  closeModal('pointModal');
-}
 function addPointSuccess() {
-  closePointModal();
+  closeModal('pointModal');
   beep(1046, 0.1); setTimeout(() => beep(1318, 0.2), 100);
   totalUserPoints += 10;
   document.getElementById('totalPoints').textContent = totalUserPoints;
   emitGlitter(window.innerWidth / 2, window.innerHeight / 2, 40);
   openPayModal();
 }
+
 function skipPoint() {
-  closePointModal();
+  closeModal('pointModal');
   openPayModal();
 }
 
-// お支払い選択
 function openPayModal() {
   document.getElementById('paySelectModal').style.display = 'flex';
 }
+
 function closeModal(id) {
   document.getElementById(id).style.display = 'none';
   if (id === 'paySelectModal' && !isMainScanning) isMainScanning = true;
 }
 
-// ① 現金
+// 現金
 function startCashPay() {
   closeModal('paySelectModal');
   let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
@@ -536,7 +485,7 @@ function finishCashPay(isExact) {
   setTimeout(() => completeCheckout(msg), 300);
 }
 
-// ② クレジット（スワイプ・タッチ）
+// クレジット
 function startCardPay() {
   closeModal('paySelectModal');
   document.getElementById('terminalStatus').innerHTML = "[ AONE TERMINAL ]<br>カードをスライド または タッチしてね";
@@ -545,7 +494,7 @@ function startCardPay() {
 function executeCardSwipe() {
   beep(1200, 0.1);
   const s = document.getElementById('terminalStatus');
-  s.innerHTML = "💳 カードをよみとっています...<br>ピピピ...";
+  s.innerHTML = "💳 よみとっています... ピピピ...";
   setTimeout(() => {
     beep(1800, 0.15);
     s.innerHTML = "✅ しょうにんOK！";
@@ -556,7 +505,7 @@ function executeCardSwipe() {
   }, 600);
 }
 
-// ③ 1つのQRコード決済
+// QR決済
 async function startQRScan() {
   closeModal('paySelectModal');
   document.getElementById('qrScanModal').style.display = 'flex';
@@ -597,7 +546,7 @@ function completeCheckout(method) {
   let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
   document.getElementById('successDetails').innerHTML = `
     おしはらい: <strong>${method}</strong><br>
-    ごうけい: <strong style="color:#FF4081;font-size:32px;">¥${total.toLocaleString()}</strong>
+    ごうけい: <strong style="color:#FF4081;font-size:30px;">¥${total.toLocaleString()}</strong>
   `;
   document.getElementById('cashierScreen').classList.remove('active');
   document.getElementById('successScreen').classList.add('active');
@@ -614,19 +563,17 @@ function nextCustomer() {
 // 印刷シート生成
 function openPrintSheet() {
   document.getElementById('printSheetModal').style.display = 'block';
-  document.getElementById('print_qr_point').innerHTML = '';
   document.getElementById('print_qr_pay').innerHTML = '';
-  new QRCode(document.getElementById('print_qr_point'), { text: 'CARD:POINT', width: 85, height: 85 });
-  new QRCode(document.getElementById('print_qr_pay'), { text: 'PLAY:QR_PAY', width: 85, height: 85 });
+  new QRCode(document.getElementById('print_qr_pay'), { text: 'PLAY:QR_PAY', width: 80, height: 80 });
 
   const grid = document.getElementById('productPrintGrid');
   grid.innerHTML = '';
   PRODUCTS.forEach(p => {
     const div = document.createElement('div');
     div.className = 'print-card';
-    div.innerHTML = `<span>${p.icon}</span><strong style="font-size:11px;">${p.name}</strong><span style="color:#FF4081;font-weight:bold;font-size:12px;">¥${p.price}</span><div id="q_${p.code}"></div>`;
+    div.innerHTML = `<span>${p.icon}</span><strong style="font-size:11px;">${p.name}</strong><span style="color:#FF4081;font-weight:bold;font-size:11px;">¥${p.price}</span><div id="q_${p.code}"></div>`;
     grid.appendChild(div);
-    setTimeout(() => new QRCode(document.getElementById(`q_${p.code}`), { text: p.code, width: 75, height: 75 }), 50);
+    setTimeout(() => new QRCode(document.getElementById(`q_${p.code}`), { text: p.code, width: 70, height: 70 }), 50);
   });
 }
 
