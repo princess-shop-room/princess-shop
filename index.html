@@ -26,35 +26,39 @@
     background: linear-gradient(180deg, #FFF 0%, #FF80AB 100%);
     color: #FFF; border: 2px solid #FFF; border-radius: 20px;
     padding: 8px 16px; font-size: 16px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
   .btn:active { transform: scale(0.95); }
   .btn-gold { background: linear-gradient(180deg, #FFF9C4 0%, #FFD54F 100%); color: #5D4037; }
   .btn-red { background: linear-gradient(180deg, #FFEBEE 0%, #E53935 100%); color: #FFF; }
+  .btn-magic {
+    background: linear-gradient(180deg, #E040FB 0%, #7C4DFF 100%);
+    color: #FFF; font-size: 18px; padding: 10px 20px; border-radius: 25px;
+    box-shadow: 0 4px 15px rgba(124, 77, 255, 0.4);
+  }
 
   .cashier-body { display: flex; width: 100%; height: calc(100vh - 85px); gap: 12px; margin-top: 8px; }
 
-  /* バーコード読み取りカメラ枠 */
+  /* カメラ枠 */
   .scanner-panel {
     flex: 1.3; background: #FFF; border-radius: 20px; border: 3px solid var(--primary-pink);
-    padding: 10px; display: flex; flex-direction: column; align-items: center;
+    padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
   }
   .camera-wrap {
     width: 100%; flex: 1; position: relative; border-radius: 14px; overflow: hidden; background: #000;
   }
   #scanVideo { width: 100%; height: 100%; object-fit: cover; }
   
-  /* しましまバーコードを合わせやすい横長赤いレーザー枠 */
+  /* ガイド枠 */
   .scan-guide {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 260px; height: 140px; border: 3px dashed #FF4081; border-radius: 16px;
+    width: 280px; height: 150px; border: 3px dashed #00E676; border-radius: 16px;
     box-shadow: 0 0 0 2000px rgba(0,0,0,0.35); pointer-events: none;
   }
   .scan-laser {
     position: absolute; top: 50%; left: 0; width: 100%; height: 3px;
-    background: #FF0055; box-shadow: 0 0 8px #FF0055;
-    animation: laserPulse 1.5s infinite alternate;
+    background: #00E676; box-shadow: 0 0 10px #00E676;
   }
-  @keyframes laserPulse { 0% { opacity: 0.4; } 100% { opacity: 1; } }
 
   /* カート枠 */
   .cart-panel {
@@ -64,7 +68,7 @@
   .cart-list { flex: 1; overflow-y: auto; margin: 8px 0; display: flex; flex-direction: column; gap: 6px; }
   .cart-item {
     display: flex; justify-content: space-between; align-items: center;
-    background: #FFF0F5; padding: 6px 10px; border-radius: 10px; border: 1px solid #F8BBD0; font-size: 14px;
+    background: #FFF0F5; padding: 8px 12px; border-radius: 10px; border: 1px solid #F8BBD0; font-size: 15px;
   }
   .cart-total-box {
     background: #FCE4EC; border-radius: 12px; padding: 8px 12px;
@@ -87,7 +91,7 @@
   }
 </style>
 
-<!-- 本物のバーコード（JAN）とQRコードの両方を同時に読める強力ライブラリ ZXing -->
+<!-- ZXing バーコードエンジン -->
 <script src="https://unpkg.com/@zxing/library@latest"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
@@ -106,8 +110,8 @@
 
   <div class="cashier-body">
     <div class="scanner-panel">
-      <div id="statusText" style="font-size: 15px; font-weight: bold; color: #D81B60; margin-bottom: 6px;">
-        🔍 ジュースやお菓子のバーコードをうつしてね！
+      <div id="statusText" style="font-size: 15px; font-weight: bold; color: #00897B; margin-bottom: 4px;">
+        🔍 バーコードをみどりの線に合わせてね！
       </div>
 
       <div class="camera-wrap">
@@ -117,8 +121,14 @@
         </div>
       </div>
 
-      <div style="font-size: 13px; color: #555; margin-top: 8px; text-align: center;">
-        赤い線のところに、<strong>黒白のバーコード（縦縞）</strong>を合わせてね！
+      <!-- 救済機能：魔法のピッ！ボタン -->
+      <div style="margin-top: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%;">
+        <button class="btn btn-magic" onclick="forceScanProduct()" style="width: 80%;">
+          🪄 ピッ！とよみとる
+        </button>
+        <span style="font-size: 12px; color: #666;">
+          ※ ピントが合わない時はこのボタンを押してもレジ打ちできるよ！
+        </span>
       </div>
     </div>
 
@@ -144,7 +154,7 @@
   <button class="btn btn-gold" style="font-size: 22px; padding: 12px 30px;" onclick="nextCustomer()">つぎのおきゃくさま 🌸</button>
 </div>
 
-<!-- 印刷シート（決済用） -->
+<!-- 印刷シート -->
 <div id="printSheetModal">
   <div class="no-print" style="position: sticky; top:0; background:#FFF; padding:10px; border-bottom:1px solid #CCC; display:flex; justify-content:space-between;">
     <h3>🖨️ お支払い用カード 印刷シート</h3>
@@ -154,9 +164,6 @@
     </div>
   </div>
   <div style="max-width: 800px; margin: 0 auto; padding: 20px;">
-    <p class="no-print" style="margin-bottom: 12px; color: #666;">
-      これを印刷してハサミで切り、お会計のときにカメラにかざして遊んでね！
-    </p>
     <div class="print-grid">
       <div class="print-card" style="background:#FFF9C4; border: 3px solid #FFB300;">
         <strong style="font-size: 18px;">👑 AONE VIP CARD</strong>
@@ -178,7 +185,6 @@
 </div>
 
 <script>
-// 家にある本物のバーコードを読み取った時に自動で割り振られる可愛い商品リスト
 const RANDOM_ITEMS = [
   { name: 'プリンセスジュース', price: 160, icon: '🧃' },
   { name: 'きらきらクッキー', price: 130, icon: '🍪' },
@@ -186,10 +192,11 @@ const RANDOM_ITEMS = [
   { name: 'いちごみるく', price: 150, icon: '🍓' },
   { name: 'プリンセスキャンディ', price: 90, icon: '🍬' },
   { name: 'フルーツゼリー', price: 180, icon: '🍮' },
-  { name: 'ハートのアイス', price: 170, icon: '🍦' }
+  { name: 'ハートのアイス', price: 170, icon: '🍦' },
+  { name: 'ポップコーン', price: 140, icon: '🍿' }
 ];
 
-let scannedProductMap = {}; // 1度スキャンした商品の記憶
+let scannedProductMap = {};
 let cart = [];
 let lastCode = '';
 let lastTime = 0;
@@ -209,48 +216,51 @@ function beep(freq, duration) {
   osc.start(); osc.stop(actx.currentTime + duration);
 }
 
-// 本物のバーコード＆QR両対応リーダーの開始
+// カメラ初期化（HD画質を強制してバーコードのシマシマをくっきり映す）
 async function initBarcodeScanner() {
   const status = document.getElementById('statusText');
   
   try {
-    // ZXingの複数フォーマット（EAN-13, EAN-8, QRなど）対応リーダー
-    codeReader = new ZXing.BrowserMultiFormatReader();
-    
-    // カメラ取得（背面カメラ）
-    const videoInputDevices = await codeReader.listVideoInputDevices();
-    let selectedDeviceId = undefined;
-    
-    // 背面カメラを探す
-    for (const dev of videoInputDevices) {
-      if (dev.label.toLowerCase().includes('back') || dev.label.toLowerCase().includes('rear') || dev.label.toLowerCase().includes('environment')) {
-        selectedDeviceId = dev.deviceId;
-        break;
+    const hints = new Map();
+    // 日本のバーコード（EAN-13, EAN-8）と決済用QRコードに特化して感度最大化
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+      ZXing.BarcodeFormat.EAN_13,
+      ZXing.BarcodeFormat.EAN_8,
+      ZXing.BarcodeFormat.QR_CODE
+    ]);
+    hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+
+    codeReader = new ZXing.BrowserMultiFormatReader(hints);
+
+    // 背面カメラを高画質（1280x720）で開く
+    const constraints = {
+      video: {
+        facingMode: { ideal: "environment" },
+        width: { min: 1280, ideal: 1280 },
+        height: { min: 720, ideal: 720 }
       }
-    }
-    if (!selectedDeviceId && videoInputDevices.length > 0) {
-      selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
-    }
+    };
 
-    status.textContent = '🟢 バーコードを赤い線にかざしてね！';
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    const video = document.getElementById('scanVideo');
+    video.srcObject = stream;
 
-    // リアルタイム読み取りループ開始
-    codeReader.decodeFromVideoDevice(selectedDeviceId, 'scanVideo', (result, err) => {
+    // 読み取りループ
+    codeReader.decodeFromVideoElement(video, (result, err) => {
       if (result && isScanning) {
         onBarcodeDetected(result.getText());
       }
     });
 
   } catch (e) {
-    status.textContent = '⚠️ カメラが開けません。「カメラを許可」してね';
+    status.textContent = '⚠️ カメラを開けませんでした';
   }
 }
 
-// バーコードまたはQRを読み取ったときの判定
+// バーコードまたはQRを読み取った時の判定
 function onBarcodeDetected(code) {
   const now = Date.now();
-  // 連続誤読み取り防止（1.5秒間隔）
-  if (code === lastCode && now - lastTime < 1500) return;
+  if (code === lastCode && now - lastTime < 1800) return;
   lastCode = code;
   lastTime = now;
 
@@ -270,25 +280,35 @@ function onBarcodeDetected(code) {
     return;
   }
 
-  // ② 本物の商品のバーコード（しましま）の場合！
-  beep(1900, 0.08); // 本物のレジの「ピッ！」
+  // ② 本物の商品のバーコード（しましま）が自動認識できた場合！
+  registerProduct(code);
+}
 
-  // すでに登録されているかチェック。初スキャンの場合はランダム割り振り
-  if (!scannedProductMap[code]) {
+// 商品をカートに登録する共通処理
+function registerProduct(codeKey) {
+  beep(1900, 0.08); // ピピッ！
+
+  if (!scannedProductMap[codeKey]) {
     const template = RANDOM_ITEMS[Object.keys(scannedProductMap).length % RANDOM_ITEMS.length];
-    scannedProductMap[code] = { ...template };
+    scannedProductMap[codeKey] = { ...template };
   }
-  const item = scannedProductMap[code];
+  const item = scannedProductMap[codeKey];
 
-  // カートに入れる
-  const exist = cart.find(c => c.code === code);
+  const exist = cart.find(c => c.code === codeKey);
   if (exist) {
     exist.qty += 1;
   } else {
-    cart.push({ ...item, code: code, qty: 1 });
+    cart.push({ ...item, code: codeKey, qty: 1 });
   }
 
   renderCart();
+}
+
+// 救済機能：魔法のピッ！ボタンを押したとき
+function forceScanProduct() {
+  // 自動で新しい商品として登録
+  const dummyCode = 'ITEM_' + (cart.length + 1);
+  registerProduct(dummyCode);
 }
 
 function renderCart() {
@@ -336,7 +356,6 @@ function openPrintSheet() {
 }
 function closePrintSheet() { document.getElementById('printSheetModal').style.display = 'none'; }
 
-// ページを開いたら自動スタート
 window.onload = initBarcodeScanner;
 </script>
 </body>
