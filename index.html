@@ -1,95 +1,1022 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#f8dce9">
-<title>AONE PRINCESS SHOP</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>AONE Princess Shop</title>
 <style>
-:root{--pink:#e98ab6;--deep:#a94378;--pale:#fff3f8;--gold:#c99a42;--ink:#493746}
-*{box-sizing:border-box}body{margin:0;background:#fff8fb;color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif}
-header{background:linear-gradient(110deg,#f8d9e8,#fff,#f4d5e5);padding:14px 18px;border-bottom:2px solid #edc2d6;display:flex;justify-content:space-between;align-items:center}
-h1{font-size:clamp(20px,3vw,30px);margin:0;color:var(--deep);letter-spacing:.04em}header small{color:#93627b}
-main{padding:14px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.9fr);gap:14px;max-width:1200px;margin:auto}
-.panel{background:white;border:1px solid #efd3e0;border-radius:18px;padding:14px;box-shadow:0 3px 12px #d99bb51c}
-h2{font-size:18px;color:var(--deep);margin:0 0 12px}
-button,input{font:inherit}button{border:0;border-radius:12px;padding:12px 14px;background:#f3d4e3;color:#743653;font-weight:700;cursor:pointer}button.primary{background:var(--deep);color:white}button.gold{background:#f4e5c5;color:#79551a}button:disabled{opacity:.45}
-.actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-input{width:100%;padding:12px;border:1px solid #e5bfd0;border-radius:10px;background:#fffafd;color:var(--ink);margin:4px 0 10px}
-label{font-size:13px;color:#80536a}
-table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:9px 5px;border-bottom:1px solid #f1dce6;text-align:left}td:last-child,th:last-child{text-align:right}
-.total{font-size:26px;font-weight:800;color:var(--deep);text-align:right;padding:14px 0}
-.muted{font-size:12px;color:#927b88}.paygrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.paygrid button{min-height:58px}
-#scanner{display:none;width:100%;max-height:260px;background:#211923;border-radius:12px;margin:8px 0;object-fit:cover}
-#modal{display:none;position:fixed;inset:0;background:#241421b8;z-index:5;align-items:center;justify-content:center;padding:16px}
-.dialog{background:white;border-radius:20px;padding:20px;max-width:520px;width:100%;max-height:90vh;overflow:auto}
-#card{width:min(100%,360px);aspect-ratio:1.586;border-radius:18px;background:linear-gradient(135deg,#ffdeed,#fff,#f4b9d5);border:2px solid #e7a6c6;box-shadow:0 8px 22px #a9437840;padding:15px;color:#8c3f68;display:flex;flex-direction:column;justify-content:space-between;touch-action:pan-y;user-select:none}
-#card strong{font: bold 24px Georgia,serif;letter-spacing:.04em}#card .faces{font-size:25px;text-align:center}#card .num{letter-spacing:.12em;font-size:14px}
-#receipt{white-space:pre-wrap;background:#fff8fb;padding:12px;border-radius:12px}
-@media(max-width:720px){main{grid-template-columns:1fr}.total{text-align:left}}
+  :root {
+    --bg-pink: #FFF0F5;
+    --primary-pink: #FF80AB;
+    --deep-pink: #FF4081;
+    --lavender: #E1BEE7;
+    --gold: #FFD700;
+    --gold-shadow: #FFA000;
+    --text-color: #5D4037;
+    --white: #FFFFFF;
+  }
+
+  * {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    margin: 0;
+    padding: 0;
+    font-family: 'Hiragino Maru Gothic ProN', 'Rounded Mplus 1c', sans-serif;
+  }
+
+  body {
+    background: radial-gradient(circle, #FFF5F8 0%, #F8BBD0 100%);
+    color: var(--text-color);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* キラキラ背景パーティクルキャンバス */
+  #fxCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* 全体コンテナ */
+  .screen {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .screen.active {
+    display: flex;
+  }
+
+  /* ヘッダー */
+  .header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    border: 3px solid var(--primary-pink);
+    border-radius: 24px;
+    padding: 10px 24px;
+    box-shadow: 0 8px 16px rgba(255, 128, 171, 0.2);
+  }
+
+  .header h1 {
+    font-size: 28px;
+    color: var(--deep-pink);
+    text-shadow: 2px 2px 0px #FFF, 3px 3px 0px var(--lavender);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* プリンセスボタンスタイル */
+  .btn {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FF80AB 100%);
+    color: #FFF;
+    border: 3px solid #FFF;
+    border-radius: 30px;
+    padding: 12px 24px;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 6px 12px rgba(255, 64, 129, 0.35), inset 0 2px 4px #FFF;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 6px rgba(255, 64, 129, 0.3);
+  }
+  .btn-gold {
+    background: linear-gradient(180deg, #FFF9C4 0%, #FFD54F 100%);
+    color: #5D4037;
+    border: 3px solid #FFF;
+    box-shadow: 0 6px 12px rgba(255, 160, 0, 0.4);
+    text-shadow: none;
+  }
+  .btn-blue {
+    background: linear-gradient(180deg, #E1F5FE 0%, #4FC3F7 100%);
+    color: #01579B;
+    border: 3px solid #FFF;
+    box-shadow: 0 6px 12px rgba(3, 169, 244, 0.4);
+    text-shadow: none;
+  }
+  .btn-red {
+    background: linear-gradient(180deg, #FFEBEE 0%, #E53935 100%);
+    color: #FFF;
+  }
+
+  /* スタート画面 */
+  #startScreen {
+    justify-content: center;
+    gap: 30px;
+    background: radial-gradient(circle, #FFF0F5 0%, #F48FB1 100%);
+  }
+  .title-logo {
+    text-align: center;
+  }
+  .title-logo h1 {
+    font-size: 56px;
+    color: var(--deep-pink);
+    text-shadow: 3px 3px 0 #FFF, 6px 6px 0 var(--gold);
+    margin-bottom: 8px;
+  }
+  .title-logo p {
+    font-size: 24px;
+    color: #880E4F;
+    font-weight: bold;
+  }
+  .mode-selection {
+    display: flex;
+    gap: 24px;
+  }
+  .mode-btn {
+    width: 260px;
+    height: 180px;
+    flex-direction: column;
+    font-size: 24px;
+    border-radius: 36px;
+    gap: 16px;
+  }
+  .mode-btn span.icon {
+    font-size: 54px;
+  }
+
+  /* レジ画面レイアウト */
+  .cashier-body {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 110px);
+    gap: 16px;
+    margin-top: 10px;
+  }
+  .item-catalog {
+    flex: 2;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    padding: 16px;
+    border: 2px solid var(--lavender);
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    grid-auto-rows: 150px;
+    gap: 12px;
+  }
+  .item-card {
+    background: linear-gradient(145deg, #FFFFFF, #FFF5F8);
+    border: 2px solid #F8BBD0;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+    transition: transform 0.1s;
+    padding: 8px;
+  }
+  .item-card:active {
+    transform: scale(0.92);
+  }
+  .item-card .icon {
+    font-size: 44px;
+  }
+  .item-card .name {
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 4px;
+    text-align: center;
+    color: #4A148C;
+  }
+  .item-card .price {
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--deep-pink);
+  }
+
+  /* レジカート側 */
+  .cart-panel {
+    flex: 1.2;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    border: 3px solid var(--primary-pink);
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+  }
+  .cart-list {
+    flex: 1;
+    overflow-y: auto;
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFF0F5;
+    padding: 8px 12px;
+    border-radius: 14px;
+    border: 1px solid #F8BBD0;
+  }
+  .cart-total-box {
+    background: #FCE4EC;
+    border-radius: 16px;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #880E4F;
+    margin-bottom: 12px;
+  }
+  .cart-total-box .amount {
+    font-size: 32px;
+    color: var(--deep-pink);
+  }
+  .pay-methods {
+    display: flex;
+    gap: 8px;
+  }
+  .pay-methods .btn {
+    flex: 1;
+    font-size: 16px;
+    padding: 12px 6px;
+  }
+
+  /* カメラQR読取モーダル */
+  #qrScanModal {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .scanner-box {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    border: 4px solid var(--gold);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 0 30px var(--gold);
+  }
+  #scanVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .laser {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 4px;
+    background: #FF4081;
+    box-shadow: 0 0 12px #FF4081;
+    animation: scanMove 2s infinite ease-in-out;
+  }
+  @keyframes scanMove {
+    0% { top: 10%; }
+    50% { top: 90%; }
+    100% { top: 10%; }
+  }
+
+  /* AONE CARD スライド決済モーダル */
+  #cardPayModal {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(40, 10, 30, 0.9);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .card-reader {
+    width: 380px;
+    height: 80px;
+    background: #37474F;
+    border: 4px solid var(--gold);
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: #FFF;
+    font-weight: bold;
+    overflow: hidden;
+  }
+  .reader-slot {
+    position: absolute;
+    top: 36px;
+    left: 20px;
+    right: 20px;
+    height: 8px;
+    background: #111;
+    border-radius: 4px;
+  }
+  .card-track {
+    width: 80%;
+    height: 220px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .aone-card {
+    width: 250px;
+    height: 155px;
+    background: linear-gradient(135deg, #FF80AB 0%, #BA68C8 50%, #FFD54F 100%);
+    border-radius: 18px;
+    border: 3px solid #FFF;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    position: absolute;
+    left: 20px;
+    touch-action: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+    color: #FFF;
+    cursor: grab;
+  }
+  .aone-card:active {
+    cursor: grabbing;
+  }
+  .card-chip {
+    width: 38px;
+    height: 28px;
+    background: linear-gradient(135deg, #FFE082, #FFB300);
+    border-radius: 6px;
+    border: 1px solid #FFA000;
+  }
+
+  /* 完了画面 */
+  #successScreen {
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background: radial-gradient(circle, #FFFDE7 0%, #F8BBD0 100%);
+  }
+  .success-badge {
+    font-size: 80px;
+    animation: popBounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes popBounce {
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* お客様モード（QR表示） */
+  #customerScreen {
+    justify-content: space-between;
+    background: #FCE4EC;
+  }
+  .customer-methods {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .qr-box-wrap {
+    background: #FFF;
+    padding: 24px;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 4px solid var(--primary-pink);
+  }
+  #qrCanvas {
+    width: 230px !important;
+    height: 230px !important;
+    border: 8px solid #FFF;
+    border-radius: 12px;
+  }
 </style>
+<!-- jsQR: 完全スタンドアローン内蔵 (外部通信ゼロ) -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<!-- QRCode.js: お客様端末用のQR生成 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-<header><div><h1>👑 AONE PRINCESS SHOP</h1><small>かわいいけれど本格派・おみせレジ</small></div><div>🌸 <b>レジ</b></div></header>
-<main>
-<section class="panel">
-<h2>🛍 商品登録・バーコード</h2>
-<div class="actions"><button class="primary" onclick="startScan('barcode')">📷 バーコードを読む</button><button onclick="stopScan()">カメラを閉じる</button></div>
-<video id="scanner" playsinline muted></video><div id="scanMsg" class="muted">カメラが使えない場合は、下の欄に番号を入力してね。</div>
-<label>バーコード番号</label><input id="code" placeholder="例：4900000000000" inputmode="numeric">
-<div class="actions"><button onclick="lookupCode()">商品を呼び出す</button><button onclick="registerProduct()">商品を新規登録</button></div>
-<div id="registerArea" style="display:none">
-<label>商品名</label><input id="pname" placeholder="例：いちごグミ">
-<label>値段（円）</label><input id="pprice" type="number" min="0" placeholder="例：120">
-<button class="primary" onclick="saveProduct()">商品を保存して追加</button>
+
+<canvas id="fxCanvas"></canvas>
+
+<!-- 1. スタート画面 -->
+<div id="startScreen" class="screen active">
+  <div class="title-logo">
+    <h1>👑 AONE Princess Shop 🌸</h1>
+    <p>〜 ゆめみる プリンセス おみせやさん 〜</p>
+  </div>
+  <div class="mode-selection">
+    <button class="btn mode-btn btn-gold" onclick="switchMode('cashier')">
+      <span class="icon">🏰</span>
+      <span>おみせやさん (レジ)</span>
+    </button>
+    <button class="btn mode-btn btn-blue" onclick="switchMode('customer')">
+      <span class="icon">📱</span>
+      <span>おきゃくさま (スマホ)</span>
+    </button>
+  </div>
+  <div style="font-size: 14px; color: #880E4F; font-weight: bold;">
+    ※ 2台で遊ぶ場合は、Fire HD 10を「おみせやさん」、スマートフォンを「おきゃくさま」に設定してください。
+  </div>
 </div>
-<h2 style="margin-top:22px">🧺 お買い物かご</h2>
-<table><thead><tr><th>商品</th><th>個数</th><th>小計</th><th></th></tr></thead><tbody id="cart"></tbody></table>
-<div class="total">合計 ¥<span id="total">0</span></div>
-<div class="actions"><button onclick="clearCart()">お会計をリセット</button><button class="gold" onclick="showHistory()">お会計履歴</button></div>
-</section>
-<section class="panel">
-<h2>💳 お支払い方法</h2>
-<div class="paygrid">
-<button onclick="pay('PayPay風')">💗 PayPay風</button><button onclick="pay('楽天ペイ風')">❤️ 楽天ペイ風</button>
-<button onclick="pay('d払い風')">💜 d払い風</button><button class="gold" onclick="cardPay()">👑 AONE CARD</button>
+
+<!-- 2. レジ画面（店員側） -->
+<div id="cashierScreen" class="screen">
+  <div class="header">
+    <h1>🏰 AONE レジカウンター 💖</h1>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn btn-gold" onclick="openHistoryModal()">📜 りれき</button>
+      <button class="btn" style="background: #FFF; color: #5D4037;" onclick="showScreen('startScreen')">🚪 もどる</button>
+    </div>
+  </div>
+
+  <div class="cashier-body">
+    <!-- 商品カタログ -->
+    <div class="item-catalog" id="catalogList"></div>
+
+    <!-- カート & 合計パネル -->
+    <div class="cart-panel">
+      <h2 style="font-size: 20px; color: #880E4F;">🛍️ かいものかご</h2>
+      <div class="cart-list" id="cartList"></div>
+
+      <div class="cart-total-box">
+        <span>ごうけい</span>
+        <span class="amount">¥<span id="cartTotal">0</span></span>
+      </div>
+
+      <div class="pay-methods">
+        <button class="btn btn-blue" onclick="startQRScan()">📷 QRコード</button>
+        <button class="btn btn-gold" onclick="startCardPayment()">💳 AONEカード</button>
+      </div>
+      <button class="btn btn-red" style="margin-top: 8px; font-size: 14px; padding: 6px;" onclick="clearCart()">🗑️ かごを空にする</button>
+    </div>
+  </div>
 </div>
-<p class="muted">※すべてごっこ遊び専用。本物の決済・各社サービスとは接続しません。</p>
-<div id="payStatus" class="panel" style="background:#fff8fb;margin-top:12px">
-<h2>✨ お会計案内</h2><div id="statusText">商品を登録して、お支払い方法を選んでね。</div>
-<div class="actions" style="margin-top:12px"><button class="primary" onclick="nextCustomer()">次のお客さま</button></div>
+
+<!-- 3. お客様側画面（QRコード提示モード） -->
+<div id="customerScreen" class="screen">
+  <div class="header">
+    <h1>🎀 おきゃくさま スマホ 🛍️</h1>
+    <button class="btn" style="background: #FFF; color: #5D4037;" onclick="showScreen('startScreen')">🚪 もどる</button>
+  </div>
+
+  <div class="qr-box-wrap">
+    <div id="customerQRTitle" style="font-size: 24px; font-weight: bold; color: var(--deep-pink); margin-bottom: 12px;">PayPayごっこ</div>
+    <div id="customerQRCode"></div>
+    <p style="margin-top: 14px; font-weight: bold; color: #666;">レジのカメラにかざしてね！</p>
+  </div>
+
+  <div class="customer-methods">
+    <button class="btn btn-red" onclick="generateCustomerQR('PLAY:PAYPAY', 'PayPayごっこ')">🔴 PayPay</button>
+    <button class="btn btn-red" style="background: #C62828;" onclick="generateCustomerQR('PLAY:RAKUTEN', '楽天ペイごっこ')">🔴 楽天ペイ</button>
+    <button class="btn btn-blue" onclick="generateCustomerQR('PLAY:DMOBILE', 'd払いごっこ')">🔵 d払い</button>
+  </div>
 </div>
-<h2 style="margin-top:20px">📱 お客さまQRコード</h2>
-<div class="actions"><button onclick="startScan('qr')">QRコードを読み取る</button></div>
-<div class="muted">専用QRには PLAY:PAYPAY / PLAY:RAKUTEN / PLAY:D払い の文字を入れてね。選んだ決済方法と一致したら完了にできるよ。QR読み取りはカメラ対応ブラウザ・HTTPS環境が必要です。</div>
-</section>
-</main>
-<div id="modal"><div class="dialog" id="dialog"></div></div>
+
+<!-- 4. QRコード読み取りモーダル（レジ用） -->
+<div id="qrScanModal">
+  <h2 style="color: #FFF; margin-bottom: 16px; font-size: 26px;">📱 QRコードをうつしてね</h2>
+  <div class="scanner-box">
+    <video id="scanVideo" playsinline></video>
+    <div class="laser"></div>
+  </div>
+  <button class="btn btn-red" style="margin-top: 24px;" onclick="stopQRScan()">キャンセル</button>
+</div>
+
+<!-- 5. AONE CARD スライド決済モーダル -->
+<div id="cardPayModal">
+  <div style="text-align: center; color: #FFF;">
+    <h2 style="font-size: 30px; text-shadow: 0 0 10px #FFD700;">✨ AONE CARD をスライドしてね ✨</h2>
+    <p style="font-size: 18px; margin-top: 4px;">ゆびでカードをつかんで、右のリーダーに通そう！</p>
+  </div>
+
+  <div class="card-track" id="cardTrack">
+    <div class="card-reader">
+      <span>CARD READER</span>
+      <span>>>> INSERT >>></span>
+      <div class="reader-slot"></div>
+    </div>
+
+    <!-- つかんで動かすカード -->
+    <div class="aone-card" id="draggableCard">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 900; font-size: 18px; letter-spacing: 2px;">AONE VIP</span>
+        <span style="font-size: 20px;">👑</span>
+      </div>
+      <div class="card-chip"></div>
+      <div style="font-size: 14px; font-weight: bold;">PRINCESS SHOPPING CLUB</div>
+    </div>
+  </div>
+
+  <button class="btn btn-red" onclick="closeCardPayment()">やめる</button>
+</div>
+
+<!-- 6. 決済完了画面 -->
+<div id="successScreen" class="screen">
+  <div class="success-badge">💖👑✨</div>
+  <h1 style="font-size: 42px; color: var(--deep-pink); text-shadow: 2px 2px 0 #FFF;">おかいあげ ありがとう！</h1>
+  <div id="successDetails" style="font-size: 22px; font-weight: bold; color: #880E4F; text-align: center;"></div>
+  <button class="btn btn-gold" style="font-size: 26px; padding: 16px 40px;" onclick="nextCustomer()">つぎのおきゃくさま 🌸</button>
+</div>
+
+<!-- 7. 購入履歴モーダル -->
+<div id="historyModal" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000;">
+  <div style="width: 80%; max-height: 80%; background: #FFF; border-radius: 24px; padding: 24px; display: flex; flex-direction: column;">
+    <h2 style="color: var(--deep-pink); margin-bottom: 12px;">📜 おかいものりれき</h2>
+    <div id="historyList" style="flex: 1; overflow-y: auto; margin-bottom: 16px;"></div>
+    <div style="display: flex; justify-content: space-between;">
+      <button class="btn btn-red" onclick="clearHistory()">りれきを消す</button>
+      <button class="btn btn-gold" onclick="closeHistoryModal()">とじる</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const products=JSON.parse(localStorage.getItem('aoneProducts')||'{}');
-let cart=[],stream=null,scanMode='',history=JSON.parse(localStorage.getItem('aoneHistory')||'[]'),pendingMethod='';
-const $=id=>document.getElementById(id);
-function yen(n){return Number(n||0).toLocaleString('ja-JP')}
-function total(){return cart.reduce((s,x)=>s+x.price*x.qty,0)}
-function draw(){ $('cart').innerHTML=cart.map((x,i)=>`<tr><td>${esc(x.name)}</td><td><button onclick="qty(${i},-1)">−</button> ${x.qty} <button onclick="qty(${i},1)">＋</button></td><td>¥${yen(x.price*x.qty)}</td><td><button onclick="removeItem(${i})">削除</button></td></tr>`).join('');$('total').textContent=yen(total())}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function add(p){let x=cart.find(v=>v.code===p.code);if(x)x.qty++;else cart.push({...p,qty:1});draw()}
-function lookupCode(){let c=$('code').value.trim(),p=products[c];if(!c)return alert('バーコード番号を入力してね');if(p){add({code:c,...p});$('registerArea').style.display='none'}else{registerProduct()}}
-function registerProduct(){if(!$('code').value.trim())return alert('先にバーコード番号を入力してね');$('registerArea').style.display='block';$('pname').focus()}
-function saveProduct(){let c=$('code').value.trim(),name=$('pname').value.trim(),price=Number($('pprice').value);if(!c||!name||$('pprice').value===''||price<0)return alert('番号・商品名・値段を入力してね');products[c]={name,price};localStorage.setItem('aoneProducts',JSON.stringify(products));add({code:c,name,price,qty:1});$('registerArea').style.display='none';$('pname').value='';$('pprice').value=''}
-function qty(i,d){cart[i].qty+=d;if(cart[i].qty<1)cart.splice(i,1);draw()}function removeItem(i){cart.splice(i,1);draw()}function clearCart(){cart=[];draw();$('statusText').textContent='商品を登録して、お支払い方法を選んでね。'}
-function playTone(method){let a=new (window.AudioContext||window.webkitAudioContext)(),freq=method==='PayPay風'?[880,1175]:method==='楽天ペイ風'?[660,990,1320]:method==='d払い風'?[740,880,1100]:[523,659,784,1046];let t=a.currentTime;freq.forEach((f,i)=>{let o=a.createOscillator(),g=a.createGain();o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(.0001,t+i*.14);g.gain.exponentialRampToValueAtTime(.13,t+i*.14+.02);g.gain.exponentialRampToValueAtTime(.0001,t+i*.14+.13);o.connect(g);g.connect(a.destination);o.start(t+i*.14);o.stop(t+i*.14+.15)})}
-function pay(m){if(!cart.length)return alert('先に商品を登録してね');pendingMethod=m;$('statusText').innerHTML=`<b>${m}</b>を選択中。お客さまのQRコードを読み取ってね。<br>（テスト用の決済画面）`;startScan('qr')}
-function complete(m){let amount=total();history.unshift({date:new Date().toLocaleString('ja-JP'),method:m,amount,items:cart.map(x=>({...x}))});localStorage.setItem('aoneHistory',JSON.stringify(history));playTone(m);$('statusText').innerHTML=`<div style="text-align:center;font-size:28px">✨👑 お支払い完了！ 👑✨</div><p>${m}</p><p style="font-size:26px;color:#a94378;font-weight:bold">¥${yen(amount)}</p><p>ありがとうございました♡</p>`}
-function cardPay(){if(!cart.length)return alert('先に商品を登録してね');$('modal').style.display='flex';$('dialog').innerHTML=`<h2>👑 AONE CARD</h2><p>カードを下の枠にタッチして、右へスライドしてね！</p><div id="card" draggable="false"><strong>AONE CARD</strong><div class="faces">👸🏻 ✨ 👸🏽 ✨ 👸🏼</div><div class="num">PLAY CARD · AONE</div></div><p class="muted">画面上のカード演出です。実物カードの読み取りはしません。</p><button onclick="closeModal()">戻る</button>`;let card=$('card'),start=null;card.addEventListener('pointerdown',e=>{start=e.clientX;card.setPointerCapture(e.pointerId)});card.addEventListener('pointerup',e=>{if(start!==null&&e.clientX-start>70){closeModal();complete('AONE CARD');start=null}})}
-function closeModal(){$('modal').style.display='none'}
-function nextCustomer(){clearCart();$('statusText').textContent='次のお客さまをどうぞ！'}
-function showHistory(){$('modal').style.display='flex';$('dialog').innerHTML='<h2>お会計履歴</h2>'+(history.length?history.slice(0,30).map(h=>`<p>${esc(h.date)}<br>${esc(h.method)}　¥${yen(h.amount)}</p>`).join(''):'<p>まだ履歴はありません。</p>')+'<button onclick="closeModal()">閉じる</button>'}
-async function startScan(mode){scanMode=mode;$('scanner').style.display='block';$('scanMsg').textContent='カメラを起動しています…';if(!navigator.mediaDevices?.getUserMedia){$('scanMsg').textContent='この環境ではカメラが使えません。番号を手入力してね。';return}
-try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});$('scanner').srcObject=stream;await $('scanner').play();if(!('BarcodeDetector'in window)){ $('scanMsg').textContent='このブラウザは自動読み取りに未対応です。番号を手入力してね。';return}
-let formats=await BarcodeDetector.getSupportedFormats(),wanted=mode==='qr'?'qr_code':null,available=wanted?formats.includes(wanted)?[wanted]:[]:formats.filter(f=>['ean_13','ean_8','upc_a','upc_e','code_128'].includes(f));if(!available.length){$('scanMsg').textContent='このブラウザはこのコード形式に未対応です。手入力で遊べるよ。';return}
-let detector=new BarcodeDetector({formats:available});let scan=async()=>{if(!stream||!stream.active)return;try{let codes=await detector.detect($('scanner'));if(codes.length){let raw=codes[0].rawValue;if(mode==='barcode'){$('code').value=raw;stopScan();lookupCode()}else{stopScan();let map={'PLAY:PAYPAY':'PayPay風','PLAY:RAKUTEN':'楽天ペイ風','PLAY:DMOBILE':'d払い風'};let found=map[raw];if(found&&pendingMethod===found)complete(found);else $('statusText').textContent='QRコードを確認したよ。選んだ決済方法とコードが一致しないか、決済方法を先に選んでね。'};return}}catch(e){}requestAnimationFrame(scan)};scan();$('scanMsg').textContent='コードをカメラに映してね。'}catch(e){$('scanMsg').textContent='カメラを起動できませんでした。サイトのカメラ許可を確認するか、番号を手入力してね。'}}
-function stopScan(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('scanner').style.display='none'}
-draw();
+/* ==========================================================================
+   AONE Princess Shop Engine: Audio, FX, Storage, QR, and Physical Drag
+   ========================================================================== */
+
+// --- 商品マスターデータ (初期データ & LocalStorage永続化) ---
+const DEFAULT_PRODUCTS = [
+  { id: 'p1', name: 'きらきらティアラ', price: 1200, icon: '👑' },
+  { id: 'p2', name: 'まほうのステッキ', price: 980, icon: '🪄' },
+  { id: 'p3', name: 'ルビーのゆびわ', price: 500, icon: '💍' },
+  { id: 'p4', name: 'ガラスのくつ', price: 2500, icon: '👠' },
+  { id: 'p5', name: 'ピンクドレス', price: 3800, icon: '👗' },
+  { id: 'p6', name: 'リボンカチューシャ', price: 650, icon: '🎀' },
+  { id: 'p7', name: 'ユニコーンぬいぐるみ', price: 1800, icon: '🦄' },
+  { id: 'p8', name: 'ハートのペンダント', price: 420, icon: '💖' },
+  { id: 'p9', name: 'プリンセスコスメ', price: 850, icon: '💄' }
+];
+
+let products = JSON.parse(localStorage.getItem('aone_products')) || DEFAULT_PRODUCTS;
+let cart = [];
+let scanStream = null;
+let scanAnimId = null;
+let qrCodeObj = null;
+
+// --- オリジナルWeb Audio サウンドエンジン (外部ファイル不要) ---
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+// 魔法のベル音 (ボタンタップ)
+function playToneButton() {
+  initAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+  osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.15);
+  gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.15);
+}
+
+// レジ登録音（ピピッ）
+function playToneRegister() {
+  initAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.08);
+}
+
+// 決済成功ファンファーレ（きらめくアルペジオ）
+function playToneSuccess() {
+  initAudio();
+  const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98]; // C5, E5, G5, C6, E6, G6
+  notes.forEach((freq, idx) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.07);
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime + idx * 0.07);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.07 + 0.35);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime + idx * 0.07);
+    osc.stop(audioCtx.currentTime + idx * 0.07 + 0.35);
+  });
+}
+
+// --- パーティクル描画エンジン ---
+const canvas = document.getElementById('fxCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function emitGlitter(x, y, count = 25) {
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: x,
+      y: y,
+      vx: (Math.random() - 0.5) * 12,
+      vy: (Math.random() - 0.5) * 12,
+      size: Math.random() * 8 + 4,
+      color: ['#FFD700', '#FF80AB', '#E1BEE7', '#FFF'][Math.floor(Math.random() * 4)],
+      alpha: 1,
+      rotation: Math.random() * Math.PI
+    });
+  }
+}
+
+function updateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = particles.length - 1; i >= 0; i--) {
+    let p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.alpha -= 0.02;
+    p.rotation += 0.05;
+
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, p.alpha);
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rotation);
+    ctx.fillStyle = p.color;
+
+    // 星型描画
+    ctx.beginPath();
+    for (let r = 0; r < 5; r++) {
+      ctx.lineTo(Math.cos((18 + r * 72) * Math.PI / 180) * p.size, -Math.sin((18 + r * 72) * Math.PI / 180) * p.size);
+      ctx.lineTo(Math.cos((54 + r * 72) * Math.PI / 180) * (p.size / 2), -Math.sin((54 + r * 72) * Math.PI / 180) * (p.size / 2));
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    if (p.alpha <= 0) particles.splice(i, 1);
+  }
+  requestAnimationFrame(updateParticles);
+}
+updateParticles();
+
+// --- 画面切り替え ---
+function showScreen(screenId) {
+  playToneButton();
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+}
+
+function switchMode(mode) {
+  if (mode === 'cashier') {
+    renderCatalog();
+    renderCart();
+    showScreen('cashierScreen');
+  } else {
+    showScreen('customerScreen');
+    generateCustomerQR('PLAY:PAYPAY', 'PayPayごっこ');
+  }
+}
+
+// --- カタログ & カートロジック ---
+function renderCatalog() {
+  const container = document.getElementById('catalogList');
+  container.innerHTML = '';
+  products.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      <div class="icon">${p.icon}</div>
+      <div class="name">${p.name}</div>
+      <div class="price">¥${p.price.toLocaleString()}</div>
+    `;
+    card.onclick = (e) => {
+      addToCart(p);
+      emitGlitter(e.clientX, e.clientY, 15);
+    };
+    container.appendChild(card);
+  });
+}
+
+function addToCart(item) {
+  playToneRegister();
+  const existing = cart.find(c => c.id === item.id);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({ ...item, qty: 1 });
+  }
+  renderCart();
+}
+
+function renderCart() {
+  const container = document.getElementById('cartList');
+  container.innerHTML = '';
+  let total = 0;
+
+  cart.forEach(item => {
+    const subtotal = item.price * item.qty;
+    total += subtotal;
+
+    const row = document.createElement('div');
+    row.className = 'cart-item';
+    row.innerHTML = `
+      <div style="font-weight: bold; font-size: 14px;">${item.icon} ${item.name}</div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-weight: bold; color: var(--deep-pink);">¥${subtotal.toLocaleString()}</span>
+        <button onclick="changeQty('${item.id}', -1)" style="border:none; background:#FFF; border-radius:50%; width:24px; height:24px;">-</button>
+        <span style="font-weight: bold;">${item.qty}</span>
+        <button onclick="changeQty('${item.id}', 1)" style="border:none; background:#FFF; border-radius:50%; width:24px; height:24px;">+</button>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+
+  document.getElementById('cartTotal').textContent = total.toLocaleString();
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(c => c.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) {
+    cart = cart.filter(c => c.id !== id);
+  }
+  renderCart();
+}
+
+function clearCart() {
+  playToneButton();
+  cart = [];
+  renderCart();
+}
+
+// --- QRコード決済 (レジ側：Fire HD 10背面カメラ) ---
+function startQRScan() {
+  if (cart.length === 0) {
+    alert('かいものかごに しょうひんを入れてね！');
+    return;
+  }
+  initAudio();
+  playToneButton();
+  const modal = document.getElementById('qrScanModal');
+  const video = document.getElementById('scanVideo');
+  modal.style.display = 'flex';
+
+  // Fire OS 8 最適化: 背面カメラを明示指定
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: { ideal: "environment" }, width: { ideal: 640 }, height: { ideal: 480 } }
+  }).then(stream => {
+    scanStream = stream;
+    video.srcObject = stream;
+    video.setAttribute("playsinline", true);
+    video.play();
+    scanAnimId = requestAnimationFrame(scanTick);
+  }).catch(err => {
+    alert("カメラが起動できませんでした: " + err.message);
+    stopQRScan();
+  });
+}
+
+function scanTick() {
+  const video = document.getElementById('scanVideo');
+  if (video.readyState === video.HAVE_ENOUGH_DATA) {
+    const scanCanvas = document.createElement("canvas");
+    scanCanvas.width = video.videoWidth;
+    scanCanvas.height = video.videoHeight;
+    const sCtx = scanCanvas.getContext("2d");
+    sCtx.drawImage(video, 0, 0, scanCanvas.width, scanCanvas.height);
+    const imgData = sCtx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
+
+    // jsQRで解析
+    const code = jsQR(imgData.data, imgData.width, imgData.height, {
+      inversionAttempts: "dontInvert"
+    });
+
+    if (code) {
+      const data = code.data;
+      if (['PLAY:PAYPAY', 'PLAY:RAKUTEN', 'PLAY:DMOBILE'].includes(data)) {
+        stopQRScan();
+        let name = "QRコード決済";
+        if (data === 'PLAY:PAYPAY') name = "PayPayごっこ";
+        if (data === 'PLAY:RAKUTEN') name = "楽天ペイごっこ";
+        if (data === 'PLAY:DMOBILE') name = "d払いごっこ";
+        completeCheckout(name);
+        return;
+      }
+    }
+  }
+  scanAnimId = requestAnimationFrame(scanTick);
+}
+
+function stopQRScan() {
+  if (scanStream) {
+    scanStream.getTracks().forEach(t => t.stop());
+    scanStream = null;
+  }
+  if (scanAnimId) cancelAnimationFrame(scanAnimId);
+  document.getElementById('qrScanModal').style.display = 'none';
+}
+
+// --- お客様端末用 QR生成 ---
+function generateCustomerQR(token, title) {
+  playToneButton();
+  document.getElementById('customerQRTitle').textContent = title;
+  const qrContainer = document.getElementById('customerQRCode');
+  qrContainer.innerHTML = '';
+  qrCodeObj = new QRCode(qrContainer, {
+    text: token,
+    width: 200,
+    height: 200,
+    colorDark: "#333333",
+    colorLight: "#FFFFFF",
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+// --- AONE CARD 物理スワイプ決済 ---
+let cardStartX = 0;
+let cardCurrentX = 0;
+let isDragging = false;
+const cardElem = document.getElementById('draggableCard');
+
+function startCardPayment() {
+  if (cart.length === 0) {
+    alert('かいものかごに しょうひんを入れてね！');
+    return;
+  }
+  playToneButton();
+  document.getElementById('cardPayModal').style.display = 'flex';
+  resetCardPosition();
+  setupCardEvents();
+}
+
+function closeCardPayment() {
+  playToneButton();
+  document.getElementById('cardPayModal').style.display = 'none';
+}
+
+function resetCardPosition() {
+  cardElem.style.transition = 'left 0.3s ease';
+  cardElem.style.left = '20px';
+  cardCurrentX = 20;
+}
+
+function setupCardEvents() {
+  cardElem.onpointerdown = (e) => {
+    isDragging = true;
+    cardStartX = e.clientX - cardElem.offsetLeft;
+    cardElem.style.transition = 'none';
+    cardElem.setPointerCapture(e.pointerId);
+  };
+
+  cardElem.onpointermove = (e) => {
+    if (!isDragging) return;
+    const track = document.getElementById('cardTrack');
+    let x = e.clientX - cardStartX;
+    const maxSwipe = track.offsetWidth - cardElem.offsetWidth + 50;
+
+    if (x < 10) x = 10;
+    cardElem.style.left = x + 'px';
+    cardCurrentX = x;
+
+    // スライド完了判定（リーダーを通過したか）
+    if (x >= maxSwipe - 40) {
+      isDragging = false;
+      playToneRegister();
+      emitGlitter(e.clientX, e.clientY, 40);
+      setTimeout(() => {
+        closeCardPayment();
+        completeCheckout("AONE CARD決済");
+      }, 300);
+    }
+  };
+
+  cardElem.onpointerup = (e) => {
+    if (!isDragging) return;
+    isDragging = false;
+    resetCardPosition();
+  };
+}
+
+// --- 会計完了処理 & 履歴保存 ---
+function completeCheckout(methodName) {
+  let total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+  const record = {
+    date: new Date().toLocaleString('ja-JP'),
+    method: methodName,
+    total: total,
+    items: [...cart]
+  };
+
+  // LocalStorage永続化
+  let history = JSON.parse(localStorage.getItem('aone_history')) || [];
+  history.unshift(record);
+  localStorage.setItem('aone_history', JSON.stringify(history));
+
+  playToneSuccess();
+  emitGlitter(window.innerWidth / 2, window.innerHeight / 2, 80);
+
+  document.getElementById('successDetails').innerHTML = `
+    おしはらいほうほう: <strong>${methodName}</strong><br>
+    ごうけいきんがく: <strong style="color: #FF4081; font-size: 32px;">¥${total.toLocaleString()}</strong>
+  `;
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('successScreen').classList.add('active');
+}
+
+function nextCustomer() {
+  cart = [];
+  renderCart();
+  showScreen('cashierScreen');
+}
+
+// --- 履歴閲覧モーダル ---
+function openHistoryModal() {
+  playToneButton();
+  const list = document.getElementById('historyList');
+  list.innerHTML = '';
+  let history = JSON.parse(localStorage.getItem('aone_history')) || [];
+
+  if (history.length === 0) {
+    list.innerHTML = '<p style="text-align: center; color: #888;">まだ りれきはありません</p>';
+  } else {
+    history.forEach(h => {
+      const itemNames = h.items.map(i => `${i.name}×${i.qty}`).join(', ');
+      const div = document.createElement('div');
+      div.style.borderBottom = '1px dashed #F48FB1';
+      div.style.padding = '8px 0';
+      div.innerHTML = `
+        <div style="font-size: 13px; color: #666;">${h.date} 【${h.method}】</div>
+        <div style="font-weight: bold; color: #4A148C;">¥${h.total.toLocaleString()}</div>
+        <div style="font-size: 12px; color: #444;">${itemNames}</div>
+      `;
+      list.appendChild(div);
+    });
+  }
+  document.getElementById('historyModal').style.display = 'flex';
+}
+
+function closeHistoryModal() {
+  playToneButton();
+  document.getElementById('historyModal').style.display = 'none';
+}
+
+function clearHistory() {
+  if (confirm("おかいものりれきを すべて消去しますか？")) {
+    localStorage.removeItem('aone_history');
+    openHistoryModal();
+  }
+}
+
+// 誤操作防止（戻るキーハンドリング）
+function handleBackPress() {
+  const cardModal = document.getElementById('cardPayModal');
+  const qrModal = document.getElementById('qrScanModal');
+  if (cardModal.style.display === 'flex') {
+    closeCardPayment();
+  } else if (qrModal.style.display === 'flex') {
+    stopQRScan();
+  }
+}
 </script>
-</body></html>
+</body>
+</html>
