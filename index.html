@@ -1,662 +1,982 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Princess Shop</title>
-<style>
-  :root {
-    --primary-pink: #FF80AB;
-    --deep-pink: #FF4081;
-    --gold: #FFD700;
-    --text-color: #4A148C;
-  }
-  * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; font-family: 'Hiragino Maru Gothic ProN', sans-serif; }
-  
-  /* 縦横スクロール完全禁止（1画面固定） */
-  html, body {
-    width: 100vw; height: 100vh; overflow: hidden;
-    background: radial-gradient(circle, #FFF5F8 0%, #F8BBD0 100%);
-    color: var(--text-color);
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Princess Shop</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsQR（超高速・安定QRエンジン） -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  .screen {
-    width: 100vw; height: 100vh; padding: 6px 12px;
-    display: none; flex-direction: column; justify-content: space-between;
-  }
-  .screen.active { display: flex; }
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        princess: {
+                            pink: '#FFD1DC',
+                            deepPink: '#FF69B4',
+                            lavender: '#E6E6FA',
+                            purple: '#9370DB',
+                            gold: '#FFD700',
+                            goldDark: '#D4AF37',
+                            softYellow: '#FFFACD',
+                            cream: '#FFF5EE'
+                        }
+                    },
+                    fontFamily: {
+                        rounded: ['"M PLUS Rounded 1c"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 
-  /* ヘッダー */
-  .header {
-    height: 46px; display: flex; justify-content: space-between; align-items: center;
-    background: #FFF; border: 3px solid var(--primary-pink); border-radius: 14px; padding: 0 12px;
-  }
-  .header h1 { font-size: 20px; color: var(--deep-pink); }
+    <style>
+        /* 縦横スクロールを完全に禁止（1画面固定） */
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            background: linear-gradient(135deg, #FFE4E1 0%, #E6E6FA 50%, #FFF0F5 100%);
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
 
-  /* ボタン */
-  .btn {
-    background: linear-gradient(180deg, #FFF 0%, #FF80AB 100%);
-    color: #FFF; border: 2px solid #FFF; border-radius: 16px;
-    padding: 6px 12px; font-size: 14px; font-weight: bold; cursor: pointer;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1); display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-  }
-  .btn:active { transform: scale(0.95); }
-  .btn-gold { background: linear-gradient(180deg, #FFF9C4 0%, #FFD54F 100%); color: #5D4037; }
-  .btn-blue { background: linear-gradient(180deg, #E1F5FE 0%, #4FC3F7 100%); color: #01579B; }
-  .btn-green { background: linear-gradient(180deg, #E8F5E9 0%, #66BB6A 100%); color: #1B5E20; }
-  .btn-red { background: linear-gradient(180deg, #FFEBEE 0%, #E53935 100%); color: #FFF; }
+        /* 姫系可愛い立体ボタン */
+        .btn-princess {
+            background: linear-gradient(180deg, #FFB6C1 0%, #FF69B4 100%);
+            box-shadow: 0 4px 0 #C71585, 0 6px 12px rgba(255, 105, 180, 0.4);
+            transition: all 0.08s ease;
+        }
+        .btn-princess:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #C71585, 0 3px 6px rgba(255, 105, 180, 0.4);
+        }
 
-  /* メインボディ：横3分割 */
-  .main-body {
-    height: calc(100vh - 60px); width: 100%;
-    display: flex; gap: 10px; margin-top: 4px;
-  }
+        .btn-gold {
+            background: linear-gradient(180deg, #FFE57F 0%, #FFC107 100%);
+            box-shadow: 0 4px 0 #B8860B, 0 6px 12px rgba(218, 165, 32, 0.4);
+            color: #5D4037;
+            transition: all 0.08s ease;
+        }
+        .btn-gold:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #B8860B, 0 3px 6px rgba(218, 165, 32, 0.4);
+        }
 
-  /* ① 左：カメラ（コード） */
-  .col-code {
-    flex: 1.1; background: #FFF; border-radius: 16px; border: 3px solid var(--primary-pink);
-    padding: 8px; display: flex; flex-direction: column; justify-content: space-between;
-  }
-  .camera-wrap {
-    width: 100%; flex: 1; position: relative; border-radius: 12px; overflow: hidden; background: #000;
-  }
-  #scanVideo { width: 100%; height: 100%; object-fit: cover; }
-  .scan-guide {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 170px; height: 170px; border: 3px dashed #FF4081; border-radius: 14px;
-    box-shadow: 0 0 0 2000px rgba(0,0,0,0.3); pointer-events: none;
-  }
-  .scan-guide.hit { border-color: #00E676 !important; }
+        .btn-green {
+            background: linear-gradient(180deg, #A5D6A7 0%, #4CAF50 100%);
+            box-shadow: 0 4px 0 #2E7D32, 0 6px 12px rgba(76, 175, 80, 0.4);
+            color: white;
+            transition: all 0.08s ease;
+        }
+        .btn-green:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #2E7D32, 0 3px 6px rgba(76, 175, 80, 0.4);
+        }
 
-  /* ② 中央：手打ちカタログ（画面ぴったり12品） */
-  .col-manual {
-    flex: 1.2; background: rgba(255, 255, 255, 0.95); border-radius: 16px;
-    border: 3px solid var(--primary-pink); padding: 6px; display: flex; flex-direction: column;
-  }
-  .catalog-grid {
-    flex: 1; display: grid; grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(4, 1fr); gap: 5px; margin-top: 4px;
-  }
-  .item-card {
-    background: #FFF; border: 2px solid #F8BBD0; border-radius: 10px;
-    padding: 2px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  }
-  .item-card:active { transform: scale(0.92); }
-  .item-card .icon { font-size: 22px; line-height: 1; }
-  .item-card .name { font-size: 11px; font-weight: bold; margin-top: 2px; }
-  .item-card .price { font-size: 11px; font-weight: 900; color: var(--deep-pink); }
+        .btn-blue {
+            background: linear-gradient(180deg, #81D4FA 0%, #03A9F4 100%);
+            box-shadow: 0 4px 0 #0277BD, 0 6px 12px rgba(3, 169, 244, 0.4);
+            color: white;
+            transition: all 0.08s ease;
+        }
+        .btn-blue:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #0277BD, 0 3px 6px rgba(3, 169, 244, 0.4);
+        }
 
-  /* ③ 右：買い物かご＆お会計 */
-  .col-cart {
-    flex: 1; background: rgba(255, 255, 255, 0.95); border-radius: 16px;
-    border: 3px solid var(--primary-pink); display: flex; flex-direction: column; padding: 8px 10px;
-  }
-  .cart-list { flex: 1; overflow-y: auto; margin: 4px 0; display: flex; flex-direction: column; gap: 4px; }
-  .cart-item {
-    display: flex; justify-content: space-between; align-items: center;
-    background: #FFF0F5; padding: 4px 8px; border-radius: 8px; border: 1px solid #F8BBD0; font-size: 13px;
-  }
-  .cart-total-box {
-    background: #FCE4EC; border-radius: 12px; padding: 6px 12px;
-    display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #880E4F;
-  }
+        /* 宝石風パネル */
+        .jewel-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(6px);
+            border: 3px solid #FFF;
+            box-shadow: 0 8px 20px rgba(219, 112, 147, 0.2), inset 0 0 12px rgba(255, 192, 203, 0.4);
+            border-radius: 1.5rem;
+        }
 
-  /* モーダル */
-  .modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 1000;
-  }
-  .modal-box {
-    background: #FFF; border-radius: 20px; border: 4px solid var(--primary-pink);
-    padding: 16px; width: 440px; max-width: 90%; text-align: center;
-  }
+        /* スワイプカードトラック */
+        .card-slider-track {
+            background: linear-gradient(90deg, #FFE4E1 0%, #E6E6FA 100%);
+            border: 2px dashed #FF69B4;
+        }
 
-  /* 印刷シート */
-  #printSheetModal {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: #FFF; display: none; z-index: 2000; overflow-y: auto; padding: 14px;
-  }
-  .print-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
-  .print-card {
-    border: 2px dashed #FF4081; border-radius: 10px; padding: 6px; text-align: center;
-    display: flex; flex-direction: column; align-items: center; background: #FFF5F8;
-  }
-  @media print {
-    .no-print { display: none !important; }
-    #printSheetModal { position: static; display: block !important; padding: 0; }
-  }
-</style>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+        /* スクロールバー */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #FFF0F5; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #FFB6C1; border-radius: 10px; }
+    </style>
 </head>
-<body>
+<body class="h-screen w-screen flex flex-col justify-between p-2">
 
-<!-- 1. メインレジ画面 -->
-<div id="cashierScreen" class="screen active">
-  <div class="header">
-    <h1>👑 Princess Shop 💖</h1>
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <button class="btn btn-gold" onclick="openPrintSheet()">🖨️ いんさつシート</button>
-      <button class="btn btn-red" onclick="clearCart()">🗑️ クリア</button>
-    </div>
-  </div>
+    <!-- メインヘッダー（お城＆プリンセス風） -->
+    <header class="h-12 bg-white/90 backdrop-blur-md border-b-2 border-pink-300 px-3 flex justify-between items-center rounded-2xl shadow-sm">
+        <div class="flex items-center space-x-2">
+            <div class="w-9 h-9 bg-pink-100 rounded-full border-2 border-pink-400 flex items-center justify-center text-lg text-pink-500 shadow-inner">
+                <i class="fa-solid fa-crown"></i>
+            </div>
+            <div>
+                <h1 class="text-base font-black text-pink-600 tracking-wider flex items-center gap-1.5">
+                    Princess Shop <span class="text-[10px] bg-pink-500 text-white px-2 py-0.5 rounded-full font-bold">レジ</span>
+                </h1>
+            </div>
+        </div>
 
-  <div class="main-body">
-    <!-- ① 左：カメラ（コード） -->
-    <div class="col-code">
-      <div style="font-size: 13px; font-weight: bold; color: var(--deep-pink); margin-bottom: 2px;">
-        📷 コードをかざす（コード）
-      </div>
-      <div class="camera-wrap">
-        <video id="scanVideo" playsinline autoplay muted></video>
-        <div id="scanBox" class="scan-guide"></div>
-      </div>
-      <div style="font-size: 11px; color: #666; text-align: center; margin-top: 2px;">
-        値札をわくにかざしてね
-      </div>
-    </div>
+        <!-- ガイド吹き出し -->
+        <div class="flex items-center bg-pink-50 border border-pink-300 rounded-xl px-3 py-1 shadow-sm">
+            <span class="text-base mr-1.5">👑</span>
+            <span id="princessGuide" class="text-xs font-bold text-pink-700">「いらっしゃいませ！商品をピッしてね♪」</span>
+        </div>
 
-    <!-- ② 中央：手打ちカタログ -->
-    <div class="col-manual">
-      <div style="font-size: 13px; font-weight: bold; color: var(--deep-pink);">
-        🛍️ タッチしてえらぶ（手打ち）
-      </div>
-      <div class="catalog-grid" id="catalogGrid"></div>
-    </div>
+        <div class="flex items-center space-x-2">
+            <!-- 音声効果ボタン -->
+            <button onclick="toggleSound()" class="bg-pink-100 text-pink-600 w-8 h-8 rounded-xl border border-pink-300 text-sm flex items-center justify-center shadow-sm">
+                <i id="soundIcon" class="fa-solid fa-volume-high"></i>
+            </button>
+            <!-- 管理画面ボタン（大人用） -->
+            <button onclick="openAdminModal()" class="bg-purple-100 text-purple-700 font-bold px-2.5 py-1 rounded-xl border border-purple-300 text-xs flex items-center gap-1 shadow-sm">
+                <i class="fa-solid fa-gear"></i>
+                <span>かんり</span>
+            </button>
+        </div>
+    </header>
 
-    <!-- ③ 右：お買い物かご ＆ お会計 -->
-    <div class="col-cart">
-      <h2 style="font-size: 15px; color: #880E4F;">🛒 かいものかご</h2>
-      <div class="cart-list" id="cartList"></div>
+    <!-- メインコンテンツ（横3分割・1画面固定レイアウト） -->
+    <main class="flex-1 grid grid-cols-12 gap-2 mt-2 overflow-hidden h-[calc(100vh-62px)]">
+        
+        <!-- ① 左カラム：カメラバーコードリーダー（35%） -->
+        <section class="col-span-4 jewel-card p-2.5 flex flex-col justify-between h-full">
+            <div class="flex justify-between items-center px-1 mb-1">
+                <span class="text-xs font-bold text-pink-700 flex items-center gap-1">
+                    <i class="fa-solid fa-camera"></i> コードリーダー
+                </span>
+                <span id="scanStatus" class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold border border-green-300">
+                    スタンバイ中
+                </span>
+            </div>
 
-      <div class="cart-total-box">
-        <span>ごうけい</span>
-        <span style="font-size: 24px; color: var(--deep-pink);">¥<span id="cartTotal">0</span></span>
-      </div>
+            <!-- カメラ映像領域 -->
+            <div class="relative w-full flex-1 bg-black rounded-xl overflow-hidden border-2 border-pink-300 flex items-center justify-center shadow-inner min-h-[140px]">
+                <video id="scanVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
+                <!-- スキャン照準ガイド -->
+                <div id="scanBox" class="absolute inset-0 border-2 border-dashed border-pink-400 m-3 rounded-lg pointer-events-none flex items-center justify-center">
+                    <div class="w-full h-0.5 bg-pink-500/70"></div>
+                </div>
+            </div>
 
-      <button class="btn btn-gold" style="font-size: 19px; padding: 8px; margin-top: 6px;" onclick="startCheckoutFlow()">
-        ✨ おかいけいへ
-      </button>
-    </div>
-  </div>
-</div>
+            <p class="text-[11px] text-center text-gray-500 font-bold mt-1.5">
+                値札のコードを枠にかざすと「ピッ！」と入るよ
+            </p>
+        </section>
 
-<!-- 2. ポイントカード読み取り画面 -->
-<div id="pointModal" class="modal-overlay">
-  <div class="modal-box">
-    <div style="font-size: 34px;">⭐👑</div>
-    <h2 style="color: #FFB300; font-size: 20px;">「ポイントカードはお持ちですか？」</h2>
-    <p style="font-size: 12px; color: #666; margin: 6px 0;">
-      あおねちゃん・あやはちゃんのカードをかざしてね！
-    </p>
+        <!-- ② 中央カラム：手打ち商品カタログ（37%・スクロールなし12品） -->
+        <section class="col-span-4 jewel-card p-2 flex flex-col justify-between h-full">
+            <div class="px-1 mb-1 flex justify-between items-center">
+                <span class="text-xs font-bold text-purple-700 flex items-center gap-1">
+                    <i class="fa-solid fa-gem text-pink-500"></i> タッチしてえらぶ
+                </span>
+                <span class="text-[10px] text-gray-400 font-bold">手押しでもOK</span>
+            </div>
 
-    <div style="width: 200px; height: 130px; margin: 6px auto; border-radius: 12px; overflow: hidden; border: 2px solid #FFD54F; background: #000;">
-      <video id="pointVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover;"></video>
-    </div>
+            <!-- 12商品のグリッド（3列×4行） -->
+            <div id="quickProductGrid" class="grid grid-cols-3 grid-rows-4 gap-1.5 flex-1">
+                <!-- JSで動的生成 -->
+            </div>
+        </section>
 
-    <div id="pointResultBox" style="display: none; background: #FFF9C4; border: 2px solid #FFA000; border-radius: 10px; padding: 6px; margin: 6px 0; font-size: 14px; font-weight: bold; color: #5D4037;">
-    </div>
+        <!-- ③ 右カラム：おかいものかご ＆ お会計（28%） -->
+        <section class="col-span-4 jewel-card p-2.5 flex flex-col justify-between h-full">
+            <div class="flex justify-between items-center border-b border-pink-200 pb-1 mb-1">
+                <div class="flex items-center gap-1">
+                    <span class="text-lg">🛍️</span>
+                    <h2 class="text-xs font-black text-pink-700">おかいものかご</h2>
+                    <span id="cartCountBadge" class="bg-pink-500 text-white font-bold text-[10px] px-1.5 py-0.2 rounded-full">0点</span>
+                </div>
+                <button onclick="clearCart()" class="text-[10px] text-red-500 font-bold bg-red-50 border border-red-200 px-2 py-0.5 rounded-lg">
+                    ぜんぶ消す
+                </button>
+            </div>
 
-    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 8px;">
-      <button class="btn" style="background: #EEE; color: #555;" onclick="skipPoint()">
-        もっていません（スキップ）
-      </button>
-    </div>
-  </div>
-</div>
+            <!-- カート明細リスト -->
+            <div id="cartList" class="flex-1 overflow-y-auto space-y-1.5 pr-0.5 my-1">
+                <!-- JSで動的表示 -->
+            </div>
 
-<!-- 3. お支払方法選択画面 -->
-<div id="paySelectModal" class="modal-overlay">
-  <div class="modal-box">
-    <h2 style="color: var(--deep-pink); font-size: 20px;">「おしはらい ほうほうは？」</h2>
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0;">
-      <button class="btn btn-green" style="height: 90px; flex-direction: column; font-size: 15px; border-radius: 14px; gap: 4px;" onclick="startCashPay()">
-        <span style="font-size: 26px;">💵</span>
-        <span>げんきん</span>
-      </button>
-      <button class="btn btn-gold" style="height: 90px; flex-direction: column; font-size: 15px; border-radius: 14px; gap: 4px;" onclick="startCardPay()">
-        <span style="font-size: 26px;">💳</span>
-        <span>カード</span>
-      </button>
-      <button class="btn btn-blue" style="height: 90px; flex-direction: column; font-size: 15px; border-radius: 14px; gap: 4px;" onclick="startQRScan()">
-        <span style="font-size: 26px;">📱</span>
-        <span>QRコード</span>
-      </button>
-    </div>
-    <button class="btn btn-red" onclick="closeModal('paySelectModal')">レジにもどる</button>
-  </div>
-</div>
+            <!-- 合計金額パネル -->
+            <div class="bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl p-2 text-white shadow-md">
+                <div class="flex justify-between items-center text-[10px] text-pink-100 font-bold">
+                    <span>ごうけい金額</span>
+                </div>
+                <div class="flex justify-between items-end">
+                    <span class="text-xs font-bold text-amber-200">税込</span>
+                    <span id="totalPrice" class="text-2xl font-black text-amber-300">¥0</span>
+                </div>
+            </div>
 
-<!-- 4. クレジットカード決済端末 -->
-<div id="cardPayModal" class="modal-overlay">
-  <div class="modal-box">
-    <h2 style="color: #FFB300;">💳 クレジットカード決済</h2>
-    <div style="background: #263238; border-radius: 14px; border: 3px solid #FFD54F; padding: 12px; margin: 12px 0; color: #FFF;">
-      <div id="terminalStatus" style="font-size: 14px; margin-bottom: 8px;">
-        [ PRINCESS TERMINAL ]<br>カードをスライド または タッチしてね
-      </div>
-      <div style="width: 80%; height: 46px; background: #37474F; border: 2px dashed #FFF; border-radius: 10px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: bold; cursor: pointer; color: #FFD54F;" onclick="executeCardSwipe()">
-        💳 カードをここにかざす / スライド
-      </div>
-    </div>
-    <button class="btn btn-red" onclick="closeModal('cardPayModal'); openPayModal();">もどる</button>
-  </div>
-</div>
+            <!-- お会計ボタン -->
+            <button id="payButton" onclick="startCheckoutFlow()" disabled class="w-full btn-gold text-lg font-black py-2 rounded-xl mt-1.5 flex items-center justify-center gap-1.5 shadow-md disabled:opacity-40 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-heart text-pink-600"></i>
+                <span>おかいけいへ</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+        </section>
 
-<!-- 5. QRコード決済 -->
-<div id="qrScanModal" class="modal-overlay">
-  <div class="modal-box">
-    <h2 style="color: #0288D1;">📱 QRコードをうつしてね</h2>
-    <div style="width: 200px; height: 150px; margin: 8px auto; border-radius: 12px; overflow: hidden; border: 3px solid var(--gold); background: #000;">
-      <video id="qrVideo" playsinline autoplay muted style="width: 100%; height: 100%; object-fit: cover;"></video>
-    </div>
-    <button class="btn btn-red" onclick="stopQRScan()">もどる</button>
-  </div>
-</div>
+    </main>
 
-<!-- 6. 現金決済 -->
-<div id="cashModal" class="modal-overlay">
-  <div class="modal-box">
-    <h2 style="color: #2E7D32;">💵 げんきん おかいけい</h2>
-    <div style="font-size: 20px; font-weight: bold; margin: 10px 0;">
-      ごうけい: <span style="color: var(--deep-pink);">¥<span id="cashTotalDisp">0</span></span>
-    </div>
-    <div style="display: flex; gap: 8px; justify-content: center; margin: 12px 0;">
-      <button class="btn btn-green" onclick="finishCashPay(true)">ぴったり もらった！</button>
-      <button class="btn btn-gold" onclick="finishCashPay(false)">おつり あり</button>
-    </div>
-    <button class="btn btn-red" onclick="closeModal('cashModal'); openPayModal();">もどる</button>
-  </div>
-</div>
+    <!-- モーダル1：ポイントカード確認（あおねちゃん ＆ あやはちゃん） -->
+    <div id="pointModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
+        <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
+            <div class="text-3xl mb-1">⭐👑</div>
+            <h3 class="text-base font-black text-purple-700">「ポイントカードはお持ちですか？」</h3>
+            <p class="text-[11px] text-gray-500 mt-0.5 mb-2">カードをカメラにかざしてね！</p>
 
-<!-- 7. お会計完了画面 -->
-<div id="successScreen" class="screen" style="justify-content: center; align-items: center; gap: 12px;">
-  <div style="font-size: 55px;">💖👑✨</div>
-  <h1 style="font-size: 32px; color: var(--deep-pink);">おかいあげ ありがとう！</h1>
-  <div id="successDetails" style="font-size: 18px; font-weight: bold; color: #880E4F; text-align: center;"></div>
-  <div id="successPointBadge" style="display:none; background: #FFF9C4; border: 2px solid #FFA000; border-radius: 12px; padding: 6px 16px; font-size: 16px; font-weight: bold; color: #E65100;">
-  </div>
-  <button class="btn btn-gold" style="font-size: 19px; padding: 8px 24px;" onclick="nextCustomer()">つぎのおきゃくさま 🌸</button>
-</div>
+            <div class="w-48 h-32 bg-black mx-auto rounded-xl overflow-hidden border-2 border-amber-400 relative mb-2">
+                <video id="pointVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
+            </div>
 
-<!-- 8. 印刷シート（あおねちゃん ＆ あやはちゃん専用カード付き！） -->
-<div id="printSheetModal">
-  <div class="no-print" style="position: sticky; top:0; background:#FFF; padding:6px; border-bottom:1px solid #CCC; display:flex; justify-content:space-between;">
-    <h3>🖨️ A4印刷シート（Princess Shop 専用）</h3>
-    <div>
-      <button class="btn btn-gold" onclick="window.print()">印刷する</button>
-      <button class="btn btn-red" onclick="closeModal('printSheetModal')">とじる</button>
-    </div>
-  </div>
-  <div style="max-width: 800px; margin: 0 auto; padding: 10px;">
-    <!-- あおね ＆ あやは ポイントカード -->
-    <h4 style="color: var(--deep-pink);">⭐ お客さんのポイントカード（あおね ＆ あやは）</h4>
-    <div class="print-grid">
-      <!-- あおね（ピンク） -->
-      <div class="print-card" style="background:#FCE4EC; border: 3px solid #FF4081;">
-        <strong style="color: #C2185B;">🌸 あおね ポイントカード</strong>
-        <div id="print_qr_point_aone" style="margin:4px 0;"></div>
-        <span style="font-size: 11px;">あおねちゃんのカード</span>
-      </div>
-      <!-- あやは（ブルー） -->
-      <div class="print-card" style="background:#E1F5FE; border: 3px solid #0288D1;">
-        <strong style="color: #01579B;">💎 あやは ポイントカード</strong>
-        <div id="print_qr_point_ayaha" style="margin:4px 0;"></div>
-        <span style="font-size: 11px;">あやはちゃんのカード</span>
-      </div>
-      <!-- クレジットカード -->
-      <div class="print-card" style="background: linear-gradient(135deg, #FF80AB, #FFD54F); color: #FFF; border: 3px solid #FFB300;">
-        <strong>👑 Princess VIP CARD</strong>
-        <div style="font-size: 26px; margin: 10px 0;">💳 ✨</div>
-        <span style="font-size: 11px; background: rgba(0,0,0,0.2); padding: 2px 4px; border-radius: 4px;">クレジットカード</span>
-      </div>
+            <!-- 読み取り結果 -->
+            <div id="pointResultBox" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-2 text-xs font-bold text-amber-800 mb-2">
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="skipPoint()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-2 rounded-xl text-xs">
+                    もっていません（スキップ）
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- 決済用QRコード -->
-    <h4 style="color: var(--deep-pink); margin-top: 10px;">📱 スマホQRコード</h4>
-    <div class="print-grid">
-      <div class="print-card" style="border: 3px solid #0288D1;">
-        <strong style="color:#0288D1;">📱 スマホQR決済</strong>
-        <div id="print_qr_pay" style="margin:4px 0;"></div>
-        <span style="font-size: 11px;">共通QRコード</span>
-      </div>
+    <!-- モーダル2：お支払い方法選択（現金・カード・QR） -->
+    <div id="paySelectModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
+        <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
+            <p class="text-xs font-bold text-purple-600">お支払い合計金額</p>
+            <p id="paySelectTotal" class="text-2xl font-black text-pink-600 mb-1">¥0</p>
+            <h3 class="text-sm font-black text-gray-700 mb-3">「おしはらい ほうほうは？」</h3>
+
+            <div class="grid grid-cols-3 gap-2 mb-3">
+                <!-- 現金 -->
+                <button onclick="startCashPay()" class="btn-green h-24 rounded-2xl flex flex-col items-center justify-center gap-1 shadow">
+                    <span class="text-3xl">💵</span>
+                    <span class="font-black text-xs">げんきん</span>
+                </button>
+
+                <!-- クレジットカード -->
+                <button onclick="startCardPay()" class="btn-gold h-24 rounded-2xl flex flex-col items-center justify-center gap-1 shadow">
+                    <span class="text-3xl">💳</span>
+                    <span class="font-black text-xs">カード</span>
+                </button>
+
+                <!-- QRコード -->
+                <button onclick="startQRScan()" class="btn-blue h-24 rounded-2xl flex flex-col items-center justify-center gap-1 shadow">
+                    <span class="text-3xl">📱</span>
+                    <span class="font-black text-xs">QR決済</span>
+                </button>
+            </div>
+
+            <button onclick="closeModal('paySelectModal')" class="w-full bg-gray-100 text-gray-600 font-bold py-1.5 rounded-xl text-xs">
+                レジにもどる
+            </button>
+        </div>
     </div>
 
-    <!-- 商品タグ -->
-    <h4 style="color: var(--deep-pink); margin-top: 10px;">🏷️ 商品ねふだバーコード</h4>
-    <div class="print-grid" id="productPrintGrid"></div>
-  </div>
-</div>
+    <!-- モーダル3：AONE / Princess CARD スライド決済端末 -->
+    <div id="cardPayModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
+        <div class="jewel-card max-w-sm w-full p-5 bg-white text-center">
+            <h3 class="text-base font-black text-amber-600 mb-1">💳 クレジットカード決済</h3>
+            <p class="text-xs text-gray-500 mb-3">カードを右へスライドしてね！</p>
 
-<script>
-const PRODUCTS = [
-  { code: 'ITEM_COOKIE',  name: 'クッキー',   price: 130, icon: '🍪' },
-  { code: 'ITEM_CHOCO',   name: 'チョコ',     price: 120, icon: '🍫' },
-  { code: 'ITEM_JUICE',   name: 'ジュース',   price: 150, icon: '🧃' },
-  { code: 'ITEM_PUDDING', name: 'プリン',     price: 140, icon: '🍮' },
-  { code: 'ITEM_ICE',     name: 'アイス',     price: 160, icon: '🍦' },
-  { code: 'ITEM_APPLE',   name: 'りんご',     price: 120, icon: '🍎' },
-  { code: 'ITEM_BANANA',  name: 'バナナ',     price: 100, icon: '🍌' },
-  { code: 'ITEM_STRAW',   name: 'いちご',     price: 380, icon: '🍓' },
-  { code: 'ITEM_TOMATO',  name: 'トマト',     price: 90,  icon: '🍅' },
-  { code: 'ITEM_ONIGIRI', name: 'おにぎり',   price: 130, icon: '🍙' },
-  { code: 'ITEM_BREAD',   name: 'パン',       price: 140, icon: '🍞' },
-  { code: 'ITEM_CURRY',   name: 'カレー',     price: 320, icon: '🍛' }
-];
+            <!-- 端末画面 -->
+            <div class="bg-gray-800 rounded-2xl p-3 border-2 border-amber-400 mb-3 text-white">
+                <div id="terminalStatus" class="text-xs font-mono text-amber-300 font-bold mb-3">
+                    [ PRINCESS TERMINAL ]<br>カードをスワイプしてください
+                </div>
 
-let cart = [];
-let scanStream = null;
-let lastScanCode = '';
-let lastScanTime = 0;
-let isMainScanning = true;
+                <!-- スワイプレール -->
+                <div id="sliderTrack" class="relative w-full h-14 card-slider-track rounded-full p-1 flex items-center overflow-hidden">
+                    <div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-pink-400 pointer-events-none">
+                        スライドしてお支払い >>>
+                    </div>
+                    <div id="swipeCard" class="relative z-10 w-24 h-12 bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 rounded-xl border border-white shadow flex items-center justify-center text-white text-[11px] font-black cursor-grab active:cursor-grabbing">
+                        👑 VIP CARD
+                    </div>
+                </div>
+            </div>
 
-// あおねちゃん ＆ あやはちゃんのポイント管理
-let userPoints = JSON.parse(localStorage.getItem('princess_points')) || {
-  'POINT_AONE':  { name: '🌸 あおね', pt: 0 },
-  'POINT_AYAHA': { name: '💎 あやは', pt: 0 }
-};
+            <button onclick="closeModal('cardPayModal'); openModal('paySelectModal');" class="w-full bg-gray-100 text-gray-600 font-bold py-1.5 rounded-xl text-xs">
+                もどる
+            </button>
+        </div>
+    </div>
 
-let currentCustomerCard = null;
+    <!-- モーダル4：QRコード読み取りモーダル -->
+    <div id="qrScanModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
+        <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
+            <h3 class="text-base font-black text-sky-600 mb-1">📱 QRコードをうつしてね</h3>
+            <p class="text-xs text-gray-500 mb-2">印刷したスマホQRコードをかざしてね！</p>
 
-let ptStream = null;
-let ptTimer = null;
-let qrStream = null;
-let qrTimer = null;
+            <div class="w-48 h-36 bg-black mx-auto rounded-xl overflow-hidden border-2 border-sky-400 relative mb-3">
+                <video id="qrVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
+            </div>
 
-// 音
-let actx = null;
-function beep(freq, duration) {
-  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = actx.createOscillator();
-  const g = actx.createGain();
-  osc.frequency.value = freq;
-  g.gain.setValueAtTime(0.2, actx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + duration);
-  osc.connect(g); g.connect(actx.destination);
-  osc.start(); osc.stop(actx.currentTime + duration);
-}
-function playBeep() { beep(1900, 0.08); }
-function playCash() { beep(523, 0.1); setTimeout(() => beep(1046, 0.2), 100); }
-function playFanfare() { [523, 659, 784, 1046, 1318].forEach((f, i) => setTimeout(() => beep(f, 0.2), i * 80)); }
+            <button onclick="stopQRScan()" class="w-full bg-gray-100 text-gray-600 font-bold py-1.5 rounded-xl text-xs">
+                もどる
+            </button>
+        </div>
+    </div>
 
-// メインカメラ
-async function startMainScanner() {
-  const video = document.getElementById('scanVideo');
-  try {
-    scanStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: "environment" }, width: { ideal: 640 }, height: { ideal: 480 } }
-    });
-    video.srcObject = scanStream;
-    setInterval(scanFrame, 250);
-  } catch (e) {}
-}
+    <!-- モーダル5：現金決済モーダル -->
+    <div id="cashModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
+        <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
+            <h3 class="text-base font-black text-green-700 mb-1">💵 げんきん おかいけい</h3>
+            <div class="text-xs text-gray-500 mt-1">ごうけい金額</div>
+            <div id="cashTotalDisp" class="text-2xl font-black text-pink-600 my-2">¥0</div>
 
-function scanFrame() {
-  if (!isMainScanning) return;
-  const video = document.getElementById('scanVideo');
-  if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <button onclick="finishCashPay(true)" class="btn-green py-2.5 rounded-xl text-xs font-bold">
+                    ぴったり もらった！
+                </button>
+                <button onclick="finishCashPay(false)" class="btn-gold py-2.5 rounded-xl text-xs font-bold">
+                    おつり あり
+                </button>
+            </div>
 
-  const cvs = document.createElement('canvas');
-  cvs.width = 320; cvs.height = 240;
-  const ctx = cvs.getContext('2d');
-  ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
-  const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+            <button onclick="closeModal('cashModal'); openModal('paySelectModal');" class="w-full bg-gray-100 text-gray-600 font-bold py-1.5 rounded-xl text-xs">
+                もどる
+            </button>
+        </div>
+    </div>
 
-  const code = jsQR(imgData.data, imgData.width, imgData.height);
-  if (code) {
-    const now = Date.now();
-    if (code.data === lastScanCode && now - lastScanTime < 1600) return;
-    lastScanCode = code.data;
-    lastScanTime = now;
+    <!-- モーダル6：お会計完了演出画面 -->
+    <div id="successModal" class="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 hidden p-4">
+        <div class="jewel-card max-w-sm w-full p-5 bg-white text-center">
+            <div class="text-5xl mb-1 animate-bounce">👑✨💖</div>
+            <h2 class="text-2xl font-black text-pink-600 mb-1">お買い上げ ありがとう！</h2>
+            <div id="successDetails" class="text-xs font-bold text-purple-700 my-2"></div>
+            <!-- ポイント獲得情報 -->
+            <div id="successPointBadge" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-2 text-xs font-bold text-amber-800 my-2">
+            </div>
+            <button onclick="nextCustomer()" class="w-full btn-princess text-white font-black py-2.5 rounded-xl text-sm shadow-md mt-2">
+                つぎのお客様へ ✨
+            </button>
+        </div>
+    </div>
 
-    const item = PRODUCTS.find(p => p.code === code.data);
-    if (item) {
-      const box = document.getElementById('scanBox');
-      box.classList.add('hit');
-      setTimeout(() => box.classList.remove('hit'), 350);
-      addToCart(item);
-    }
-  }
-}
+    <!-- モーダル7：管理画面（大人用PIN付き） -->
+    <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+        <div class="jewel-card max-w-md w-full p-5 bg-white flex flex-col max-h-[90vh]">
+            <!-- PIN入力 -->
+            <div id="adminPinView" class="text-center py-4">
+                <span class="text-3xl mb-1">🔒</span>
+                <h3 class="text-base font-black text-purple-700 mb-1">おとなのかたへ</h3>
+                <p class="text-xs text-gray-500 mb-3">パスコード（初期設定: 1234）を入力してください</p>
+                <input type="password" id="adminPinInput" maxlength="4" placeholder="1234" class="w-28 text-center text-xl font-mono border-2 border-purple-300 rounded-xl py-1.5 mb-3">
+                <div class="flex gap-2">
+                    <button onclick="closeModal('adminModal')" class="flex-1 bg-gray-200 text-gray-700 font-bold py-1.5 rounded-xl text-xs">やめる</button>
+                    <button onclick="verifyAdminPin()" class="flex-1 btn-princess text-white font-bold py-1.5 rounded-xl text-xs">ひらく</button>
+                </div>
+            </div>
 
-function renderCatalog() {
-  const container = document.getElementById('catalogGrid');
-  container.innerHTML = '';
-  PRODUCTS.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'item-card';
-    card.innerHTML = `<div class="icon">${p.icon}</div><div class="name">${p.name}</div><div class="price">¥${p.price}</div>`;
-    card.onclick = () => addToCart(p);
-    container.appendChild(card);
-  });
-}
+            <!-- 管理本体 -->
+            <div id="adminContentView" class="hidden flex-col h-full overflow-hidden">
+                <div class="flex justify-between items-center border-b pb-1 mb-2">
+                    <h3 class="text-sm font-black text-purple-800">📊 ポイント＆履歴管理</h3>
+                    <button onclick="closeModal('adminModal')" class="text-gray-400 text-lg font-bold">×</button>
+                </div>
+                <div class="flex-1 overflow-y-auto space-y-3 text-xs">
+                    <!-- 現在のポイント -->
+                    <div class="bg-purple-50 p-2.5 rounded-xl border border-purple-200">
+                        <h4 class="font-bold text-purple-800 mb-1.5">⭐ 現在の会員ポイント</h4>
+                        <div class="space-y-1" id="adminPointList"></div>
+                    </div>
+                    <!-- 購入履歴 -->
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-1">📜 おかいもの履歴</h4>
+                        <div id="historyList" class="space-y-1 max-h-36 overflow-y-auto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-function addToCart(item) {
-  playBeep();
-  const exist = cart.find(c => c.code === item.code);
-  if (exist) exist.qty += 1;
-  else cart.push({ ...item, qty: 1 });
-  renderCart();
-}
+    <!-- JavaScript ロジック -->
+    <script>
+        /* ----------------------------------------------------
+         * 1. 商品データ & 状態
+         * ---------------------------------------------------- */
+        const PRODUCTS = [
+            { code: 'ITEM_COOKIE',  name: 'クッキー',   price: 130, icon: '🍪' },
+            { code: 'ITEM_CHOCO',   name: 'チョコ',     price: 120, icon: '🍫' },
+            { code: 'ITEM_JUICE',   name: 'ジュース',   price: 150, icon: '🧃' },
+            { code: 'ITEM_PUDDING', name: 'プリン',     price: 140, icon: '🍮' },
+            { code: 'ITEM_ICE',     name: 'アイス',     price: 160, icon: '🍦' },
+            { code: 'ITEM_APPLE',   name: 'りんご',     price: 120, icon: '🍎' },
+            { code: 'ITEM_BANANA',  name: 'バナナ',     price: 100, icon: '🍌' },
+            { code: 'ITEM_STRAW',   name: 'いちご',     price: 380, icon: '🍓' },
+            { code: 'ITEM_TOMATO',  name: 'トマト',     price: 90,  icon: '🍅' },
+            { code: 'ITEM_ONIGIRI', name: 'おにぎり',   price: 130, icon: '🍙' },
+            { code: 'ITEM_BREAD',   name: 'パン',       price: 140, icon: '🍞' },
+            { code: 'ITEM_CURRY',   name: 'カレー',     price: 320, icon: '🍛' }
+        ];
 
-function renderCart() {
-  const list = document.getElementById('cartList');
-  list.innerHTML = '';
-  let total = 0;
-  cart.forEach(item => {
-    const sub = item.price * item.qty;
-    total += sub;
-    const div = document.createElement('div');
-    div.className = 'cart-item';
-    div.innerHTML = `<span>${item.icon} ${item.name} × ${item.qty}</span><strong>¥${sub}</strong>`;
-    list.appendChild(div);
-  });
-  document.getElementById('cartTotal').textContent = total.toLocaleString();
-}
+        let cart = [];
+        let purchaseHistory = JSON.parse(localStorage.getItem('princess_history')) || [];
+        let isSoundEnabled = true;
 
-function clearCart() { cart = []; renderCart(); }
+        // あおねちゃん ＆ あやはちゃんのポイント管理
+        let userPoints = JSON.parse(localStorage.getItem('princess_points')) || {
+            'POINT_AONE':  { name: '🌸 あおね', pt: 0 },
+            'POINT_AYAHA': { name: '💎 あやは', pt: 0 }
+        };
 
-// 会計フロー
-function startCheckoutFlow() {
-  if (cart.length === 0) { alert('かいものかごに しょうひんを入れてね！'); return; }
-  isMainScanning = false;
-  currentCustomerCard = null;
-  document.getElementById('pointResultBox').style.display = 'none';
-  openPointModal();
-}
+        let currentCustomerCard = null;
+        let isMainScanning = true;
 
-async function openPointModal() {
-  document.getElementById('pointModal').style.display = 'flex';
-  const video = document.getElementById('pointVideo');
-  try {
-    ptStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 480 } } });
-    video.srcObject = ptStream;
-    ptTimer = setInterval(scanPointFrame, 250);
-  } catch (e) {}
-}
+        // カメラストリーム
+        let scanStream = null;
+        let ptStream = null;
+        let ptTimer = null;
+        let qrStream = null;
+        let qrTimer = null;
 
-function scanPointFrame() {
-  const video = document.getElementById('pointVideo');
-  if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
-  const cvs = document.createElement('canvas'); cvs.width = 240; cvs.height = 180;
-  const ctx = cvs.getContext('2d'); ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
-  const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
-  const code = jsQR(imgData.data, imgData.width, imgData.height);
+        let lastScanCode = '';
+        let lastScanTime = 0;
 
-  if (code && userPoints[code.data]) {
-    onPointCardScanned(code.data);
-  }
-}
+        /* ----------------------------------------------------
+         * 2. Web Audio 効果音
+         * ---------------------------------------------------- */
+        let actx = null;
+        function getAudio() {
+            if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+            if (actx.state === 'suspended') actx.resume();
+            return actx;
+        }
 
-function onPointCardScanned(cardKey) {
-  if (ptTimer) { clearInterval(ptTimer); ptTimer = null; }
-  currentCustomerCard = cardKey;
-  
-  beep(1046, 0.1); setTimeout(() => beep(1318, 0.2), 100);
+        function playBeep() {
+            if (!isSoundEnabled) return;
+            const ctx = getAudio();
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.frequency.setValueAtTime(1900, ctx.currentTime);
+            g.gain.setValueAtTime(0.2, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + 0.08);
+        }
 
-  const prevPt = userPoints[cardKey].pt;
-  const newPt = prevPt + 10;
-  userPoints[cardKey].pt = newPt;
-  localStorage.setItem('princess_points', JSON.stringify(userPoints));
+        function playPopSound() {
+            if (!isSoundEnabled) return;
+            const ctx = getAudio();
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.frequency.setValueAtTime(600, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.05);
+            g.gain.setValueAtTime(0.15, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.06);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + 0.06);
+        }
 
-  const box = document.getElementById('pointResultBox');
-  box.innerHTML = `
-    🎉 ${userPoints[cardKey].name}ちゃんのカードをよみとったよ！<br>
-    ぜんかい: ${prevPt} pt ➔ <strong>いま: ${newPt} pt</strong> (+10pt)
-  `;
-  box.style.display = 'block';
+        function playCash() {
+            if (!isSoundEnabled) return;
+            const ctx = getAudio();
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.frequency.setValueAtTime(523, ctx.currentTime);
+            osc.frequency.setValueAtTime(1046, ctx.currentTime + 0.1);
+            g.gain.setValueAtTime(0.2, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + 0.25);
+        }
 
-  setTimeout(() => {
-    closePointModal();
-    openPayModal();
-  }, 1400);
-}
+        function playFanfare() {
+            if (!isSoundEnabled) return;
+            const ctx = getAudio();
+            [523, 659, 784, 1046].forEach((f, i) => {
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.frequency.setValueAtTime(f, ctx.currentTime + i * 0.08);
+                g.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.08);
+                g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.08 + 0.2);
+                osc.connect(g); g.connect(ctx.destination);
+                osc.start(ctx.currentTime + i * 0.08);
+                osc.stop(ctx.currentTime + i * 0.08 + 0.2);
+            });
+        }
 
-function closePointModal() {
-  if (ptStream) { ptStream.getTracks().forEach(t => t.stop()); ptStream = null; }
-  if (ptTimer) { clearInterval(ptTimer); ptTimer = null; }
-  closeModal('pointModal');
-}
+        function toggleSound() {
+            isSoundEnabled = !isSoundEnabled;
+            const icon = document.getElementById('soundIcon');
+            icon.className = isSoundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+            if (isSoundEnabled) playPopSound();
+        }
 
-function skipPoint() {
-  currentCustomerCard = null;
-  closePointModal();
-  openPayModal();
-}
+        /* ----------------------------------------------------
+         * 3. メインカメラ（商品コード常時スキャン）
+         * ---------------------------------------------------- */
+        async function startMainScanner() {
+            const video = document.getElementById('scanVideo');
+            try {
+                scanStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: "environment" }, width: { ideal: 640 }, height: { ideal: 480 } }
+                });
+                video.srcObject = scanStream;
+                setInterval(scanMainFrame, 250);
+            } catch (e) {
+                console.log(e);
+            }
+        }
 
-function openPayModal() {
-  document.getElementById('paySelectModal').style.display = 'flex';
-}
-function closeModal(id) {
-  document.getElementById(id).style.display = 'none';
-  if (id === 'paySelectModal' && !isMainScanning) isMainScanning = true;
-}
+        function scanMainFrame() {
+            if (!isMainScanning) return;
+            const video = document.getElementById('scanVideo');
+            if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
 
-// 現金
-function startCashPay() {
-  closeModal('paySelectModal');
-  let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-  document.getElementById('cashTotalDisp').textContent = total.toLocaleString();
-  document.getElementById('cashModal').style.display = 'flex';
-}
-function finishCashPay(isExact) {
-  closeModal('cashModal');
-  playCash();
-  let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-  let msg = isExact ? `げんきん（ちょうど ¥${total}）` : `げんきん（おつりあり）`;
-  setTimeout(() => completeCheckout(msg), 300);
-}
+            const cvs = document.createElement('canvas');
+            cvs.width = 320; cvs.height = 240;
+            const ctx = cvs.getContext('2d');
+            ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
+            const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
 
-// クレジット
-function startCardPay() {
-  closeModal('paySelectModal');
-  document.getElementById('terminalStatus').innerHTML = "[ PRINCESS TERMINAL ]<br>カードをスライド または タッチしてね";
-  document.getElementById('cardPayModal').style.display = 'flex';
-}
-function executeCardSwipe() {
-  beep(1200, 0.1);
-  const s = document.getElementById('terminalStatus');
-  s.innerHTML = "💳 よみとっています... ピピピ...";
-  setTimeout(() => {
-    beep(1800, 0.15);
-    s.innerHTML = "✅ しょうにんOK！";
-    setTimeout(() => {
-      closeModal('cardPayModal');
-      completeCheckout('👑 Princess VIP CARD（クレジット）');
-    }, 400);
-  }, 500);
-}
+            const code = jsQR(imgData.data, imgData.width, imgData.height);
+            if (code) {
+                const now = Date.now();
+                if (code.data === lastScanCode && now - lastScanTime < 1600) return;
+                lastScanCode = code.data;
+                lastScanTime = now;
 
-// QR決済
-async function startQRScan() {
-  closeModal('paySelectModal');
-  document.getElementById('qrScanModal').style.display = 'flex';
-  const video = document.getElementById('qrVideo');
-  try {
-    qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 480 } } });
-    video.srcObject = qrStream;
-    qrTimer = setInterval(scanQRTick, 250);
-  } catch (e) {
-    alert('カメラを開けませんでした');
-    stopQRScan();
-  }
-}
-function stopQRScan() {
-  if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
-  if (qrTimer) { clearInterval(qrTimer); qrTimer = null; }
-  closeModal('qrScanModal');
-  openPayModal();
-}
-function scanQRTick() {
-  const video = document.getElementById('qrVideo');
-  if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
-  const cvs = document.createElement('canvas'); cvs.width = 240; cvs.height = 180;
-  const ctx = cvs.getContext('2d'); ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
-  const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
-  const code = jsQR(imgData.data, imgData.width, imgData.height);
-  if (code && code.data === 'PLAY:QR_PAY') {
-    if (qrStream) qrStream.getTracks().forEach(t => t.stop());
-    clearInterval(qrTimer);
-    closeModal('qrScanModal');
-    completeCheckout('📱 スマホQRコード決済');
-  }
-}
+                const item = PRODUCTS.find(p => p.code === code.data);
+                if (item) {
+                    const box = document.getElementById('scanBox');
+                    box.classList.add('border-green-400');
+                    setTimeout(() => box.classList.remove('border-green-400'), 350);
+                    addToCart(item);
+                }
+            }
+        }
 
-function completeCheckout(method) {
-  playFanfare();
-  let total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-  document.getElementById('successDetails').innerHTML = `
-    おしはらい: <strong>${method}</strong><br>
-    ごうけい: <strong style="color:#FF4081;font-size:30px;">¥${total.toLocaleString()}</strong>
-  `;
+        /* ----------------------------------------------------
+         * 4. カタログ ＆ カート処理
+         * ---------------------------------------------------- */
+        function renderQuickProducts() {
+            const grid = document.getElementById('quickProductGrid');
+            grid.innerHTML = PRODUCTS.map(p => `
+                <button onclick="addToCartByCode('${p.code}')" class="bg-white hover:bg-pink-50 border-2 border-pink-200 hover:border-pink-400 p-1 rounded-xl flex flex-col items-center justify-center text-center shadow-sm active:scale-95 transition">
+                    <span class="text-xl leading-tight">${p.icon}</span>
+                    <span class="text-[10px] font-bold text-gray-800 line-clamp-1 leading-tight">${p.name}</span>
+                    <span class="text-[10px] font-black text-pink-600 leading-tight">¥${p.price}</span>
+                </button>
+            `).join('');
+        }
 
-  const ptBadge = document.getElementById('successPointBadge');
-  if (currentCustomerCard && userPoints[currentCustomerCard]) {
-    ptBadge.innerHTML = `⭐ ${userPoints[currentCustomerCard].name}ちゃんの現在のポイント: <strong>${userPoints[currentCustomerCard].pt} pt</strong>`;
-    ptBadge.style.display = 'inline-block';
-  } else {
-    ptBadge.style.display = 'none';
-  }
+        function addToCartByCode(code) {
+            playPopSound();
+            const product = PRODUCTS.find(p => p.code === code);
+            if (product) addToCart(product);
+        }
 
-  document.getElementById('cashierScreen').classList.remove('active');
-  document.getElementById('successScreen').classList.add('active');
-}
+        function addToCart(item) {
+            playBeep();
+            const exist = cart.find(c => c.code === item.code);
+            if (exist) {
+                exist.quantity += 1;
+            } else {
+                cart.push({ ...item, quantity: 1 });
+            }
+            renderCart();
+            updateGuide(`「${item.name}」をカートに入れたよ！`);
+        }
 
-function nextCustomer() {
-  cart = [];
-  renderCart();
-  isMainScanning = true;
-  document.getElementById('successScreen').classList.remove('active');
-  document.getElementById('cashierScreen').classList.add('active');
-}
+        function updateQuantity(code, delta) {
+            playPopSound();
+            const item = cart.find(i => i.code === code);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) cart = cart.filter(i => i.code !== code);
+            }
+            renderCart();
+        }
 
-// 印刷シート生成
-function openPrintSheet() {
-  document.getElementById('printSheetModal').style.display = 'block';
-  document.getElementById('print_qr_point_aone').innerHTML = '';
-  document.getElementById('print_qr_point_ayaha').innerHTML = '';
-  document.getElementById('print_qr_pay').innerHTML = '';
+        function clearCart() {
+            if (cart.length === 0) return;
+            playPopSound();
+            cart = [];
+            renderCart();
+            updateGuide("かごをからっぽにしたよ！");
+        }
 
-  new QRCode(document.getElementById('print_qr_point_aone'), { text: 'POINT_AONE', width: 75, height: 75 });
-  new QRCode(document.getElementById('print_qr_point_ayaha'), { text: 'POINT_AYAHA', width: 75, height: 75 });
-  new QRCode(document.getElementById('print_qr_pay'), { text: 'PLAY:QR_PAY', width: 75, height: 75 });
+        function renderCart() {
+            const listEl = document.getElementById('cartList');
+            const totalEl = document.getElementById('totalPrice');
+            const countBadge = document.getElementById('cartCountBadge');
+            const payBtn = document.getElementById('payButton');
 
-  const grid = document.getElementById('productPrintGrid');
-  grid.innerHTML = '';
-  PRODUCTS.forEach(p => {
-    const div = document.createElement('div');
-    div.className = 'print-card';
-    div.innerHTML = `<span>${p.icon}</span><strong style="font-size:11px;">${p.name}</strong><span style="color:#FF4081;font-weight:bold;font-size:11px;">¥${p.price}</span><div id="q_${p.code}"></div>`;
-    grid.appendChild(div);
-    setTimeout(() => new QRCode(document.getElementById(`q_${p.code}`), { text: p.code, width: 70, height: 70 }), 50);
-  });
-}
+            if (cart.length === 0) {
+                listEl.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-pink-300 py-6">
+                        <i class="fa-solid fa-basket-shopping text-3xl mb-1"></i>
+                        <p class="font-bold text-xs text-pink-400">かごはからっぽです</p>
+                    </div>`;
+                totalEl.textContent = '¥0';
+                countBadge.textContent = '0点';
+                payBtn.disabled = true;
+                return;
+            }
 
-window.onload = () => {
-  renderCatalog();
-  startMainScanner();
-};
-</script>
+            let total = 0;
+            let count = 0;
+
+            listEl.innerHTML = cart.map(item => {
+                const sub = item.price * item.quantity;
+                total += sub;
+                count += item.quantity;
+
+                return `
+                    <div class="bg-white p-1.5 rounded-xl border border-pink-200 flex items-center justify-between text-xs shadow-sm">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-base">${item.icon}</span>
+                            <div>
+                                <h4 class="font-bold text-[11px] text-gray-800 leading-tight">${item.name}</h4>
+                                <span class="text-[10px] text-pink-500 font-bold">¥${item.price}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="flex items-center bg-pink-50 rounded-lg border border-pink-200">
+                                <button onclick="updateQuantity('${item.code}', -1)" class="w-5 h-5 text-pink-600 font-bold flex items-center justify-center">-</button>
+                                <span class="w-4 text-center font-black text-purple-700 text-[11px]">${item.quantity}</span>
+                                <button onclick="updateQuantity('${item.code}', 1)" class="w-5 h-5 text-pink-600 font-bold flex items-center justify-center">+</button>
+                            </div>
+                            <span class="font-black text-gray-700 w-10 text-right text-[11px]">¥${sub}</span>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            totalEl.textContent = `¥${total.toLocaleString()}`;
+            countBadge.textContent = `${count}点`;
+            payBtn.disabled = false;
+        }
+
+        function calculateTotal() {
+            return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        }
+
+        /* ----------------------------------------------------
+         * 5. 会計フロー：ポイント確認 ➔ 決済選択
+         * ---------------------------------------------------- */
+        function startCheckoutFlow() {
+            playPopSound();
+            isMainScanning = false;
+            currentCustomerCard = null;
+            document.getElementById('pointResultBox').classList.add('hidden');
+            openPointModal();
+        }
+
+        async function openPointModal() {
+            openModal('pointModal');
+            const video = document.getElementById('pointVideo');
+            try {
+                ptStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: "environment" }, width: { ideal: 480 } }
+                });
+                video.srcObject = ptStream;
+                ptTimer = setInterval(scanPointFrame, 250);
+            } catch (e) {}
+        }
+
+        function scanPointFrame() {
+            const video = document.getElementById('pointVideo');
+            if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+
+            const cvs = document.createElement('canvas');
+            cvs.width = 240; cvs.height = 180;
+            const ctx = cvs.getContext('2d');
+            ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
+            const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+
+            const code = jsQR(imgData.data, imgData.width, imgData.height);
+            if (code && userPoints[code.data]) {
+                onPointCardScanned(code.data);
+            }
+        }
+
+        function onPointCardScanned(cardKey) {
+            if (ptTimer) { clearInterval(ptTimer); ptTimer = null; }
+            currentCustomerCard = cardKey;
+            playBeep();
+
+            const prevPt = userPoints[cardKey].pt;
+            const newPt = prevPt + 10;
+            userPoints[cardKey].pt = newPt;
+            localStorage.setItem('princess_points', JSON.stringify(userPoints));
+
+            const box = document.getElementById('pointResultBox');
+            box.innerHTML = `🎉 ${userPoints[cardKey].name}ちゃんのカードをよみとったよ！<br>いま: <strong>${newPt} pt</strong> (+10pt)`;
+            box.classList.remove('hidden');
+
+            setTimeout(() => {
+                closePointModal();
+                openPaymentSelectModal();
+            }, 1400);
+        }
+
+        function closePointModal() {
+            if (ptStream) { ptStream.getTracks().forEach(t => t.stop()); ptStream = null; }
+            if (ptTimer) { clearInterval(ptTimer); ptTimer = null; }
+            closeModal('pointModal');
+        }
+
+        function skipPoint() {
+            currentCustomerCard = null;
+            closePointModal();
+            openPaymentSelectModal();
+        }
+
+        function openPaymentSelectModal() {
+            const total = calculateTotal();
+            document.getElementById('paySelectTotal').textContent = `¥${total.toLocaleString()}`;
+            openModal('paySelectModal');
+        }
+
+        /* ----------------------------------------------------
+         * 6. 各種お支払い
+         * ---------------------------------------------------- */
+        // ① 現金
+        function startCashPay() {
+            closeModal('paySelectModal');
+            const total = calculateTotal();
+            document.getElementById('cashTotalDisp').textContent = `¥${total.toLocaleString()}`;
+            openModal('cashModal');
+        }
+
+        function finishCashPay(isExact) {
+            closeModal('cashModal');
+            playCash();
+            const total = calculateTotal();
+            const msg = isExact ? `げんきん（ちょうど ¥${total}）` : `げんきん（おつりあり）`;
+            setTimeout(() => completePayment(msg), 300);
+        }
+
+        // ② クレジットカード（スワイプ端末）
+        function startCardPay() {
+            closeModal('paySelectModal');
+            document.getElementById('terminalStatus').innerHTML = "[ PRINCESS TERMINAL ]<br>カードをスワイプしてください";
+            openModal('cardPayModal');
+            initSwipeCard();
+        }
+
+        function initSwipeCard() {
+            const card = document.getElementById('swipeCard');
+            const track = document.getElementById('sliderTrack');
+            let isDragging = false;
+            let startX = 0;
+
+            card.style.transform = 'translateX(0px)';
+
+            const onStart = (e) => {
+                isDragging = true;
+                startX = e.touches ? e.touches[0].clientX : e.clientX;
+            };
+
+            const onMove = (e) => {
+                if (!isDragging) return;
+                const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+                const deltaX = currentX - startX;
+                const maxTranslate = track.clientWidth - card.clientWidth - 8;
+
+                if (deltaX >= 0 && deltaX <= maxTranslate) {
+                    card.style.transform = `translateX(${deltaX}px)`;
+                }
+
+                if (deltaX >= maxTranslate - 8) {
+                    isDragging = false;
+                    onCardSwipeSuccess();
+                }
+            };
+
+            const onEnd = () => {
+                if (!isDragging) return;
+                isDragging = false;
+                card.style.transform = 'translateX(0px)';
+            };
+
+            card.onmousedown = onStart;
+            card.ontouchstart = onStart;
+            window.onmousemove = onMove;
+            window.ontouchmove = onMove;
+            window.onmouseup = onEnd;
+            window.ontouchend = onEnd;
+        }
+
+        function onCardSwipeSuccess() {
+            playBeep();
+            const status = document.getElementById('terminalStatus');
+            status.innerHTML = "💳 よみとっています... ピピピ...";
+            setTimeout(() => {
+                playPopSound();
+                status.innerHTML = "✅ しょうにんOK！";
+                setTimeout(() => {
+                    closeModal('cardPayModal');
+                    completePayment('👑 Princess VIP CARD');
+                }, 400);
+            }, 500);
+        }
+
+        // ③ QR決済
+        async function startQRScan() {
+            closeModal('paySelectModal');
+            openModal('qrScanModal');
+            const video = document.getElementById('qrVideo');
+            try {
+                qrStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: "environment" }, width: { ideal: 480 } }
+                });
+                video.srcObject = qrStream;
+                qrTimer = setInterval(scanQRTick, 250);
+            } catch (e) {
+                alert('カメラを開けませんでした');
+                stopQRScan();
+            }
+        }
+
+        function stopQRScan() {
+            if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
+            if (qrTimer) { clearInterval(qrTimer); qrTimer = null; }
+            closeModal('qrScanModal');
+            openModal('paySelectModal');
+        }
+
+        function scanQRTick() {
+            const video = document.getElementById('qrVideo');
+            if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+
+            const cvs = document.createElement('canvas');
+            cvs.width = 240; cvs.height = 180;
+            const ctx = cvs.getContext('2d');
+            ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
+            const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+
+            const code = jsQR(imgData.data, imgData.width, imgData.height);
+            if (code && code.data === 'PLAY:QR_PAY') {
+                if (qrStream) qrStream.getTracks().forEach(t => t.stop());
+                clearInterval(qrTimer);
+                closeModal('qrScanModal');
+                completePayment('📱 スマホQRコード決済');
+            }
+        }
+
+        // お会計完了処理
+        function completePayment(method) {
+            playFanfare();
+            const total = calculateTotal();
+
+            // 履歴に追加
+            purchaseHistory.unshift({
+                date: new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }),
+                items: [...cart],
+                total: total,
+                method: method
+            });
+            localStorage.setItem('princess_history', JSON.stringify(purchaseHistory));
+
+            document.getElementById('successDetails').innerHTML = `
+                おしはらい: <strong>${method}</strong><br>
+                ごうけい: <strong class="text-pink-600 text-xl">¥${total.toLocaleString()}</strong>
+            `;
+
+            // ポイントバッジ
+            const ptBadge = document.getElementById('successPointBadge');
+            if (currentCustomerCard && userPoints[currentCustomerCard]) {
+                ptBadge.innerHTML = `⭐ ${userPoints[currentCustomerCard].name}ちゃんの現在のポイント: <strong>${userPoints[currentCustomerCard].pt} pt</strong>`;
+                ptBadge.classList.remove('hidden');
+            } else {
+                ptBadge.classList.add('hidden');
+            }
+
+            openModal('successModal');
+        }
+
+        function nextCustomer() {
+            playPopSound();
+            cart = [];
+            renderCart();
+            isMainScanning = true;
+            closeModal('successModal');
+            updateGuide('いらっしゃいませ！つぎのお客さまどうぞ♪');
+        }
+
+        /* ----------------------------------------------------
+         * 7. 管理画面（大人用PIN）
+         * ---------------------------------------------------- */
+        function openAdminModal() {
+            playPopSound();
+            document.getElementById('adminPinInput').value = '';
+            document.getElementById('adminPinView').classList.remove('hidden');
+            document.getElementById('adminContentView').classList.add('hidden');
+            openModal('adminModal');
+        }
+
+        function verifyAdminPin() {
+            const pin = document.getElementById('adminPinInput').value;
+            if (pin === '1234') {
+                playPopSound();
+                document.getElementById('adminPinView').classList.add('hidden');
+                document.getElementById('adminContentView').classList.remove('hidden');
+                renderAdminData();
+            } else {
+                alert('パスコードが違います (初期設定: 1234)');
+            }
+        }
+
+        function renderAdminData() {
+            // ポイント一覧
+            const ptList = document.getElementById('adminPointList');
+            ptList.innerHTML = Object.keys(userPoints).map(k => `
+                <div class="flex justify-between items-center bg-white p-1.5 rounded-lg border">
+                    <span class="font-bold text-gray-700">${userPoints[k].name}ちゃん</span>
+                    <span class="font-black text-amber-600">${userPoints[k].pt} pt</span>
+                </div>
+            `).join('');
+
+            // 履歴一覧
+            const histList = document.getElementById('historyList');
+            if (purchaseHistory.length === 0) {
+                histList.innerHTML = '<p class="text-gray-400 text-center py-2 text-[10px]">履歴はありません</p>';
+                return;
+            }
+            histList.innerHTML = purchaseHistory.slice(0, 10).map(h => `
+                <div class="bg-gray-50 p-1.5 rounded-lg border text-[10px]">
+                    <div class="flex justify-between font-bold text-purple-700">
+                        <span>${h.date} 【${h.method}】</span>
+                        <span>¥${h.total}</span>
+                    </div>
+                    <div class="text-gray-500">${h.items.map(i => `${i.name}×${i.quantity}`).join(', ')}</div>
+                </div>
+            `).join('');
+        }
+
+        /* ----------------------------------------------------
+         * 8. ユーティリティ
+         * ---------------------------------------------------- */
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function updateGuide(text) {
+            const g = document.getElementById('princessGuide');
+            if (g) g.textContent = `「${text}」`;
+        }
+
+        window.onload = function() {
+            renderQuickProducts();
+            renderCart();
+            startMainScanner();
+        };
+    </script>
 </body>
 </html>
