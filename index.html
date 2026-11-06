@@ -56,10 +56,7 @@
             box-shadow: 0 4px 0 #C71585, 0 6px 12px rgba(255, 105, 180, 0.4);
             transition: all 0.08s ease;
         }
-        .btn-princess:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #C71585, 0 3px 6px rgba(255, 105, 180, 0.4);
-        }
+        .btn-princess:active { transform: translateY(3px); box-shadow: 0 1px 0 #C71585, 0 3px 6px rgba(255, 105, 180, 0.4); }
 
         .btn-gold {
             background: linear-gradient(180deg, #FFE57F 0%, #FFC107 100%);
@@ -67,10 +64,7 @@
             color: #5D4037;
             transition: all 0.08s ease;
         }
-        .btn-gold:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #B8860B, 0 3px 6px rgba(218, 165, 32, 0.4);
-        }
+        .btn-gold:active { transform: translateY(3px); box-shadow: 0 1px 0 #B8860B, 0 3px 6px rgba(218, 165, 32, 0.4); }
 
         .btn-green {
             background: linear-gradient(180deg, #A5D6A7 0%, #4CAF50 100%);
@@ -78,10 +72,7 @@
             color: white;
             transition: all 0.08s ease;
         }
-        .btn-green:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #2E7D32, 0 3px 6px rgba(76, 175, 80, 0.4);
-        }
+        .btn-green:active { transform: translateY(3px); box-shadow: 0 1px 0 #2E7D32, 0 3px 6px rgba(76, 175, 80, 0.4); }
 
         .btn-blue {
             background: linear-gradient(180deg, #81D4FA 0%, #03A9F4 100%);
@@ -89,10 +80,7 @@
             color: white;
             transition: all 0.08s ease;
         }
-        .btn-blue:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #0277BD, 0 3px 6px rgba(3, 169, 244, 0.4);
-        }
+        .btn-blue:active { transform: translateY(3px); box-shadow: 0 1px 0 #0277BD, 0 3px 6px rgba(3, 169, 244, 0.4); }
 
         /* 宝石風パネル */
         .jewel-card {
@@ -103,13 +91,11 @@
             border-radius: 1.5rem;
         }
 
-        /* スワイプカードトラック */
         .card-slider-track {
             background: linear-gradient(90deg, #FFE4E1 0%, #E6E6FA 100%);
             border: 2px dashed #FF69B4;
         }
 
-        /* スクロールバー */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #FFF0F5; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #FFB6C1; border-radius: 10px; }
@@ -137,11 +123,11 @@
         </div>
 
         <div class="flex items-center space-x-2">
-            <!-- 音声効果ボタン -->
+            <!-- 音声ボタン -->
             <button onclick="toggleSound()" class="bg-pink-100 text-pink-600 w-8 h-8 rounded-xl border border-pink-300 text-sm flex items-center justify-center shadow-sm">
                 <i id="soundIcon" class="fa-solid fa-volume-high"></i>
             </button>
-            <!-- 管理画面ボタン（大人用） -->
+            <!-- 管理画面ボタン -->
             <button onclick="openAdminModal()" class="bg-purple-100 text-purple-700 font-bold px-2.5 py-1 rounded-xl border border-purple-300 text-xs flex items-center gap-1 shadow-sm">
                 <i class="fa-solid fa-gear"></i>
                 <span>かんり</span>
@@ -149,7 +135,7 @@
         </div>
     </header>
 
-    <!-- メインコンテンツ（横3分割・1画面固定レイアウト） -->
+    <!-- メインコンテンツ（横3分割レイアウト） -->
     <main class="flex-1 grid grid-cols-12 gap-2 mt-2 overflow-hidden h-[calc(100vh-62px)]">
         
         <!-- ① 左カラム：カメラバーコードリーダー（35%） -->
@@ -166,7 +152,7 @@
             <!-- カメラ映像領域 -->
             <div class="relative w-full flex-1 bg-black rounded-xl overflow-hidden border-2 border-pink-300 flex items-center justify-center shadow-inner min-h-[140px]">
                 <video id="scanVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
-                <!-- スキャン照準ガイド -->
+                <!-- 照準ガイド -->
                 <div id="scanBox" class="absolute inset-0 border-2 border-dashed border-pink-400 m-3 rounded-lg pointer-events-none flex items-center justify-center">
                     <div class="w-full h-0.5 bg-pink-500/70"></div>
                 </div>
@@ -177,7 +163,7 @@
             </p>
         </section>
 
-        <!-- ② 中央カラム：手打ち商品カタログ（37%・絵と文字をドカンと大きく！） -->
+        <!-- ② 中央カラム：手打ち商品カタログ（37%・絵文字特大） -->
         <section class="col-span-4 jewel-card p-2 flex flex-col justify-between h-full">
             <div class="px-1 mb-0.5 flex justify-between items-center">
                 <span class="text-xs font-bold text-purple-700 flex items-center gap-1">
@@ -186,9 +172,9 @@
                 <span class="text-[10px] text-gray-400 font-bold">手押しでもOK</span>
             </div>
 
-            <!-- 12商品のグリッド（3列×4行・特大アイコン＆見やすい太文字） -->
+            <!-- 12商品のグリッド（特大アイコン＆太文字） -->
             <div id="quickProductGrid" class="grid grid-cols-3 grid-rows-4 gap-1.5 flex-1">
-                <!-- JSで動的生成 -->
+                <!-- JS動的生成 -->
             </div>
         </section>
 
@@ -206,9 +192,7 @@
             </div>
 
             <!-- カート明細リスト -->
-            <div id="cartList" class="flex-1 overflow-y-auto space-y-1.5 pr-0.5 my-1">
-                <!-- JSで動的表示 -->
-            </div>
+            <div id="cartList" class="flex-1 overflow-y-auto space-y-1.5 pr-0.5 my-1"></div>
 
             <!-- 合計金額パネル -->
             <div class="bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl p-2 text-white shadow-md">
@@ -236,25 +220,22 @@
         <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
             <div class="text-3xl mb-1">⭐👑</div>
             <h3 class="text-base font-black text-purple-700">「ポイントカードはお持ちですか？」</h3>
-            <p class="text-[11px] text-gray-500 mt-0.5 mb-2">カードをカメラにかざしてね！</p>
+            <p class="text-[11px] text-gray-500 mt-0.5 mb-2">あおねちゃん・あやはちゃんのカードをかざしてね！</p>
 
             <div class="w-48 h-32 bg-black mx-auto rounded-xl overflow-hidden border-2 border-amber-400 relative mb-2">
                 <video id="pointVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
             </div>
 
             <!-- 読み取り結果 -->
-            <div id="pointResultBox" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-2 text-xs font-bold text-amber-800 mb-2">
-            </div>
+            <div id="pointResultBox" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-2 text-xs font-bold text-amber-800 mb-2"></div>
 
-            <div class="flex gap-2">
-                <button onclick="skipPoint()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-2 rounded-xl text-xs">
-                    もっていません（スキップ）
-                </button>
-            </div>
+            <button onclick="skipPoint()" class="w-full bg-gray-100 text-gray-600 font-bold py-2 rounded-xl text-xs">
+                もっていません（スキップ）
+            </button>
         </div>
     </div>
 
-    <!-- モーダル2：お支払い方法選択（現金・カード・QR） -->
+    <!-- モーダル2：お支払い方法選択（現金・カード・QR決済の3つ！） -->
     <div id="paySelectModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
         <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
             <p class="text-xs font-bold text-purple-600">お支払い合計金額</p>
@@ -274,7 +255,7 @@
                     <span class="font-black text-xs">カード</span>
                 </button>
 
-                <!-- QRコード -->
+                <!-- QRコード（これ1つでOK！） -->
                 <button onclick="startQRScan()" class="btn-blue h-24 rounded-2xl flex flex-col items-center justify-center gap-1 shadow">
                     <span class="text-3xl">📱</span>
                     <span class="font-black text-xs">QR決済</span>
@@ -314,7 +295,7 @@
         </div>
     </div>
 
-    <!-- モーダル4：QRコード読み取りモーダル -->
+    <!-- モーダル4：QRコード読み取りモーダル（1つのQRコードに対応） -->
     <div id="qrScanModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
         <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
             <h3 class="text-base font-black text-sky-600 mb-1">📱 QRコードをうつしてね</h3>
@@ -358,9 +339,7 @@
             <div class="text-5xl mb-1 animate-bounce">👑✨💖</div>
             <h2 class="text-2xl font-black text-pink-600 mb-1">お買い上げ ありがとう！</h2>
             <div id="successDetails" class="text-xs font-bold text-purple-700 my-2"></div>
-            <!-- ポイント獲得情報 -->
-            <div id="successPointBadge" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-2 text-xs font-bold text-amber-800 my-2">
-            </div>
+            <div id="successPointBadge" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-2 text-xs font-bold text-amber-800 my-2"></div>
             <button onclick="nextCustomer()" class="w-full btn-princess text-white font-black py-2.5 rounded-xl text-sm shadow-md mt-2">
                 つぎのお客様へ ✨
             </button>
@@ -403,7 +382,7 @@
     <!-- JavaScript ロジック -->
     <script>
         /* ----------------------------------------------------
-         * 1. 商品データ（いちご250円、チョコ・クッキー・プリン150円に更新！）
+         * 1. 商品データ（新価格対応）
          * ---------------------------------------------------- */
         const PRODUCTS = [
             { code: 'ITEM_COOKIE',  name: 'クッキー',   price: 150, icon: '🍪' },
@@ -441,9 +420,7 @@
         let lastScanCode = '';
         let lastScanTime = 0;
 
-        /* ----------------------------------------------------
-         * 2. 音声
-         * ---------------------------------------------------- */
+        /* 音声 */
         let actx = null;
         function getAudio() {
             if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -512,7 +489,7 @@
         }
 
         /* ----------------------------------------------------
-         * 3. メインカメラ
+         * 2. メインカメラ
          * ---------------------------------------------------- */
         async function startMainScanner() {
             const video = document.getElementById('scanVideo');
@@ -554,17 +531,14 @@
         }
 
         /* ----------------------------------------------------
-         * 4. カタログ描画（絵と文字を特大化！）
+         * 3. カタログ & カート
          * ---------------------------------------------------- */
         function renderQuickProducts() {
             const grid = document.getElementById('quickProductGrid');
             grid.innerHTML = PRODUCTS.map(p => `
                 <button onclick="addToCartByCode('${p.code}')" class="bg-white hover:bg-pink-50 border-2 border-pink-200 hover:border-pink-400 p-0.5 rounded-xl flex flex-col items-center justify-center text-center shadow-sm active:scale-95 transition">
-                    <!-- 絵（アイコン）を text-2xl から text-3xl に拡大！ -->
                     <span class="text-3xl leading-none my-0.5">${p.icon}</span>
-                    <!-- 商品名を太く大きく！ -->
                     <span class="text-xs font-black text-gray-800 line-clamp-1 leading-tight">${p.name}</span>
-                    <!-- 価格も大きく見やすく！ -->
                     <span class="text-xs font-black text-pink-600 leading-tight">¥${p.price}</span>
                 </button>
             `).join('');
@@ -662,7 +636,7 @@
         }
 
         /* ----------------------------------------------------
-         * 5. 会計フロー：ポイント確認 ➔ 決済選択
+         * 4. 会計フロー：ポイント確認 ➔ 決済選択
          * ---------------------------------------------------- */
         function startCheckoutFlow() {
             playPopSound();
@@ -739,7 +713,7 @@
         }
 
         /* ----------------------------------------------------
-         * 6. 各種お支払い
+         * 5. お支払い処理（現金・カード・QR）
          * ---------------------------------------------------- */
         function startCashPay() {
             closeModal('paySelectModal');
@@ -820,6 +794,7 @@
             }, 500);
         }
 
+        // 1つのQRコード決済
         async function startQRScan() {
             closeModal('paySelectModal');
             openModal('qrScanModal');
@@ -840,7 +815,7 @@
             if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
             if (qrTimer) { clearInterval(qrTimer); qrTimer = null; }
             closeModal('qrScanModal');
-            openModal('paySelectModal');
+            openPayModal();
         }
 
         function scanQRTick() {
@@ -900,7 +875,7 @@
         }
 
         /* ----------------------------------------------------
-         * 7. 管理画面
+         * 6. 管理画面
          * ---------------------------------------------------- */
         function openAdminModal() {
             playPopSound();
