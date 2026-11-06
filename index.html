@@ -2,11 +2,11 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Princess Shop</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- jsQR（超高速・安定QRエンジン） -->
+    <!-- jsQR（超高速QRエンジン） -->
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800;900&display=swap" rel="stylesheet">
@@ -17,18 +17,6 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        princess: {
-                            pink: '#FFD1DC',
-                            deepPink: '#FF69B4',
-                            lavender: '#E6E6FA',
-                            purple: '#9370DB',
-                            gold: '#FFD700',
-                            goldDark: '#D4AF37',
-                            softYellow: '#FFFACD',
-                            cream: '#FFF5EE'
-                        }
-                    },
                     fontFamily: {
                         rounded: ['"M PLUS Rounded 1c"', 'sans-serif']
                     }
@@ -38,58 +26,57 @@
     </script>
 
     <style>
-        /* 画面全体のスクロールを禁止し、タブレット画面に100%フィット */
+        /* Fire HD 10のSilkブラウザ用：画面の全領域に強制吸着・はみ出しゼロ設定 */
         html, body {
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
             overflow: hidden;
+            position: fixed;
+            inset: 0;
             font-family: 'M PLUS Rounded 1c', sans-serif;
             background: linear-gradient(135deg, #FFE4E1 0%, #E6E6FA 50%, #FFF0F5 100%);
             touch-action: manipulation;
             user-select: none;
             -webkit-user-select: none;
+            overscroll-behavior: none;
         }
 
-        /* 姫系立体ボタン */
+        /* 姫系可愛い立体ボタン */
         .btn-princess {
             background: linear-gradient(180deg, #FFB6C1 0%, #FF69B4 100%);
-            box-shadow: 0 3px 0 #C71585, 0 4px 8px rgba(255, 105, 180, 0.4);
-            transition: all 0.08s ease;
+            box-shadow: 0 2px 0 #C71585, 0 3px 6px rgba(255, 105, 180, 0.3);
         }
-        .btn-princess:active { transform: translateY(2px); box-shadow: 0 1px 0 #C71585; }
+        .btn-princess:active { transform: translateY(1px); box-shadow: 0 1px 0 #C71585; }
 
         .btn-gold {
             background: linear-gradient(180deg, #FFE57F 0%, #FFC107 100%);
-            box-shadow: 0 3px 0 #B8860B, 0 4px 8px rgba(218, 165, 32, 0.4);
+            box-shadow: 0 2px 0 #B8860B, 0 3px 6px rgba(218, 165, 32, 0.3);
             color: #5D4037;
-            transition: all 0.08s ease;
         }
-        .btn-gold:active { transform: translateY(2px); box-shadow: 0 1px 0 #B8860B; }
+        .btn-gold:active { transform: translateY(1px); box-shadow: 0 1px 0 #B8860B; }
 
         .btn-green {
             background: linear-gradient(180deg, #A5D6A7 0%, #4CAF50 100%);
-            box-shadow: 0 3px 0 #2E7D32, 0 4px 8px rgba(76, 175, 80, 0.4);
+            box-shadow: 0 2px 0 #2E7D32, 0 3px 6px rgba(76, 175, 80, 0.3);
             color: white;
-            transition: all 0.08s ease;
         }
-        .btn-green:active { transform: translateY(2px); box-shadow: 0 1px 0 #2E7D32; }
+        .btn-green:active { transform: translateY(1px); box-shadow: 0 1px 0 #2E7D32; }
 
         .btn-blue {
             background: linear-gradient(180deg, #81D4FA 0%, #03A9F4 100%);
-            box-shadow: 0 3px 0 #0277BD, 0 4px 8px rgba(3, 169, 244, 0.4);
+            box-shadow: 0 2px 0 #0277BD, 0 3px 6px rgba(3, 169, 244, 0.3);
             color: white;
-            transition: all 0.08s ease;
         }
-        .btn-blue:active { transform: translateY(2px); box-shadow: 0 1px 0 #0277BD; }
+        .btn-blue:active { transform: translateY(1px); box-shadow: 0 1px 0 #0277BD; }
 
-        /* 宝石風パネル */
+        /* 宝石風カード枠 */
         .jewel-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(4px);
-            border: 2px solid #FFF;
-            box-shadow: 0 4px 12px rgba(219, 112, 147, 0.15), inset 0 0 8px rgba(255, 192, 203, 0.25);
-            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1.5px solid #FFF;
+            box-shadow: 0 2px 8px rgba(219, 112, 147, 0.15);
+            border-radius: 0.75rem;
         }
 
         .card-slider-track {
@@ -97,274 +84,274 @@
             border: 2px dashed #FF69B4;
         }
 
-        /* スクロールバー装飾 */
-        ::-webkit-scrollbar { width: 5px; }
+        /* スクロールバー */
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #FFF0F5; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #FFB6C1; border-radius: 4px; }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col justify-between p-1.5 box-border overflow-hidden">
+<body class="w-full h-full flex flex-col justify-between p-1 box-border">
 
-    <!-- メインヘッダー（高さ40px固定） -->
-    <header class="h-10 shrink-0 bg-white/90 border-b border-pink-300 px-3 flex justify-between items-center rounded-xl shadow-sm">
+    <!-- メインヘッダー（Fire HDの狭い縦幅に合わせ32pxにスリム化） -->
+    <header class="h-8 shrink-0 bg-white/95 border-b border-pink-300 px-2.5 flex justify-between items-center rounded-lg shadow-xs">
         <div class="flex items-center space-x-1.5">
-            <div class="w-7 h-7 bg-pink-100 rounded-full border border-pink-400 flex items-center justify-center text-sm text-pink-500 shadow-inner">
+            <div class="w-5 h-5 bg-pink-100 rounded-full border border-pink-400 flex items-center justify-center text-[10px] text-pink-500">
                 <i class="fa-solid fa-crown"></i>
             </div>
-            <h1 class="text-sm font-black text-pink-600 tracking-wider flex items-center gap-1">
-                Princess Shop <span class="text-[9px] bg-pink-500 text-white px-1.5 py-0.2 rounded-full font-bold">レジ</span>
+            <h1 class="text-xs font-black text-pink-600 tracking-wide flex items-center gap-1">
+                Princess Shop <span class="text-[8px] bg-pink-500 text-white px-1 py-0.2 rounded-full font-bold">レジ</span>
             </h1>
         </div>
 
         <!-- ガイド吹き出し -->
-        <div class="flex items-center bg-pink-50 border border-pink-300 rounded-lg px-2 py-0.5 shadow-sm">
-            <span class="text-xs mr-1">👑</span>
-            <span id="princessGuide" class="text-[11px] font-bold text-pink-700">「いらっしゃいませ！商品をピッしてね♪」</span>
+        <div class="flex items-center bg-pink-50 border border-pink-200 rounded-md px-2 py-0.5">
+            <span class="text-[10px] mr-1">👑</span>
+            <span id="princessGuide" class="text-[10px] font-bold text-pink-700 truncate max-w-[280px]">「いらっしゃいませ！商品をピッしてね♪」</span>
         </div>
 
-        <div class="flex items-center space-x-1.5">
-            <button onclick="toggleSound()" class="bg-pink-100 text-pink-600 w-7 h-7 rounded-lg border border-pink-300 text-xs flex items-center justify-center shadow-sm">
+        <div class="flex items-center space-x-1">
+            <button onclick="toggleSound()" class="bg-pink-100 text-pink-600 w-6 h-6 rounded-md border border-pink-300 text-[10px] flex items-center justify-center">
                 <i id="soundIcon" class="fa-solid fa-volume-high"></i>
             </button>
-            <button onclick="openAdminModal()" class="bg-purple-100 text-purple-700 font-bold px-2 py-1 rounded-lg border border-purple-300 text-[11px] flex items-center gap-1 shadow-sm">
-                <i class="fa-solid fa-gear text-[10px]"></i>
+            <button onclick="openAdminModal()" class="bg-purple-100 text-purple-700 font-bold px-1.5 py-0.5 rounded-md border border-purple-300 text-[10px] flex items-center gap-1">
+                <i class="fa-solid fa-gear text-[9px]"></i>
                 <span>かんり</span>
             </button>
         </div>
     </header>
 
     <!-- メインコンテンツ（min-h-0で縦幅を突き破らない3分割） -->
-    <main class="flex-1 min-h-0 grid grid-cols-12 gap-1.5 mt-1.5 overflow-hidden">
+    <main class="flex-1 min-h-0 grid grid-cols-12 gap-1 mt-1 overflow-hidden">
         
         <!-- ① 左カラム：カメラバーコードリーダー（col-span-4） -->
-        <section class="col-span-4 jewel-card p-2 flex flex-col justify-between h-full min-h-0">
-            <div class="flex justify-between items-center px-1 shrink-0 mb-1">
-                <span class="text-xs font-bold text-pink-700 flex items-center gap-1">
+        <section class="col-span-4 jewel-card p-1.5 flex flex-col justify-between h-full min-h-0">
+            <div class="flex justify-between items-center px-0.5 shrink-0 mb-0.5">
+                <span class="text-[11px] font-bold text-pink-700 flex items-center gap-1">
                     <i class="fa-solid fa-camera"></i> コードリーダー
                 </span>
-                <span id="scanStatus" class="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.2 rounded-full font-bold border border-green-300">
+                <span id="scanStatus" class="text-[8px] bg-green-100 text-green-700 px-1 rounded-full font-bold border border-green-300">
                     スタンバイ中
                 </span>
             </div>
 
-            <!-- カメラ映像枠 -->
-            <div class="relative w-full flex-1 min-h-0 bg-black rounded-lg overflow-hidden border border-pink-300 flex items-center justify-center shadow-inner">
+            <!-- カメラ枠：余った縦幅に100%自動フィット -->
+            <div class="relative w-full flex-1 min-h-0 bg-black rounded-md overflow-hidden border border-pink-300 flex items-center justify-center">
                 <video id="scanVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
                 <!-- 照準ガイド -->
-                <div id="scanBox" class="absolute inset-0 border-2 border-dashed border-pink-400 m-2 rounded-lg pointer-events-none flex items-center justify-center transition-colors">
+                <div id="scanBox" class="absolute inset-0 border-2 border-dashed border-pink-400 m-1.5 rounded-md pointer-events-none flex items-center justify-center transition-colors">
                     <div class="w-full h-0.5 bg-pink-500/70"></div>
                 </div>
             </div>
 
-            <p class="text-[10px] text-center text-gray-500 font-bold shrink-0 mt-1">
-                値札のコードを枠にかざすと「ピッ！」と入るよ
+            <p class="text-[9px] text-center text-gray-500 font-bold shrink-0 mt-0.5 leading-tight">
+                値札のコードをかざすと「ピッ！」と入るよ
             </p>
         </section>
 
         <!-- ② 中央カラム：手打ち商品カタログ（col-span-4） -->
         <section class="col-span-4 jewel-card p-1.5 flex flex-col justify-between h-full min-h-0">
-            <div class="px-1 shrink-0 flex justify-between items-center mb-0.5">
-                <span class="text-xs font-bold text-purple-700 flex items-center gap-1">
+            <div class="px-0.5 shrink-0 flex justify-between items-center mb-0.5">
+                <span class="text-[11px] font-bold text-purple-700 flex items-center gap-1">
                     <i class="fa-solid fa-gem text-pink-500"></i> タッチしてえらぶ
                 </span>
-                <span class="text-[9px] text-gray-400 font-bold">手押しでもOK</span>
+                <span class="text-[8px] text-gray-400 font-bold">手押しOK</span>
             </div>
 
-            <!-- 12商品のグリッド（縦横比を保ちつつ伸縮） -->
+            <!-- 12商品のグリッド：Fire HDの高さに合わせて完全に等分フィット -->
             <div id="quickProductGrid" class="grid grid-cols-3 grid-rows-4 gap-1 flex-1 min-h-0">
                 <!-- JS動的生成 -->
             </div>
         </section>
 
         <!-- ③ 右カラム：おかいものかご ＆ お会計（col-span-4） -->
-        <section class="col-span-4 jewel-card p-2 flex flex-col justify-between h-full min-h-0">
+        <section class="col-span-4 jewel-card p-1.5 flex flex-col justify-between h-full min-h-0">
             <div class="flex justify-between items-center border-b border-pink-200 pb-0.5 shrink-0">
                 <div class="flex items-center gap-1">
-                    <span class="text-base">🛍️</span>
-                    <h2 class="text-xs font-black text-pink-700">おかいものかご</h2>
-                    <span id="cartCountBadge" class="bg-pink-500 text-white font-bold text-[9px] px-1.5 py-0.2 rounded-full">0点</span>
+                    <span class="text-sm">🛍️</span>
+                    <h2 class="text-[11px] font-black text-pink-700">おかいものかご</h2>
+                    <span id="cartCountBadge" class="bg-pink-500 text-white font-bold text-[8px] px-1 rounded-full">0点</span>
                 </div>
-                <button onclick="clearCart()" class="text-[9px] text-red-500 font-bold bg-red-50 border border-red-200 px-1.5 py-0.5 rounded">
+                <button onclick="clearCart()" class="text-[8px] text-red-500 font-bold bg-red-50 border border-red-200 px-1 py-0.2 rounded">
                     ぜんぶ消す
                 </button>
             </div>
 
-            <!-- カートリスト（ここだけがスクロール可能） -->
-            <div id="cartList" class="flex-1 min-h-0 overflow-y-auto space-y-1 pr-0.5 my-1"></div>
+            <!-- カートリスト（ここだけがスクロール可能なので、画面はビクとも動きません） -->
+            <div id="cartList" class="flex-1 min-h-0 overflow-y-auto space-y-0.5 pr-0.5 my-0.5"></div>
 
             <!-- 合計金額パネル -->
-            <div class="bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg p-1.5 text-white shadow shrink-0">
-                <div class="flex justify-between items-center text-[9px] text-pink-100 font-bold">
+            <div class="bg-gradient-to-r from-pink-500 to-purple-500 rounded-md px-2 py-1 text-white shadow-xs shrink-0">
+                <div class="flex justify-between items-center text-[8px] text-pink-100 font-bold leading-none">
                     <span>ごうけい金額</span>
-                    <span class="text-[9px] text-amber-200">税込</span>
+                    <span>税込</span>
                 </div>
-                <div class="text-right">
-                    <span id="totalPrice" class="text-xl font-black text-amber-300">¥0</span>
+                <div class="text-right leading-none mt-0.5">
+                    <span id="totalPrice" class="text-lg font-black text-amber-300">¥0</span>
                 </div>
             </div>
 
-            <!-- お会計ボタン -->
-            <button id="payButton" onclick="startCheckoutFlow()" disabled class="w-full btn-gold text-base font-black py-1.5 rounded-lg mt-1 flex items-center justify-center gap-1 shadow shrink-0 disabled:opacity-40 disabled:cursor-not-allowed">
-                <i class="fa-solid fa-heart text-pink-600 text-xs"></i>
+            <!-- お会計ボタン（絶対に隠れない固定エリア） -->
+            <button id="payButton" onclick="startCheckoutFlow()" disabled class="w-full btn-gold text-sm font-black py-1 rounded-md mt-1 flex items-center justify-center gap-1 shadow-xs shrink-0 disabled:opacity-40 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-heart text-pink-600 text-[10px]"></i>
                 <span>おかいけいへ</span>
-                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                <i class="fa-solid fa-arrow-right text-[9px]"></i>
             </button>
         </section>
 
     </main>
 
     <!-- モーダル1：ポイントカード確認 -->
-    <div id="pointModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
-        <div class="jewel-card max-w-xs w-full p-3.5 bg-white text-center">
-            <div class="text-2xl mb-1">⭐👑</div>
-            <h3 class="text-sm font-black text-purple-700">「ポイントカードはお持ちですか？」</h3>
-            <p class="text-[10px] text-gray-500 mt-0.5 mb-2">あおねちゃん・あやはちゃんのカードをかざしてね！</p>
+    <div id="pointModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
+        <div class="jewel-card max-w-xs w-full p-3 bg-white text-center">
+            <div class="text-xl mb-0.5">⭐👑</div>
+            <h3 class="text-xs font-black text-purple-700">「ポイントカードはお持ちですか？」</h3>
+            <p class="text-[9px] text-gray-500 mb-1.5">カードをカメラにかざしてね！</p>
 
-            <div class="w-40 h-28 bg-black mx-auto rounded-lg overflow-hidden border-2 border-amber-400 relative mb-2">
+            <div class="w-36 h-24 bg-black mx-auto rounded-md overflow-hidden border border-amber-400 relative mb-1.5">
                 <video id="pointVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
             </div>
 
-            <div id="pointResultBox" class="hidden bg-amber-50 border border-amber-300 rounded-lg p-1.5 text-[11px] font-bold text-amber-800 mb-2"></div>
+            <div id="pointResultBox" class="hidden bg-amber-50 border border-amber-300 rounded-md p-1 text-[10px] font-bold text-amber-800 mb-1.5"></div>
 
-            <button onclick="skipPoint()" class="w-full bg-gray-100 text-gray-600 font-bold py-1.5 rounded-lg text-xs">
+            <button onclick="skipPoint()" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-md text-[11px]">
                 もっていません（スキップ）
             </button>
         </div>
     </div>
 
     <!-- モーダル2：お支払い方法選択 -->
-    <div id="paySelectModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
-        <div class="jewel-card max-w-xs w-full p-3.5 bg-white text-center">
-            <p class="text-[10px] font-bold text-purple-600">お支払い合計金額</p>
-            <p id="paySelectTotal" class="text-xl font-black text-pink-600 mb-1">¥0</p>
-            <h3 class="text-xs font-black text-gray-700 mb-2">「おしはらい ほうほうは？」</h3>
+    <div id="paySelectModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
+        <div class="jewel-card max-w-xs w-full p-3 bg-white text-center">
+            <p class="text-[9px] font-bold text-purple-600 leading-tight">お支払い合計金額</p>
+            <p id="paySelectTotal" class="text-lg font-black text-pink-600 mb-0.5 leading-tight">¥0</p>
+            <h3 class="text-[11px] font-black text-gray-700 mb-1.5">「おしはらい ほうほうは？」</h3>
 
-            <div class="grid grid-cols-3 gap-1.5 mb-2.5">
-                <button onclick="startCashPay()" class="btn-green h-20 rounded-xl flex flex-col items-center justify-center gap-0.5 shadow">
-                    <span class="text-2xl">💵</span>
-                    <span class="font-black text-[11px]">げんきん</span>
+            <div class="grid grid-cols-3 gap-1 mb-2">
+                <button onclick="startCashPay()" class="btn-green h-16 rounded-lg flex flex-col items-center justify-center gap-0.5 shadow-xs">
+                    <span class="text-xl leading-none">💵</span>
+                    <span class="font-black text-[10px]">げんきん</span>
                 </button>
-                <button onclick="startCardPay()" class="btn-gold h-20 rounded-xl flex flex-col items-center justify-center gap-0.5 shadow">
-                    <span class="text-2xl">💳</span>
-                    <span class="font-black text-[11px]">カード</span>
+                <button onclick="startCardPay()" class="btn-gold h-16 rounded-lg flex flex-col items-center justify-center gap-0.5 shadow-xs">
+                    <span class="text-xl leading-none">💳</span>
+                    <span class="font-black text-[10px]">カード</span>
                 </button>
-                <button onclick="startQRScan()" class="btn-blue h-20 rounded-xl flex flex-col items-center justify-center gap-0.5 shadow">
-                    <span class="text-2xl">📱</span>
-                    <span class="font-black text-[11px]">QR決済</span>
+                <button onclick="startQRScan()" class="btn-blue h-16 rounded-lg flex flex-col items-center justify-center gap-0.5 shadow-xs">
+                    <span class="text-xl leading-none">📱</span>
+                    <span class="font-black text-[10px]">QR決済</span>
                 </button>
             </div>
 
-            <button onclick="closeModal('paySelectModal'); isMainScanning = true;" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-lg text-xs">
+            <button onclick="closeModal('paySelectModal'); isMainScanning = true;" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-md text-[10px]">
                 レジにもどる
             </button>
         </div>
     </div>
 
     <!-- モーダル3：クレジットカード決済端末 -->
-    <div id="cardPayModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
-        <div class="jewel-card max-w-xs w-full p-3.5 bg-white text-center">
-            <h3 class="text-sm font-black text-amber-600 mb-0.5">💳 クレジットカード決済</h3>
-            <p class="text-[10px] text-gray-500 mb-2">カードを右へスライドしてね！</p>
+    <div id="cardPayModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
+        <div class="jewel-card max-w-xs w-full p-3 bg-white text-center">
+            <h3 class="text-xs font-black text-amber-600 mb-0.5">💳 クレジットカード決済</h3>
+            <p class="text-[9px] text-gray-500 mb-1.5">カードを右へスライドしてね！</p>
 
-            <div class="bg-gray-800 rounded-xl p-2.5 border border-amber-400 mb-2.5 text-white">
-                <div id="terminalStatus" class="text-[11px] font-mono text-amber-300 font-bold mb-2">
-                    [ PRINCESS TERMINAL ]<br>カードをスワイプしてください
+            <div class="bg-gray-800 rounded-lg p-2 border border-amber-400 mb-2 text-white">
+                <div id="terminalStatus" class="text-[10px] font-mono text-amber-300 font-bold mb-1.5 leading-tight">
+                    [ TERMINAL ]<br>カードをスワイプしてください
                 </div>
 
-                <div id="sliderTrack" class="relative w-full h-12 card-slider-track rounded-full p-1 flex items-center overflow-hidden">
-                    <div class="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-pink-400 pointer-events-none">
+                <div id="sliderTrack" class="relative w-full h-10 card-slider-track rounded-full p-1 flex items-center overflow-hidden">
+                    <div class="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-pink-400 pointer-events-none">
                         スライドしてお支払い &gt;&gt;&gt;
                     </div>
-                    <div id="swipeCard" class="relative z-10 w-20 h-10 bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 rounded-lg border border-white shadow flex items-center justify-center text-white text-[10px] font-black cursor-grab active:cursor-grabbing">
-                        👑 VIP CARD
+                    <div id="swipeCard" class="relative z-10 w-16 h-8 bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 rounded-md border border-white shadow-xs flex items-center justify-center text-white text-[9px] font-black cursor-grab">
+                        👑 VIP
                     </div>
                 </div>
             </div>
 
-            <button onclick="closeModal('cardPayModal'); openModal('paySelectModal');" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-lg text-xs">
+            <button onclick="closeModal('cardPayModal'); openModal('paySelectModal');" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-md text-[10px]">
                 もどる
             </button>
         </div>
     </div>
 
     <!-- モーダル4：QRコード読み取りモーダル -->
-    <div id="qrScanModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
-        <div class="jewel-card max-w-xs w-full p-3.5 bg-white text-center">
-            <h3 class="text-sm font-black text-sky-600 mb-0.5">📱 QRコードをうつしてね</h3>
-            <p class="text-[10px] text-gray-500 mb-1.5">スマホQRコードをカメラにかざしてね！</p>
+    <div id="qrScanModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
+        <div class="jewel-card max-w-xs w-full p-3 bg-white text-center">
+            <h3 class="text-xs font-black text-sky-600 mb-0.5">📱 QRコードをうつしてね</h3>
+            <p class="text-[9px] text-gray-500 mb-1.5">スマホQRをカメラにかざしてね！</p>
 
-            <div class="w-40 h-28 bg-black mx-auto rounded-lg overflow-hidden border border-sky-400 relative mb-2">
+            <div class="w-36 h-24 bg-black mx-auto rounded-md overflow-hidden border border-sky-400 relative mb-1.5">
                 <video id="qrVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
             </div>
 
-            <button onclick="stopQRScan()" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-lg text-xs">
+            <button onclick="stopQRScan()" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-md text-[10px]">
                 もどる
             </button>
         </div>
     </div>
 
     <!-- モーダル5：現金決済モーダル -->
-    <div id="cashModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
-        <div class="jewel-card max-w-xs w-full p-3.5 bg-white text-center">
-            <h3 class="text-sm font-black text-green-700 mb-0.5">💵 げんきん おかいけい</h3>
-            <div class="text-[10px] text-gray-500">ごうけい金額</div>
-            <div id="cashTotalDisp" class="text-xl font-black text-pink-600 my-1">¥0</div>
+    <div id="cashModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
+        <div class="jewel-card max-w-xs w-full p-3 bg-white text-center">
+            <h3 class="text-xs font-black text-green-700 mb-0.5">💵 げんきん おかいけい</h3>
+            <div class="text-[9px] text-gray-500 leading-none">ごうけい金額</div>
+            <div id="cashTotalDisp" class="text-lg font-black text-pink-600 my-0.5 leading-none">¥0</div>
 
-            <div class="grid grid-cols-2 gap-1.5 mb-2.5">
-                <button onclick="finishCashPay(true)" class="btn-green py-2 rounded-lg text-xs font-bold">
+            <div class="grid grid-cols-2 gap-1 mb-2">
+                <button onclick="finishCashPay(true)" class="btn-green py-1.5 rounded-md text-[11px] font-bold">
                     ぴったり もらった！
                 </button>
-                <button onclick="finishCashPay(false)" class="btn-gold py-2 rounded-lg text-xs font-bold">
+                <button onclick="finishCashPay(false)" class="btn-gold py-1.5 rounded-md text-[11px] font-bold">
                     おつり あり
                 </button>
             </div>
 
-            <button onclick="closeModal('cashModal'); openModal('paySelectModal');" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-lg text-xs">
+            <button onclick="closeModal('cashModal'); openModal('paySelectModal');" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-md text-[10px]">
                 もどる
             </button>
         </div>
     </div>
 
     <!-- モーダル6：お会計完了演出画面 -->
-    <div id="successModal" class="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 hidden p-3">
-        <div class="jewel-card max-w-xs w-full p-4 bg-white text-center">
-            <div class="text-4xl mb-0.5 animate-bounce">👑✨💖</div>
-            <h2 class="text-lg font-black text-pink-600 mb-0.5">お買い上げ ありがとう！</h2>
-            <div id="successDetails" class="text-[11px] font-bold text-purple-700 my-1"></div>
-            <div id="successPointBadge" class="hidden bg-amber-50 border border-amber-300 rounded-lg p-1.5 text-xs font-bold text-amber-800 my-1.5"></div>
-            <button onclick="nextCustomer()" class="w-full btn-princess text-white font-black py-2 rounded-lg text-xs shadow mt-1">
+    <div id="successModal" class="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
+        <div class="jewel-card max-w-xs w-full p-3.5 bg-white text-center">
+            <div class="text-3xl mb-0.5 animate-bounce">👑✨💖</div>
+            <h2 class="text-base font-black text-pink-600 mb-0.5">お買い上げ ありがとう！</h2>
+            <div id="successDetails" class="text-[10px] font-bold text-purple-700 my-1"></div>
+            <div id="successPointBadge" class="hidden bg-amber-50 border border-amber-300 rounded-md p-1 text-[10px] font-bold text-amber-800 my-1"></div>
+            <button onclick="nextCustomer()" class="w-full btn-princess text-white font-black py-1.5 rounded-md text-xs shadow mt-1">
                 つぎのお客様へ ✨
             </button>
         </div>
     </div>
 
-    <!-- モーダル7：管理画面（大人用PIN付き） -->
-    <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
-        <div class="jewel-card max-w-xs w-full p-4 bg-white flex flex-col max-h-[85vh]">
-            <div id="adminPinView" class="text-center py-2">
-                <span class="text-2xl mb-0.5">🔒</span>
-                <h3 class="text-sm font-black text-purple-700 mb-0.5">おとなのかたへ</h3>
-                <p class="text-[10px] text-gray-500 mb-2">パスコード（初期設定: 1234）を入力してください</p>
-                <input type="password" id="adminPinInput" maxlength="4" placeholder="1234" class="w-24 text-center text-lg font-mono border border-purple-300 rounded-lg py-1 mb-2">
-                <div class="flex gap-1.5">
-                    <button onclick="closeModal('adminModal')" class="flex-1 bg-gray-200 text-gray-700 font-bold py-1 rounded-lg text-xs">やめる</button>
-                    <button onclick="verifyAdminPin()" class="flex-1 btn-princess text-white font-bold py-1 rounded-lg text-xs">ひらく</button>
+    <!-- モーダル7：管理画面（PIN: 1234） -->
+    <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
+        <div class="jewel-card max-w-xs w-full p-3 bg-white flex flex-col max-h-[85vh]">
+            <div id="adminPinView" class="text-center py-1">
+                <span class="text-xl mb-0.5">🔒</span>
+                <h3 class="text-xs font-black text-purple-700 mb-0.5">おとなのかたへ</h3>
+                <p class="text-[9px] text-gray-500 mb-1.5">パスコード（初期設定: 1234）を入力してください</p>
+                <input type="password" id="adminPinInput" maxlength="4" placeholder="1234" class="w-20 text-center text-base font-mono border border-purple-300 rounded-md py-0.5 mb-1.5">
+                <div class="flex gap-1">
+                    <button onclick="closeModal('adminModal')" class="flex-1 bg-gray-200 text-gray-700 font-bold py-1 rounded-md text-[10px]">やめる</button>
+                    <button onclick="verifyAdminPin()" class="flex-1 btn-princess text-white font-bold py-1 rounded-md text-[10px]">ひらく</button>
                 </div>
             </div>
 
             <div id="adminContentView" class="hidden flex-col h-full overflow-hidden">
-                <div class="flex justify-between items-center border-b pb-1 mb-1.5">
-                    <h3 class="text-xs font-black text-purple-800">📊 ポイント＆履歴管理</h3>
-                    <button onclick="closeModal('adminModal')" class="text-gray-400 text-base font-bold">×</button>
+                <div class="flex justify-between items-center border-b pb-0.5 mb-1">
+                    <h3 class="text-[11px] font-black text-purple-800">📊 ポイント＆履歴管理</h3>
+                    <button onclick="closeModal('adminModal')" class="text-gray-400 text-sm font-bold">×</button>
                 </div>
-                <div class="flex-1 overflow-y-auto space-y-2 text-[11px]">
-                    <div class="bg-purple-50 p-2 rounded-lg border border-purple-200">
-                        <h4 class="font-bold text-purple-800 mb-1">⭐ 現在の会員ポイント</h4>
+                <div class="flex-1 overflow-y-auto space-y-1.5 text-[10px]">
+                    <div class="bg-purple-50 p-1.5 rounded-md border border-purple-200">
+                        <h4 class="font-bold text-purple-800 mb-0.5">⭐ 現在の会員ポイント</h4>
                         <div class="space-y-0.5" id="adminPointList"></div>
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-700 mb-0.5">📜 おかいもの履歴</h4>
-                        <div id="historyList" class="space-y-1 max-h-32 overflow-y-auto"></div>
+                        <div id="historyList" class="space-y-0.5 max-h-28 overflow-y-auto"></div>
                     </div>
                 </div>
             </div>
@@ -373,9 +360,6 @@
 
     <!-- JavaScript ロジック -->
     <script>
-        /* ----------------------------------------------------
-         * 1. 商品データ＆初期設定
-         * ---------------------------------------------------- */
         const PRODUCTS = [
             { code: 'ITEM_COOKIE',  name: 'クッキー',   price: 150, icon: '🍪' },
             { code: 'ITEM_CHOCO',   name: 'チョコ',     price: 150, icon: '🍫' },
@@ -412,7 +396,6 @@
         let lastScanCode = '';
         let lastScanTime = 0;
 
-        /* 音声エンジン (Web Audio API) */
         let actx = null;
         function getAudio() {
             if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -480,9 +463,6 @@
             if (isSoundEnabled) playPopSound();
         }
 
-        /* ----------------------------------------------------
-         * 2. メインカメラ（商品コード読み取り）
-         * ---------------------------------------------------- */
         async function startMainScanner() {
             const video = document.getElementById('scanVideo');
             try {
@@ -524,16 +504,13 @@
             }
         }
 
-        /* ----------------------------------------------------
-         * 3. カタログ＆カート操作
-         * ---------------------------------------------------- */
         function renderQuickProducts() {
             const grid = document.getElementById('quickProductGrid');
             grid.innerHTML = PRODUCTS.map(p => `
-                <button onclick="addToCartByCode('${p.code}')" class="bg-white hover:bg-pink-50 border border-pink-200 hover:border-pink-400 p-0.5 rounded-lg flex flex-col items-center justify-center text-center shadow-sm active:scale-95 transition overflow-hidden">
-                    <span class="text-2xl leading-none">${p.icon}</span>
-                    <span class="text-[11px] font-black text-gray-800 line-clamp-1 leading-tight mt-0.5">${p.name}</span>
-                    <span class="text-[11px] font-black text-pink-600 leading-tight">¥${p.price}</span>
+                <button onclick="addToCartByCode('${p.code}')" class="bg-white hover:bg-pink-50 border border-pink-200 hover:border-pink-400 rounded-md flex flex-col items-center justify-center text-center shadow-xs active:scale-95 transition overflow-hidden p-0.5 min-h-0">
+                    <span class="text-lg leading-none">${p.icon}</span>
+                    <span class="text-[9px] font-black text-gray-800 line-clamp-1 leading-tight mt-0.5">${p.name}</span>
+                    <span class="text-[9px] font-black text-pink-600 leading-tight">¥${p.price}</span>
                 </button>
             `).join('');
         }
@@ -553,7 +530,7 @@
                 cart.push({ ...item, quantity: 1 });
             }
             renderCart();
-            updateGuide(`「${item.name}」をカートに入れたよ！`);
+            updateGuide(`「${item.name}」を入れたよ！`);
         }
 
         function updateQuantity(code, delta) {
@@ -582,9 +559,9 @@
 
             if (cart.length === 0) {
                 listEl.innerHTML = `
-                    <div class="h-full flex flex-col items-center justify-center text-pink-300 py-3">
-                        <i class="fa-solid fa-basket-shopping text-2xl mb-1"></i>
-                        <p class="font-bold text-[11px] text-pink-400">かごはからっぽです</p>
+                    <div class="h-full flex flex-col items-center justify-center text-pink-300 py-2">
+                        <i class="fa-solid fa-basket-shopping text-xl mb-0.5"></i>
+                        <p class="font-bold text-[9px] text-pink-400">かごは空です</p>
                     </div>`;
                 totalEl.textContent = '¥0';
                 countBadge.textContent = '0点';
@@ -601,21 +578,21 @@
                 count += item.quantity;
 
                 return `
-                    <div class="bg-white p-1 rounded-lg border border-pink-200 flex items-center justify-between text-xs shadow-sm">
+                    <div class="bg-white px-1 py-0.5 rounded border border-pink-200 flex items-center justify-between text-xs shadow-xs">
                         <div class="flex items-center gap-1 overflow-hidden">
-                            <span class="text-base">${item.icon}</span>
+                            <span class="text-sm">${item.icon}</span>
                             <div class="truncate">
-                                <h4 class="font-bold text-[10px] text-gray-800 leading-tight truncate">${item.name}</h4>
-                                <span class="text-[10px] text-pink-500 font-bold">¥${item.price}</span>
+                                <h4 class="font-bold text-[9px] text-gray-800 leading-none truncate">${item.name}</h4>
+                                <span class="text-[8px] text-pink-500 font-bold leading-none">¥${item.price}</span>
                             </div>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
                             <div class="flex items-center bg-pink-50 rounded border border-pink-200">
-                                <button onclick="updateQuantity('${item.code}', -1)" class="w-4 h-4 text-pink-600 font-bold flex items-center justify-center text-[10px]">-</button>
-                                <span class="w-3.5 text-center font-black text-purple-700 text-[10px]">${item.quantity}</span>
-                                <button onclick="updateQuantity('${item.code}', 1)" class="w-4 h-4 text-pink-600 font-bold flex items-center justify-center text-[10px]">+</button>
+                                <button onclick="updateQuantity('${item.code}', -1)" class="w-3.5 h-3.5 text-pink-600 font-bold flex items-center justify-center text-[9px]">-</button>
+                                <span class="w-3 text-center font-black text-purple-700 text-[9px]">${item.quantity}</span>
+                                <button onclick="updateQuantity('${item.code}', 1)" class="w-3.5 h-3.5 text-pink-600 font-bold flex items-center justify-center text-[9px]">+</button>
                             </div>
-                            <span class="font-black text-gray-700 w-9 text-right text-[10px]">¥${sub}</span>
+                            <span class="font-black text-gray-700 w-8 text-right text-[9px]">¥${sub}</span>
                         </div>
                     </div>`;
             }).join('');
@@ -629,9 +606,6 @@
             return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         }
 
-        /* ----------------------------------------------------
-         * 4. 会計フロー：ポイント確認 ➔ 決済選択
-         * ---------------------------------------------------- */
         function startCheckoutFlow() {
             playPopSound();
             isMainScanning = false;
@@ -649,9 +623,7 @@
                 });
                 video.srcObject = ptStream;
                 ptTimer = setInterval(scanPointFrame, 250);
-            } catch (e) {
-                console.warn('ポイントカメラ起動エラー:', e);
-            }
+            } catch (e) {}
         }
 
         function scanPointFrame() {
@@ -681,7 +653,7 @@
             localStorage.setItem('princess_points', JSON.stringify(userPoints));
 
             const box = document.getElementById('pointResultBox');
-            box.innerHTML = `🎉 ${userPoints[cardKey].name}ちゃんのカードをよみとったよ！<br>いま: <strong>${newPt} pt</strong> (+10pt)`;
+            box.innerHTML = `🎉 ${userPoints[cardKey].name}ちゃんのカード！<br>いま: <strong>${newPt} pt</strong> (+10pt)`;
             box.classList.remove('hidden');
 
             setTimeout(() => {
@@ -708,9 +680,6 @@
             openModal('paySelectModal');
         }
 
-        /* ----------------------------------------------------
-         * 5. お支払い処理
-         * ---------------------------------------------------- */
         function startCashPay() {
             closeModal('paySelectModal');
             const total = calculateTotal();
@@ -728,7 +697,7 @@
 
         function startCardPay() {
             closeModal('paySelectModal');
-            document.getElementById('terminalStatus').innerHTML = "[ PRINCESS TERMINAL ]<br>カードをスワイプしてください";
+            document.getElementById('terminalStatus').innerHTML = "[ TERMINAL ]<br>カードをスワイプしてください";
             openModal('cardPayModal');
             initSwipeCard();
         }
@@ -779,18 +748,17 @@
         function onCardSwipeSuccess() {
             playBeep();
             const status = document.getElementById('terminalStatus');
-            status.innerHTML = "💳 よみとっています... ピピピ...";
+            status.innerHTML = "💳 よみとり中...";
             setTimeout(() => {
                 playPopSound();
-                status.innerHTML = "✅ しょうにんOK！";
+                status.innerHTML = "✅ OK！";
                 setTimeout(() => {
                     closeModal('cardPayModal');
-                    completePayment('👑 Princess VIP CARD');
+                    completePayment('👑 VIP CARD');
                 }, 400);
-            }, 500);
+            }, 400);
         }
 
-        // QRコード決済
         async function startQRScan() {
             closeModal('paySelectModal');
             openModal('qrScanModal');
@@ -829,7 +797,7 @@
                 if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
                 if (qrTimer) { clearInterval(qrTimer); qrTimer = null; }
                 closeModal('qrScanModal');
-                completePayment('📱 スマホQRコード決済');
+                completePayment('📱 スマホQR決済');
             }
         }
 
@@ -847,12 +815,12 @@
 
             document.getElementById('successDetails').innerHTML = `
                 おしはらい: <strong>${method}</strong><br>
-                ごうけい: <strong class="text-pink-600 text-lg">¥${total.toLocaleString()}</strong>
+                ごうけい: <strong class="text-pink-600 text-base">¥${total.toLocaleString()}</strong>
             `;
 
             const ptBadge = document.getElementById('successPointBadge');
             if (currentCustomerCard && userPoints[currentCustomerCard]) {
-                ptBadge.innerHTML = `⭐ ${userPoints[currentCustomerCard].name}ちゃんの現在のポイント: <strong>${userPoints[currentCustomerCard].pt} pt</strong>`;
+                ptBadge.innerHTML = `⭐ ${userPoints[currentCustomerCard].name}ちゃん: <strong>${userPoints[currentCustomerCard].pt} pt</strong>`;
                 ptBadge.classList.remove('hidden');
             } else {
                 ptBadge.classList.add('hidden');
@@ -870,9 +838,6 @@
             updateGuide('いらっしゃいませ！つぎのお客さまどうぞ♪');
         }
 
-        /* ----------------------------------------------------
-         * 6. 管理画面（PIN: 1234）
-         * ---------------------------------------------------- */
         function openAdminModal() {
             playPopSound();
             document.getElementById('adminPinInput').value = '';
@@ -904,16 +869,16 @@
 
             const histList = document.getElementById('historyList');
             if (purchaseHistory.length === 0) {
-                histList.innerHTML = '<p class="text-gray-400 text-center py-2 text-[10px]">履歴はありません</p>';
+                histList.innerHTML = '<p class="text-gray-400 text-center py-2 text-[9px]">履歴はありません</p>';
                 return;
             }
             histList.innerHTML = purchaseHistory.slice(0, 10).map(h => `
-                <div class="bg-gray-50 p-1 rounded border text-[10px]">
+                <div class="bg-gray-50 p-1 rounded border text-[9px]">
                     <div class="flex justify-between font-bold text-purple-700">
                         <span>${h.date} 【${h.method}】</span>
                         <span>¥${h.total}</span>
                     </div>
-                    <div class="text-gray-500">${h.items.map(i => `${i.name}×${i.quantity}`).join(', ')}</div>
+                    <div class="text-gray-500 truncate">${h.items.map(i => `${i.name}×${i.quantity}`).join(', ')}</div>
                 </div>
             `).join('');
         }
