@@ -26,7 +26,7 @@
     </script>
 
     <style>
-        /* Fire HD 10のSilkブラウザ用：画面の全領域に強制吸着・はみ出しゼロ設定 */
+        /* Fire HD 10 枠内完全固定（スクロール絶対禁止） */
         html, body {
             width: 100%;
             height: 100%;
@@ -46,38 +46,70 @@
         /* 姫系可愛い立体ボタン */
         .btn-princess {
             background: linear-gradient(180deg, #FFB6C1 0%, #FF69B4 100%);
-            box-shadow: 0 2px 0 #C71585, 0 3px 6px rgba(255, 105, 180, 0.3);
+            box-shadow: 0 3px 0 #C71585, 0 4px 8px rgba(255, 105, 180, 0.4);
         }
-        .btn-princess:active { transform: translateY(1px); box-shadow: 0 1px 0 #C71585; }
+        .btn-princess:active { transform: translateY(2px); box-shadow: 0 1px 0 #C71585; }
 
         .btn-gold {
             background: linear-gradient(180deg, #FFE57F 0%, #FFC107 100%);
-            box-shadow: 0 2px 0 #B8860B, 0 3px 6px rgba(218, 165, 32, 0.3);
+            box-shadow: 0 3px 0 #B8860B, 0 4px 8px rgba(218, 165, 32, 0.4);
             color: #5D4037;
         }
-        .btn-gold:active { transform: translateY(1px); box-shadow: 0 1px 0 #B8860B; }
+        .btn-gold:active { transform: translateY(2px); box-shadow: 0 1px 0 #B8860B; }
 
         .btn-green {
             background: linear-gradient(180deg, #A5D6A7 0%, #4CAF50 100%);
-            box-shadow: 0 2px 0 #2E7D32, 0 3px 6px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 3px 0 #2E7D32, 0 4px 8px rgba(76, 175, 80, 0.4);
             color: white;
         }
-        .btn-green:active { transform: translateY(1px); box-shadow: 0 1px 0 #2E7D32; }
+        .btn-green:active { transform: translateY(2px); box-shadow: 0 1px 0 #2E7D32; }
 
         .btn-blue {
             background: linear-gradient(180deg, #81D4FA 0%, #03A9F4 100%);
-            box-shadow: 0 2px 0 #0277BD, 0 3px 6px rgba(3, 169, 244, 0.3);
+            box-shadow: 0 3px 0 #0277BD, 0 4px 8px rgba(3, 169, 244, 0.4);
             color: white;
         }
-        .btn-blue:active { transform: translateY(1px); box-shadow: 0 1px 0 #0277BD; }
+        .btn-blue:active { transform: translateY(2px); box-shadow: 0 1px 0 #0277BD; }
 
         /* 宝石風カード枠 */
         .jewel-card {
-            background: rgba(255, 255, 255, 0.92);
-            border: 1.5px solid #FFF;
-            box-shadow: 0 2px 8px rgba(219, 112, 147, 0.15);
-            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.94);
+            border: 2px solid #FFF;
+            box-shadow: 0 3px 10px rgba(219, 112, 147, 0.18);
+            border-radius: 0.85rem;
         }
+
+        /* スキャンレーザーアニメーション */
+        @keyframes scanLaser {
+            0% { top: 8%; opacity: 0.8; }
+            50% { top: 88%; opacity: 1; }
+            100% { top: 8%; opacity: 0.8; }
+        }
+        .scan-laser-line {
+            position: absolute;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(255,105,180,0) 0%, #FF1493 50%, rgba(255,105,180,0) 100%);
+            box-shadow: 0 0 10px #FF69B4, 0 0 18px #FF1493;
+            animation: scanLaser 2s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* ターゲット照準フレーム（四隅のL字） */
+        .corner-bracket {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-color: #FF69B4;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .corner-tl { top: 10px; left: 10px; border-top: 3px solid #FF1493; border-left: 3px solid #FF1493; border-top-left-radius: 4px; }
+        .corner-tr { top: 10px; right: 10px; border-top: 3px solid #FF1493; border-right: 3px solid #FF1493; border-top-right-radius: 4px; }
+        .corner-bl { bottom: 10px; left: 10px; border-bottom: 3px solid #FF1493; border-left: 3px solid #FF1493; border-bottom-left-radius: 4px; }
+        .corner-br { bottom: 10px; right: 10px; border-bottom: 3px solid #FF1493; border-right: 3px solid #FF1493; border-bottom-right-radius: 4px; }
 
         .card-slider-track {
             background: linear-gradient(90deg, #FFE4E1 0%, #E6E6FA 100%);
@@ -85,248 +117,259 @@
         }
 
         /* スクロールバー */
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #FFF0F5; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #FFB6C1; border-radius: 4px; }
     </style>
 </head>
-<body class="w-full h-full flex flex-col justify-between p-1 box-border">
+<body class="w-full h-full flex flex-col justify-between p-1.5 box-border">
 
-    <!-- メインヘッダー（Fire HDの狭い縦幅に合わせ32pxにスリム化） -->
-    <header class="h-8 shrink-0 bg-white/95 border-b border-pink-300 px-2.5 flex justify-between items-center rounded-lg shadow-xs">
+    <!-- メインヘッダー（高さ34px） -->
+    <header class="h-8 shrink-0 bg-white/95 border-b-2 border-pink-300 px-3 flex justify-between items-center rounded-xl shadow-xs">
         <div class="flex items-center space-x-1.5">
-            <div class="w-5 h-5 bg-pink-100 rounded-full border border-pink-400 flex items-center justify-center text-[10px] text-pink-500">
+            <div class="w-6 h-6 bg-pink-100 rounded-full border border-pink-400 flex items-center justify-center text-xs text-pink-500 shadow-inner">
                 <i class="fa-solid fa-crown"></i>
             </div>
-            <h1 class="text-xs font-black text-pink-600 tracking-wide flex items-center gap-1">
-                Princess Shop <span class="text-[8px] bg-pink-500 text-white px-1 py-0.2 rounded-full font-bold">レジ</span>
+            <h1 class="text-sm font-black text-pink-600 tracking-wide flex items-center gap-1">
+                Princess Shop <span class="text-[9px] bg-pink-500 text-white px-1.5 py-0.2 rounded-full font-bold">レジ</span>
             </h1>
         </div>
 
         <!-- ガイド吹き出し -->
-        <div class="flex items-center bg-pink-50 border border-pink-200 rounded-md px-2 py-0.5">
-            <span class="text-[10px] mr-1">👑</span>
-            <span id="princessGuide" class="text-[10px] font-bold text-pink-700 truncate max-w-[280px]">「いらっしゃいませ！商品をピッしてね♪」</span>
+        <div class="flex items-center bg-pink-50 border border-pink-200 rounded-lg px-2.5 py-0.5">
+            <span class="text-xs mr-1">👑</span>
+            <span id="princessGuide" class="text-[11px] font-bold text-pink-700 truncate max-w-[320px]">「いらっしゃいませ！商品をピッしてね♪」</span>
         </div>
 
-        <div class="flex items-center space-x-1">
-            <button onclick="toggleSound()" class="bg-pink-100 text-pink-600 w-6 h-6 rounded-md border border-pink-300 text-[10px] flex items-center justify-center">
+        <div class="flex items-center space-x-1.5">
+            <button onclick="toggleSound()" class="bg-pink-100 text-pink-600 w-7 h-7 rounded-lg border border-pink-300 text-xs flex items-center justify-center shadow-xs">
                 <i id="soundIcon" class="fa-solid fa-volume-high"></i>
             </button>
-            <button onclick="openAdminModal()" class="bg-purple-100 text-purple-700 font-bold px-1.5 py-0.5 rounded-md border border-purple-300 text-[10px] flex items-center gap-1">
-                <i class="fa-solid fa-gear text-[9px]"></i>
+            <button onclick="openAdminModal()" class="bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-lg border border-purple-300 text-[11px] flex items-center gap-1 shadow-xs">
+                <i class="fa-solid fa-gear text-[10px]"></i>
                 <span>かんり</span>
             </button>
         </div>
     </header>
 
-    <!-- メインコンテンツ（min-h-0で縦幅を突き破らない3分割） -->
-    <main class="flex-1 min-h-0 grid grid-cols-12 gap-1 mt-1 overflow-hidden">
+    <!-- メインコンテンツ（3カラム・画面枠内に完全固定） -->
+    <main class="flex-1 min-h-0 grid grid-cols-12 gap-1.5 mt-1 overflow-hidden">
         
-        <!-- ① 左カラム：カメラバーコードリーダー（col-span-4） -->
+        <!-- ① 左カラム：カメラバーコードリーダー（読み取り感MAX！） -->
         <section class="col-span-4 jewel-card p-1.5 flex flex-col justify-between h-full min-h-0">
-            <div class="flex justify-between items-center px-0.5 shrink-0 mb-0.5">
-                <span class="text-[11px] font-bold text-pink-700 flex items-center gap-1">
+            <div class="flex justify-between items-center px-1 shrink-0 mb-0.5">
+                <span class="text-xs font-black text-pink-700 flex items-center gap-1">
                     <i class="fa-solid fa-camera"></i> コードリーダー
                 </span>
-                <span id="scanStatus" class="text-[8px] bg-green-100 text-green-700 px-1 rounded-full font-bold border border-green-300">
-                    スタンバイ中
+                <span id="scanStatus" class="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.2 rounded-full font-bold border border-green-300 animate-pulse">
+                    ● スキャン中
                 </span>
             </div>
 
-            <!-- カメラ枠：余った縦幅に100%自動フィット -->
-            <div class="relative w-full flex-1 min-h-0 bg-black rounded-md overflow-hidden border border-pink-300 flex items-center justify-center">
+            <!-- カメラ枠：レーザービーム ＆ 四隅照準ターゲット -->
+            <div id="scanBoxWrapper" class="relative w-full flex-1 min-h-0 bg-black rounded-lg overflow-hidden border-2 border-pink-300 flex items-center justify-center shadow-inner">
                 <video id="scanVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
-                <!-- 照準ガイド -->
-                <div id="scanBox" class="absolute inset-0 border-2 border-dashed border-pink-400 m-1.5 rounded-md pointer-events-none flex items-center justify-center transition-colors">
-                    <div class="w-full h-0.5 bg-pink-500/70"></div>
+                
+                <!-- スキャン光線 -->
+                <div class="scan-laser-line"></div>
+                
+                <!-- 四隅のターゲット枠 -->
+                <div class="corner-bracket corner-tl"></div>
+                <div class="corner-bracket corner-tr"></div>
+                <div class="corner-bracket corner-bl"></div>
+                <div class="corner-bracket corner-br"></div>
+
+                <!-- 中央の合わせガイド枠 -->
+                <div id="scanBox" class="absolute inset-4 border border-dashed border-pink-400/70 rounded-lg pointer-events-none flex flex-col items-center justify-center">
+                    <span class="bg-black/40 text-white text-[9px] font-bold px-2 py-0.5 rounded-full backdrop-blur-xs">
+                        ここにコードを合わせてね
+                    </span>
                 </div>
             </div>
 
-            <p class="text-[9px] text-center text-gray-500 font-bold shrink-0 mt-0.5 leading-tight">
-                値札のコードをかざすと「ピッ！」と入るよ
+            <p class="text-[10px] text-center text-pink-600 font-black shrink-0 mt-0.5">
+                ✨ コードをかざすと「ピッ！」と入るよ ✨
             </p>
         </section>
 
-        <!-- ② 中央カラム：手打ち商品カタログ（col-span-4） -->
+        <!-- ② 中央カラム：手打ち商品カタログ（絵と文字を特大化！） -->
         <section class="col-span-4 jewel-card p-1.5 flex flex-col justify-between h-full min-h-0">
-            <div class="px-0.5 shrink-0 flex justify-between items-center mb-0.5">
-                <span class="text-[11px] font-bold text-purple-700 flex items-center gap-1">
+            <div class="px-1 shrink-0 flex justify-between items-center mb-0.5">
+                <span class="text-xs font-black text-purple-700 flex items-center gap-1">
                     <i class="fa-solid fa-gem text-pink-500"></i> タッチしてえらぶ
                 </span>
-                <span class="text-[8px] text-gray-400 font-bold">手押しOK</span>
+                <span class="text-[10px] text-pink-500 font-bold bg-pink-50 px-1.5 rounded-full border border-pink-200">手押しOK</span>
             </div>
 
-            <!-- 12商品のグリッド：Fire HDの高さに合わせて完全に等分フィット -->
+            <!-- 12商品のグリッド：絵文字＆文字を大きく見やすく -->
             <div id="quickProductGrid" class="grid grid-cols-3 grid-rows-4 gap-1 flex-1 min-h-0">
                 <!-- JS動的生成 -->
             </div>
         </section>
 
-        <!-- ③ 右カラム：おかいものかご ＆ お会計（col-span-4） -->
+        <!-- ③ 右カラム：おかいものかご ＆ お会計（ボタン特大化！） -->
         <section class="col-span-4 jewel-card p-1.5 flex flex-col justify-between h-full min-h-0">
-            <div class="flex justify-between items-center border-b border-pink-200 pb-0.5 shrink-0">
+            <div class="flex justify-between items-center border-b border-pink-200 pb-0.5 shrink-0 px-0.5">
                 <div class="flex items-center gap-1">
-                    <span class="text-sm">🛍️</span>
-                    <h2 class="text-[11px] font-black text-pink-700">おかいものかご</h2>
-                    <span id="cartCountBadge" class="bg-pink-500 text-white font-bold text-[8px] px-1 rounded-full">0点</span>
+                    <span class="text-lg">🛍️</span>
+                    <h2 class="text-xs font-black text-pink-700">おかいものかご</h2>
+                    <span id="cartCountBadge" class="bg-pink-500 text-white font-black text-[10px] px-1.5 py-0.2 rounded-full shadow-xs">0点</span>
                 </div>
-                <button onclick="clearCart()" class="text-[8px] text-red-500 font-bold bg-red-50 border border-red-200 px-1 py-0.2 rounded">
+                <button onclick="clearCart()" class="text-[10px] text-red-500 font-bold bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-md hover:bg-red-100">
                     ぜんぶ消す
                 </button>
             </div>
 
-            <!-- カートリスト（ここだけがスクロール可能なので、画面はビクとも動きません） -->
-            <div id="cartList" class="flex-1 min-h-0 overflow-y-auto space-y-0.5 pr-0.5 my-0.5"></div>
+            <!-- カートリスト（中身だけスクロール） -->
+            <div id="cartList" class="flex-1 min-h-0 overflow-y-auto space-y-1 pr-0.5 my-1"></div>
 
-            <!-- 合計金額パネル -->
-            <div class="bg-gradient-to-r from-pink-500 to-purple-500 rounded-md px-2 py-1 text-white shadow-xs shrink-0">
-                <div class="flex justify-between items-center text-[8px] text-pink-100 font-bold leading-none">
-                    <span>ごうけい金額</span>
-                    <span>税込</span>
-                </div>
-                <div class="text-right leading-none mt-0.5">
-                    <span id="totalPrice" class="text-lg font-black text-amber-300">¥0</span>
+            <!-- 合計金額パネル（文字を大きく見やすく） -->
+            <div class="bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg px-2.5 py-1 text-white shadow-xs shrink-0 flex justify-between items-center">
+                <span class="text-xs font-bold text-pink-100">ごうけい金額</span>
+                <div class="text-right">
+                    <span id="totalPrice" class="text-2xl font-black text-amber-300">¥0</span>
                 </div>
             </div>
 
-            <!-- お会計ボタン（絶対に隠れない固定エリア） -->
-            <button id="payButton" onclick="startCheckoutFlow()" disabled class="w-full btn-gold text-sm font-black py-1 rounded-md mt-1 flex items-center justify-center gap-1 shadow-xs shrink-0 disabled:opacity-40 disabled:cursor-not-allowed">
-                <i class="fa-solid fa-heart text-pink-600 text-[10px]"></i>
-                <span>おかいけいへ</span>
-                <i class="fa-solid fa-arrow-right text-[9px]"></i>
+            <!-- 特大お会計ボタン -->
+            <button id="payButton" onclick="startCheckoutFlow()" disabled class="w-full btn-gold text-base font-black py-2 rounded-lg mt-1 flex items-center justify-center gap-2 shadow shrink-0 disabled:opacity-40 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-heart text-pink-600 text-sm animate-pulse"></i>
+                <span class="tracking-wider">おかいけいへ</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
             </button>
         </section>
 
     </main>
 
-    <!-- モーダル1：ポイントカード確認 -->
-    <div id="pointModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
-        <div class="jewel-card max-w-xs w-full p-3 bg-white text-center">
-            <div class="text-xl mb-0.5">⭐👑</div>
-            <h3 class="text-xs font-black text-purple-700">「ポイントカードはお持ちですか？」</h3>
-            <p class="text-[9px] text-gray-500 mb-1.5">カードをカメラにかざしてね！</p>
+    <!-- モーダル1：ポイントカード確認（大画面化） -->
+    <div id="pointModal" class="fixed inset-0 bg-black/65 backdrop-blur-xs flex items-center justify-center z-50 hidden p-3">
+        <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
+            <div class="text-3xl mb-0.5">⭐👑</div>
+            <h3 class="text-base font-black text-purple-700">「ポイントカードはお持ちですか？」</h3>
+            <p class="text-xs text-gray-500 mt-0.5 mb-2">あおねちゃん・あやはちゃんのカードをかざしてね！</p>
 
-            <div class="w-36 h-24 bg-black mx-auto rounded-md overflow-hidden border border-amber-400 relative mb-1.5">
+            <div class="w-48 h-32 bg-black mx-auto rounded-xl overflow-hidden border-2 border-amber-400 relative mb-2 shadow-inner">
                 <video id="pointVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
+                <div class="scan-laser-line"></div>
             </div>
 
-            <div id="pointResultBox" class="hidden bg-amber-50 border border-amber-300 rounded-md p-1 text-[10px] font-bold text-amber-800 mb-1.5"></div>
+            <div id="pointResultBox" class="hidden bg-amber-50 border-2 border-amber-300 rounded-xl p-2 text-xs font-bold text-amber-800 mb-2 shadow-xs"></div>
 
-            <button onclick="skipPoint()" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-md text-[11px]">
+            <button onclick="skipPoint()" class="w-full bg-gray-100 text-gray-700 font-black py-2 rounded-xl text-xs hover:bg-gray-200">
                 もっていません（スキップ）
             </button>
         </div>
     </div>
 
-    <!-- モーダル2：お支払い方法選択 -->
-    <div id="paySelectModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
-        <div class="jewel-card max-w-xs w-full p-3 bg-white text-center">
-            <p class="text-[9px] font-bold text-purple-600 leading-tight">お支払い合計金額</p>
-            <p id="paySelectTotal" class="text-lg font-black text-pink-600 mb-0.5 leading-tight">¥0</p>
-            <h3 class="text-[11px] font-black text-gray-700 mb-1.5">「おしはらい ほうほうは？」</h3>
+    <!-- モーダル2：お支払い方法選択（大画面化・ボタン特大） -->
+    <div id="paySelectModal" class="fixed inset-0 bg-black/65 backdrop-blur-xs flex items-center justify-center z-50 hidden p-3">
+        <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
+            <p class="text-xs font-bold text-purple-600">お支払い合計金額</p>
+            <p id="paySelectTotal" class="text-3xl font-black text-pink-600 my-0.5">¥0</p>
+            <h3 class="text-sm font-black text-gray-800 mb-3">「おしはらい ほうほうは？」</h3>
 
-            <div class="grid grid-cols-3 gap-1 mb-2">
-                <button onclick="startCashPay()" class="btn-green h-16 rounded-lg flex flex-col items-center justify-center gap-0.5 shadow-xs">
-                    <span class="text-xl leading-none">💵</span>
-                    <span class="font-black text-[10px]">げんきん</span>
+            <div class="grid grid-cols-3 gap-2 mb-3">
+                <button onclick="startCashPay()" class="btn-green h-22 py-2 rounded-xl flex flex-col items-center justify-center gap-1 shadow">
+                    <span class="text-3xl leading-none">💵</span>
+                    <span class="font-black text-xs">げんきん</span>
                 </button>
-                <button onclick="startCardPay()" class="btn-gold h-16 rounded-lg flex flex-col items-center justify-center gap-0.5 shadow-xs">
-                    <span class="text-xl leading-none">💳</span>
-                    <span class="font-black text-[10px]">カード</span>
+                <button onclick="startCardPay()" class="btn-gold h-22 py-2 rounded-xl flex flex-col items-center justify-center gap-1 shadow">
+                    <span class="text-3xl leading-none">💳</span>
+                    <span class="font-black text-xs">カード</span>
                 </button>
-                <button onclick="startQRScan()" class="btn-blue h-16 rounded-lg flex flex-col items-center justify-center gap-0.5 shadow-xs">
-                    <span class="text-xl leading-none">📱</span>
-                    <span class="font-black text-[10px]">QR決済</span>
+                <button onclick="startQRScan()" class="btn-blue h-22 py-2 rounded-xl flex flex-col items-center justify-center gap-1 shadow">
+                    <span class="text-3xl leading-none">📱</span>
+                    <span class="font-black text-xs">QR決済</span>
                 </button>
             </div>
 
-            <button onclick="closeModal('paySelectModal'); isMainScanning = true;" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-md text-[10px]">
+            <button onclick="closeModal('paySelectModal'); isMainScanning = true;" class="w-full bg-gray-100 text-gray-600 font-bold py-1.5 rounded-lg text-xs">
                 レジにもどる
             </button>
         </div>
     </div>
 
-    <!-- モーダル3：クレジットカード決済端末 -->
-    <div id="cardPayModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
-        <div class="jewel-card max-w-xs w-full p-3 bg-white text-center">
-            <h3 class="text-xs font-black text-amber-600 mb-0.5">💳 クレジットカード決済</h3>
-            <p class="text-[9px] text-gray-500 mb-1.5">カードを右へスライドしてね！</p>
+    <!-- モーダル3：クレジットカード決済端末（スライダー拡大） -->
+    <div id="cardPayModal" class="fixed inset-0 bg-black/65 backdrop-blur-xs flex items-center justify-center z-50 hidden p-3">
+        <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
+            <h3 class="text-sm font-black text-amber-600 mb-0.5">💳 クレジットカード決済</h3>
+            <p class="text-xs text-gray-500 mb-2">カードを右へシャキーンとスライドしてね！</p>
 
-            <div class="bg-gray-800 rounded-lg p-2 border border-amber-400 mb-2 text-white">
-                <div id="terminalStatus" class="text-[10px] font-mono text-amber-300 font-bold mb-1.5 leading-tight">
+            <div class="bg-gray-800 rounded-xl p-3 border-2 border-amber-400 mb-3 text-white">
+                <div id="terminalStatus" class="text-xs font-mono text-amber-300 font-bold mb-2">
                     [ TERMINAL ]<br>カードをスワイプしてください
                 </div>
 
-                <div id="sliderTrack" class="relative w-full h-10 card-slider-track rounded-full p-1 flex items-center overflow-hidden">
-                    <div class="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-pink-400 pointer-events-none">
-                        スライドしてお支払い &gt;&gt;&gt;
+                <div id="sliderTrack" class="relative w-full h-12 card-slider-track rounded-full p-1 flex items-center overflow-hidden">
+                    <div class="absolute inset-0 flex items-center justify-center text-xs font-bold text-pink-400 pointer-events-none">
+                        右にスライドしてお支払い &gt;&gt;&gt;
                     </div>
-                    <div id="swipeCard" class="relative z-10 w-16 h-8 bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 rounded-md border border-white shadow-xs flex items-center justify-center text-white text-[9px] font-black cursor-grab">
-                        👑 VIP
+                    <div id="swipeCard" class="relative z-10 w-24 h-10 bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 rounded-xl border-2 border-white shadow flex items-center justify-center text-white text-xs font-black cursor-grab">
+                        👑 VIP CARD
                     </div>
                 </div>
             </div>
 
-            <button onclick="closeModal('cardPayModal'); openModal('paySelectModal');" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-md text-[10px]">
+            <button onclick="closeModal('cardPayModal'); openModal('paySelectModal');" class="w-full bg-gray-100 text-gray-600 font-bold py-1.5 rounded-lg text-xs">
                 もどる
             </button>
         </div>
     </div>
 
-    <!-- モーダル4：QRコード読み取りモーダル -->
-    <div id="qrScanModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
-        <div class="jewel-card max-w-xs w-full p-3 bg-white text-center">
-            <h3 class="text-xs font-black text-sky-600 mb-0.5">📱 QRコードをうつしてね</h3>
-            <p class="text-[9px] text-gray-500 mb-1.5">スマホQRをカメラにかざしてね！</p>
+    <!-- モーダル4：QRコード読み取りモーダル（カメラ枠拡大） -->
+    <div id="qrScanModal" class="fixed inset-0 bg-black/65 backdrop-blur-xs flex items-center justify-center z-50 hidden p-3">
+        <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
+            <h3 class="text-sm font-black text-sky-600 mb-0.5">📱 スマホQRをうつしてね</h3>
+            <p class="text-xs text-gray-500 mb-2">スマホのQRコードをカメラにかざしてね！</p>
 
-            <div class="w-36 h-24 bg-black mx-auto rounded-md overflow-hidden border border-sky-400 relative mb-1.5">
+            <div class="w-48 h-32 bg-black mx-auto rounded-xl overflow-hidden border-2 border-sky-400 relative mb-2 shadow-inner">
                 <video id="qrVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
+                <div class="scan-laser-line"></div>
             </div>
 
-            <button onclick="stopQRScan()" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-md text-[10px]">
+            <button onclick="stopQRScan()" class="w-full bg-gray-100 text-gray-600 font-bold py-1.5 rounded-lg text-xs">
                 もどる
             </button>
         </div>
     </div>
 
-    <!-- モーダル5：現金決済モーダル -->
-    <div id="cashModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
-        <div class="jewel-card max-w-xs w-full p-3 bg-white text-center">
-            <h3 class="text-xs font-black text-green-700 mb-0.5">💵 げんきん おかいけい</h3>
-            <div class="text-[9px] text-gray-500 leading-none">ごうけい金額</div>
-            <div id="cashTotalDisp" class="text-lg font-black text-pink-600 my-0.5 leading-none">¥0</div>
+    <!-- モーダル5：現金決済モーダル（ボタン拡大） -->
+    <div id="cashModal" class="fixed inset-0 bg-black/65 backdrop-blur-xs flex items-center justify-center z-50 hidden p-3">
+        <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
+            <h3 class="text-base font-black text-green-700 mb-1">💵 げんきん おかいけい</h3>
+            <div class="text-xs text-gray-500">ごうけい金額</div>
+            <div id="cashTotalDisp" class="text-2xl font-black text-pink-600 my-1">¥0</div>
 
-            <div class="grid grid-cols-2 gap-1 mb-2">
-                <button onclick="finishCashPay(true)" class="btn-green py-1.5 rounded-md text-[11px] font-bold">
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <button onclick="finishCashPay(true)" class="btn-green py-3 rounded-xl text-xs font-black shadow">
                     ぴったり もらった！
                 </button>
-                <button onclick="finishCashPay(false)" class="btn-gold py-1.5 rounded-md text-[11px] font-bold">
+                <button onclick="finishCashPay(false)" class="btn-gold py-3 rounded-xl text-xs font-black shadow">
                     おつり あり
                 </button>
             </div>
 
-            <button onclick="closeModal('cashModal'); openModal('paySelectModal');" class="w-full bg-gray-100 text-gray-600 font-bold py-1 rounded-md text-[10px]">
+            <button onclick="closeModal('cashModal'); openModal('paySelectModal');" class="w-full bg-gray-100 text-gray-600 font-bold py-1.5 rounded-lg text-xs">
                 もどる
             </button>
         </div>
     </div>
 
     <!-- モーダル6：お会計完了演出画面 -->
-    <div id="successModal" class="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
-        <div class="jewel-card max-w-xs w-full p-3.5 bg-white text-center">
-            <div class="text-3xl mb-0.5 animate-bounce">👑✨💖</div>
-            <h2 class="text-base font-black text-pink-600 mb-0.5">お買い上げ ありがとう！</h2>
-            <div id="successDetails" class="text-[10px] font-bold text-purple-700 my-1"></div>
-            <div id="successPointBadge" class="hidden bg-amber-50 border border-amber-300 rounded-md p-1 text-[10px] font-bold text-amber-800 my-1"></div>
-            <button onclick="nextCustomer()" class="w-full btn-princess text-white font-black py-1.5 rounded-md text-xs shadow mt-1">
+    <div id="successModal" class="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center z-50 hidden p-3">
+        <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
+            <div class="text-4xl mb-1 animate-bounce">👑✨💖</div>
+            <h2 class="text-xl font-black text-pink-600 mb-1">お買い上げ ありがとう！</h2>
+            <div id="successDetails" class="text-xs font-bold text-purple-700 my-1.5"></div>
+            <div id="successPointBadge" class="hidden bg-amber-50 border-2 border-amber-300 rounded-xl p-2 text-xs font-bold text-amber-800 my-2"></div>
+            <button onclick="nextCustomer()" class="w-full btn-princess text-white font-black py-2.5 rounded-xl text-sm shadow mt-1">
                 つぎのお客様へ ✨
             </button>
         </div>
     </div>
 
     <!-- モーダル7：管理画面（PIN: 1234） -->
-    <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-2">
+    <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-3">
         <div class="jewel-card max-w-xs w-full p-3 bg-white flex flex-col max-h-[85vh]">
             <div id="adminPinView" class="text-center py-1">
                 <span class="text-xl mb-0.5">🔒</span>
@@ -472,7 +515,7 @@
                 video.srcObject = scanStream;
                 setInterval(scanMainFrame, 250);
             } catch (e) {
-                console.warn('カメラの起動に失敗しました:', e);
+                console.warn('カメラ起動エラー:', e);
             }
         }
 
@@ -497,20 +540,21 @@
                 const item = PRODUCTS.find(p => p.code === code.data);
                 if (item) {
                     const box = document.getElementById('scanBox');
-                    box.classList.add('border-green-400');
-                    setTimeout(() => box.classList.remove('border-green-400'), 350);
+                    box.classList.add('border-green-400', 'bg-green-500/20');
+                    setTimeout(() => box.classList.remove('border-green-400', 'bg-green-500/20'), 350);
                     addToCart(item);
                 }
             }
         }
 
+        /* 12商品グリッド：絵文字＆文字を特大化 */
         function renderQuickProducts() {
             const grid = document.getElementById('quickProductGrid');
             grid.innerHTML = PRODUCTS.map(p => `
-                <button onclick="addToCartByCode('${p.code}')" class="bg-white hover:bg-pink-50 border border-pink-200 hover:border-pink-400 rounded-md flex flex-col items-center justify-center text-center shadow-xs active:scale-95 transition overflow-hidden p-0.5 min-h-0">
-                    <span class="text-lg leading-none">${p.icon}</span>
-                    <span class="text-[9px] font-black text-gray-800 line-clamp-1 leading-tight mt-0.5">${p.name}</span>
-                    <span class="text-[9px] font-black text-pink-600 leading-tight">¥${p.price}</span>
+                <button onclick="addToCartByCode('${p.code}')" class="bg-white hover:bg-pink-50 border-2 border-pink-200 hover:border-pink-400 rounded-lg flex flex-col items-center justify-center text-center shadow-xs active:scale-95 transition overflow-hidden p-0.5 min-h-0">
+                    <span class="text-2xl leading-none">${p.icon}</span>
+                    <span class="text-[11px] font-black text-gray-800 line-clamp-1 leading-tight mt-0.5">${p.name}</span>
+                    <span class="text-[11px] font-black text-pink-600 leading-tight">¥${p.price}</span>
                 </button>
             `).join('');
         }
@@ -551,6 +595,7 @@
             updateGuide("かごをからっぽにしたよ！");
         }
 
+        /* カートリスト：大きく見やすく表示 */
         function renderCart() {
             const listEl = document.getElementById('cartList');
             const totalEl = document.getElementById('totalPrice');
@@ -559,9 +604,9 @@
 
             if (cart.length === 0) {
                 listEl.innerHTML = `
-                    <div class="h-full flex flex-col items-center justify-center text-pink-300 py-2">
-                        <i class="fa-solid fa-basket-shopping text-xl mb-0.5"></i>
-                        <p class="font-bold text-[9px] text-pink-400">かごは空です</p>
+                    <div class="h-full flex flex-col items-center justify-center text-pink-300 py-3">
+                        <i class="fa-solid fa-basket-shopping text-2xl mb-1"></i>
+                        <p class="font-bold text-xs text-pink-400">かごはからっぽです</p>
                     </div>`;
                 totalEl.textContent = '¥0';
                 countBadge.textContent = '0点';
@@ -578,21 +623,21 @@
                 count += item.quantity;
 
                 return `
-                    <div class="bg-white px-1 py-0.5 rounded border border-pink-200 flex items-center justify-between text-xs shadow-xs">
-                        <div class="flex items-center gap-1 overflow-hidden">
-                            <span class="text-sm">${item.icon}</span>
+                    <div class="bg-white px-1.5 py-1 rounded-lg border border-pink-200 flex items-center justify-between shadow-xs">
+                        <div class="flex items-center gap-1.5 overflow-hidden">
+                            <span class="text-xl leading-none">${item.icon}</span>
                             <div class="truncate">
-                                <h4 class="font-bold text-[9px] text-gray-800 leading-none truncate">${item.name}</h4>
-                                <span class="text-[8px] text-pink-500 font-bold leading-none">¥${item.price}</span>
+                                <h4 class="font-black text-xs text-gray-800 leading-none truncate">${item.name}</h4>
+                                <span class="text-[10px] text-pink-500 font-black leading-none">¥${item.price}</span>
                             </div>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
-                            <div class="flex items-center bg-pink-50 rounded border border-pink-200">
-                                <button onclick="updateQuantity('${item.code}', -1)" class="w-3.5 h-3.5 text-pink-600 font-bold flex items-center justify-center text-[9px]">-</button>
-                                <span class="w-3 text-center font-black text-purple-700 text-[9px]">${item.quantity}</span>
-                                <button onclick="updateQuantity('${item.code}', 1)" class="w-3.5 h-3.5 text-pink-600 font-bold flex items-center justify-center text-[9px]">+</button>
+                            <div class="flex items-center bg-pink-50 rounded-md border border-pink-200">
+                                <button onclick="updateQuantity('${item.code}', -1)" class="w-5 h-5 text-pink-600 font-black flex items-center justify-center text-xs">-</button>
+                                <span class="w-4 text-center font-black text-purple-700 text-xs">${item.quantity}</span>
+                                <button onclick="updateQuantity('${item.code}', 1)" class="w-5 h-5 text-pink-600 font-black flex items-center justify-center text-xs">+</button>
                             </div>
-                            <span class="font-black text-gray-700 w-8 text-right text-[9px]">¥${sub}</span>
+                            <span class="font-black text-gray-800 w-10 text-right text-xs">¥${sub}</span>
                         </div>
                     </div>`;
             }).join('');
@@ -653,7 +698,7 @@
             localStorage.setItem('princess_points', JSON.stringify(userPoints));
 
             const box = document.getElementById('pointResultBox');
-            box.innerHTML = `🎉 ${userPoints[cardKey].name}ちゃんのカード！<br>いま: <strong>${newPt} pt</strong> (+10pt)`;
+            box.innerHTML = `🎉 ${userPoints[cardKey].name}ちゃんのカードをよみとったよ！<br>いま: <strong>${newPt} pt</strong> (+10pt)`;
             box.classList.remove('hidden');
 
             setTimeout(() => {
@@ -748,10 +793,10 @@
         function onCardSwipeSuccess() {
             playBeep();
             const status = document.getElementById('terminalStatus');
-            status.innerHTML = "💳 よみとり中...";
+            status.innerHTML = "💳 よみとり中... ピピピ！";
             setTimeout(() => {
                 playPopSound();
-                status.innerHTML = "✅ OK！";
+                status.innerHTML = "✅ しょうにんOK！";
                 setTimeout(() => {
                     closeModal('cardPayModal');
                     completePayment('👑 VIP CARD');
@@ -815,7 +860,7 @@
 
             document.getElementById('successDetails').innerHTML = `
                 おしはらい: <strong>${method}</strong><br>
-                ごうけい: <strong class="text-pink-600 text-base">¥${total.toLocaleString()}</strong>
+                ごうけい: <strong class="text-pink-600 text-lg">¥${total.toLocaleString()}</strong>
             `;
 
             const ptBadge = document.getElementById('successPointBadge');
@@ -869,11 +914,11 @@
 
             const histList = document.getElementById('historyList');
             if (purchaseHistory.length === 0) {
-                histList.innerHTML = '<p class="text-gray-400 text-center py-2 text-[9px]">履歴はありません</p>';
+                histList.innerHTML = '<p class="text-gray-400 text-center py-2 text-[10px]">履歴はありません</p>';
                 return;
             }
             histList.innerHTML = purchaseHistory.slice(0, 10).map(h => `
-                <div class="bg-gray-50 p-1 rounded border text-[9px]">
+                <div class="bg-gray-50 p-1 rounded border text-[10px]">
                     <div class="flex justify-between font-bold text-purple-700">
                         <span>${h.date} 【${h.method}】</span>
                         <span>¥${h.total}</span>
