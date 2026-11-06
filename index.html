@@ -38,7 +38,7 @@
     </script>
 
     <style>
-        /* 縦横スクロールを完全に禁止（1画面固定） */
+        /* 縦横スクロール完全禁止（1画面固定） */
         html, body {
             width: 100vw;
             height: 100vh;
@@ -117,7 +117,7 @@
 </head>
 <body class="h-screen w-screen flex flex-col justify-between p-2">
 
-    <!-- メインヘッダー（お城＆プリンセス風） -->
+    <!-- メインヘッダー -->
     <header class="h-12 bg-white/90 backdrop-blur-md border-b-2 border-pink-300 px-3 flex justify-between items-center rounded-2xl shadow-sm">
         <div class="flex items-center space-x-2">
             <div class="w-9 h-9 bg-pink-100 rounded-full border-2 border-pink-400 flex items-center justify-center text-lg text-pink-500 shadow-inner">
@@ -177,16 +177,16 @@
             </p>
         </section>
 
-        <!-- ② 中央カラム：手打ち商品カタログ（37%・スクロールなし12品） -->
+        <!-- ② 中央カラム：手打ち商品カタログ（37%・絵と文字をドカンと大きく！） -->
         <section class="col-span-4 jewel-card p-2 flex flex-col justify-between h-full">
-            <div class="px-1 mb-1 flex justify-between items-center">
+            <div class="px-1 mb-0.5 flex justify-between items-center">
                 <span class="text-xs font-bold text-purple-700 flex items-center gap-1">
                     <i class="fa-solid fa-gem text-pink-500"></i> タッチしてえらぶ
                 </span>
                 <span class="text-[10px] text-gray-400 font-bold">手押しでもOK</span>
             </div>
 
-            <!-- 12商品のグリッド（3列×4行） -->
+            <!-- 12商品のグリッド（3列×4行・特大アイコン＆見やすい太文字） -->
             <div id="quickProductGrid" class="grid grid-cols-3 grid-rows-4 gap-1.5 flex-1">
                 <!-- JSで動的生成 -->
             </div>
@@ -287,19 +287,17 @@
         </div>
     </div>
 
-    <!-- モーダル3：AONE / Princess CARD スライド決済端末 -->
+    <!-- モーダル3：Princess CARD スライド決済端末 -->
     <div id="cardPayModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
         <div class="jewel-card max-w-sm w-full p-5 bg-white text-center">
             <h3 class="text-base font-black text-amber-600 mb-1">💳 クレジットカード決済</h3>
             <p class="text-xs text-gray-500 mb-3">カードを右へスライドしてね！</p>
 
-            <!-- 端末画面 -->
             <div class="bg-gray-800 rounded-2xl p-3 border-2 border-amber-400 mb-3 text-white">
                 <div id="terminalStatus" class="text-xs font-mono text-amber-300 font-bold mb-3">
                     [ PRINCESS TERMINAL ]<br>カードをスワイプしてください
                 </div>
 
-                <!-- スワイプレール -->
                 <div id="sliderTrack" class="relative w-full h-14 card-slider-track rounded-full p-1 flex items-center overflow-hidden">
                     <div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-pink-400 pointer-events-none">
                         スライドしてお支払い >>>
@@ -320,7 +318,7 @@
     <div id="qrScanModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-3">
         <div class="jewel-card max-w-sm w-full p-4 bg-white text-center">
             <h3 class="text-base font-black text-sky-600 mb-1">📱 QRコードをうつしてね</h3>
-            <p class="text-xs text-gray-500 mb-2">印刷したスマホQRコードをかざしてね！</p>
+            <p class="text-xs text-gray-500 mb-2">スマホQRコードをカメラにかざしてね！</p>
 
             <div class="w-48 h-36 bg-black mx-auto rounded-xl overflow-hidden border-2 border-sky-400 relative mb-3">
                 <video id="qrVideo" class="w-full h-full object-cover" playsinline autoplay muted></video>
@@ -372,7 +370,6 @@
     <!-- モーダル7：管理画面（大人用PIN付き） -->
     <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
         <div class="jewel-card max-w-md w-full p-5 bg-white flex flex-col max-h-[90vh]">
-            <!-- PIN入力 -->
             <div id="adminPinView" class="text-center py-4">
                 <span class="text-3xl mb-1">🔒</span>
                 <h3 class="text-base font-black text-purple-700 mb-1">おとなのかたへ</h3>
@@ -384,19 +381,16 @@
                 </div>
             </div>
 
-            <!-- 管理本体 -->
             <div id="adminContentView" class="hidden flex-col h-full overflow-hidden">
                 <div class="flex justify-between items-center border-b pb-1 mb-2">
                     <h3 class="text-sm font-black text-purple-800">📊 ポイント＆履歴管理</h3>
                     <button onclick="closeModal('adminModal')" class="text-gray-400 text-lg font-bold">×</button>
                 </div>
                 <div class="flex-1 overflow-y-auto space-y-3 text-xs">
-                    <!-- 現在のポイント -->
                     <div class="bg-purple-50 p-2.5 rounded-xl border border-purple-200">
                         <h4 class="font-bold text-purple-800 mb-1.5">⭐ 現在の会員ポイント</h4>
                         <div class="space-y-1" id="adminPointList"></div>
                     </div>
-                    <!-- 購入履歴 -->
                     <div>
                         <h4 class="font-bold text-gray-700 mb-1">📜 おかいもの履歴</h4>
                         <div id="historyList" class="space-y-1 max-h-36 overflow-y-auto"></div>
@@ -409,17 +403,17 @@
     <!-- JavaScript ロジック -->
     <script>
         /* ----------------------------------------------------
-         * 1. 商品データ & 状態
+         * 1. 商品データ（いちご250円、チョコ・クッキー・プリン150円に更新！）
          * ---------------------------------------------------- */
         const PRODUCTS = [
-            { code: 'ITEM_COOKIE',  name: 'クッキー',   price: 130, icon: '🍪' },
-            { code: 'ITEM_CHOCO',   name: 'チョコ',     price: 120, icon: '🍫' },
+            { code: 'ITEM_COOKIE',  name: 'クッキー',   price: 150, icon: '🍪' },
+            { code: 'ITEM_CHOCO',   name: 'チョコ',     price: 150, icon: '🍫' },
             { code: 'ITEM_JUICE',   name: 'ジュース',   price: 150, icon: '🧃' },
-            { code: 'ITEM_PUDDING', name: 'プリン',     price: 140, icon: '🍮' },
+            { code: 'ITEM_PUDDING', name: 'プリン',     price: 150, icon: '🍮' },
             { code: 'ITEM_ICE',     name: 'アイス',     price: 160, icon: '🍦' },
             { code: 'ITEM_APPLE',   name: 'りんご',     price: 120, icon: '🍎' },
             { code: 'ITEM_BANANA',  name: 'バナナ',     price: 100, icon: '🍌' },
-            { code: 'ITEM_STRAW',   name: 'いちご',     price: 380, icon: '🍓' },
+            { code: 'ITEM_STRAW',   name: 'いちご',     price: 250, icon: '🍓' },
             { code: 'ITEM_TOMATO',  name: 'トマト',     price: 90,  icon: '🍅' },
             { code: 'ITEM_ONIGIRI', name: 'おにぎり',   price: 130, icon: '🍙' },
             { code: 'ITEM_BREAD',   name: 'パン',       price: 140, icon: '🍞' },
@@ -430,7 +424,6 @@
         let purchaseHistory = JSON.parse(localStorage.getItem('princess_history')) || [];
         let isSoundEnabled = true;
 
-        // あおねちゃん ＆ あやはちゃんのポイント管理
         let userPoints = JSON.parse(localStorage.getItem('princess_points')) || {
             'POINT_AONE':  { name: '🌸 あおね', pt: 0 },
             'POINT_AYAHA': { name: '💎 あやは', pt: 0 }
@@ -439,7 +432,6 @@
         let currentCustomerCard = null;
         let isMainScanning = true;
 
-        // カメラストリーム
         let scanStream = null;
         let ptStream = null;
         let ptTimer = null;
@@ -450,7 +442,7 @@
         let lastScanTime = 0;
 
         /* ----------------------------------------------------
-         * 2. Web Audio 効果音
+         * 2. 音声
          * ---------------------------------------------------- */
         let actx = null;
         function getAudio() {
@@ -520,7 +512,7 @@
         }
 
         /* ----------------------------------------------------
-         * 3. メインカメラ（商品コード常時スキャン）
+         * 3. メインカメラ
          * ---------------------------------------------------- */
         async function startMainScanner() {
             const video = document.getElementById('scanVideo');
@@ -530,9 +522,7 @@
                 });
                 video.srcObject = scanStream;
                 setInterval(scanMainFrame, 250);
-            } catch (e) {
-                console.log(e);
-            }
+            } catch (e) {}
         }
 
         function scanMainFrame() {
@@ -564,15 +554,18 @@
         }
 
         /* ----------------------------------------------------
-         * 4. カタログ ＆ カート処理
+         * 4. カタログ描画（絵と文字を特大化！）
          * ---------------------------------------------------- */
         function renderQuickProducts() {
             const grid = document.getElementById('quickProductGrid');
             grid.innerHTML = PRODUCTS.map(p => `
-                <button onclick="addToCartByCode('${p.code}')" class="bg-white hover:bg-pink-50 border-2 border-pink-200 hover:border-pink-400 p-1 rounded-xl flex flex-col items-center justify-center text-center shadow-sm active:scale-95 transition">
-                    <span class="text-xl leading-tight">${p.icon}</span>
-                    <span class="text-[10px] font-bold text-gray-800 line-clamp-1 leading-tight">${p.name}</span>
-                    <span class="text-[10px] font-black text-pink-600 leading-tight">¥${p.price}</span>
+                <button onclick="addToCartByCode('${p.code}')" class="bg-white hover:bg-pink-50 border-2 border-pink-200 hover:border-pink-400 p-0.5 rounded-xl flex flex-col items-center justify-center text-center shadow-sm active:scale-95 transition">
+                    <!-- 絵（アイコン）を text-2xl から text-3xl に拡大！ -->
+                    <span class="text-3xl leading-none my-0.5">${p.icon}</span>
+                    <!-- 商品名を太く大きく！ -->
+                    <span class="text-xs font-black text-gray-800 line-clamp-1 leading-tight">${p.name}</span>
+                    <!-- 価格も大きく見やすく！ -->
+                    <span class="text-xs font-black text-pink-600 leading-tight">¥${p.price}</span>
                 </button>
             `).join('');
         }
@@ -642,19 +635,19 @@
                 return `
                     <div class="bg-white p-1.5 rounded-xl border border-pink-200 flex items-center justify-between text-xs shadow-sm">
                         <div class="flex items-center gap-1.5">
-                            <span class="text-base">${item.icon}</span>
+                            <span class="text-xl">${item.icon}</span>
                             <div>
-                                <h4 class="font-bold text-[11px] text-gray-800 leading-tight">${item.name}</h4>
-                                <span class="text-[10px] text-pink-500 font-bold">¥${item.price}</span>
+                                <h4 class="font-bold text-xs text-gray-800 leading-tight">${item.name}</h4>
+                                <span class="text-[11px] text-pink-500 font-bold">¥${item.price}</span>
                             </div>
                         </div>
                         <div class="flex items-center gap-1.5">
                             <div class="flex items-center bg-pink-50 rounded-lg border border-pink-200">
                                 <button onclick="updateQuantity('${item.code}', -1)" class="w-5 h-5 text-pink-600 font-bold flex items-center justify-center">-</button>
-                                <span class="w-4 text-center font-black text-purple-700 text-[11px]">${item.quantity}</span>
+                                <span class="w-4 text-center font-black text-purple-700 text-xs">${item.quantity}</span>
                                 <button onclick="updateQuantity('${item.code}', 1)" class="w-5 h-5 text-pink-600 font-bold flex items-center justify-center">+</button>
                             </div>
-                            <span class="font-black text-gray-700 w-10 text-right text-[11px]">¥${sub}</span>
+                            <span class="font-black text-gray-700 w-11 text-right text-xs">¥${sub}</span>
                         </div>
                     </div>`;
             }).join('');
@@ -748,7 +741,6 @@
         /* ----------------------------------------------------
          * 6. 各種お支払い
          * ---------------------------------------------------- */
-        // ① 現金
         function startCashPay() {
             closeModal('paySelectModal');
             const total = calculateTotal();
@@ -764,7 +756,6 @@
             setTimeout(() => completePayment(msg), 300);
         }
 
-        // ② クレジットカード（スワイプ端末）
         function startCardPay() {
             closeModal('paySelectModal');
             document.getElementById('terminalStatus').innerHTML = "[ PRINCESS TERMINAL ]<br>カードをスワイプしてください";
@@ -829,7 +820,6 @@
             }, 500);
         }
 
-        // ③ QR決済
         async function startQRScan() {
             closeModal('paySelectModal');
             openModal('qrScanModal');
@@ -872,12 +862,10 @@
             }
         }
 
-        // お会計完了処理
         function completePayment(method) {
             playFanfare();
             const total = calculateTotal();
 
-            // 履歴に追加
             purchaseHistory.unshift({
                 date: new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }),
                 items: [...cart],
@@ -891,7 +879,6 @@
                 ごうけい: <strong class="text-pink-600 text-xl">¥${total.toLocaleString()}</strong>
             `;
 
-            // ポイントバッジ
             const ptBadge = document.getElementById('successPointBadge');
             if (currentCustomerCard && userPoints[currentCustomerCard]) {
                 ptBadge.innerHTML = `⭐ ${userPoints[currentCustomerCard].name}ちゃんの現在のポイント: <strong>${userPoints[currentCustomerCard].pt} pt</strong>`;
@@ -913,7 +900,7 @@
         }
 
         /* ----------------------------------------------------
-         * 7. 管理画面（大人用PIN）
+         * 7. 管理画面
          * ---------------------------------------------------- */
         function openAdminModal() {
             playPopSound();
@@ -936,7 +923,6 @@
         }
 
         function renderAdminData() {
-            // ポイント一覧
             const ptList = document.getElementById('adminPointList');
             ptList.innerHTML = Object.keys(userPoints).map(k => `
                 <div class="flex justify-between items-center bg-white p-1.5 rounded-lg border">
@@ -945,7 +931,6 @@
                 </div>
             `).join('');
 
-            // 履歴一覧
             const histList = document.getElementById('historyList');
             if (purchaseHistory.length === 0) {
                 histList.innerHTML = '<p class="text-gray-400 text-center py-2 text-[10px]">履歴はありません</p>';
@@ -962,9 +947,6 @@
             `).join('');
         }
 
-        /* ----------------------------------------------------
-         * 8. ユーティリティ
-         * ---------------------------------------------------- */
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function updateGuide(text) {
